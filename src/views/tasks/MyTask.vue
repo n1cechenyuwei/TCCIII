@@ -53,7 +53,8 @@
             </el-table-column>
             <el-table-column
               prop="objpeople"
-              label="负责人">
+              label="负责人"
+              width="180">
             </el-table-column>
             <el-table-column
               prop="objtime[0]"
@@ -231,14 +232,14 @@ export default {
   transform: translateX(110%);
 }
 .taskright-title {
-  height: 54px;
-  line-height: 54px;
+  height: 50px;
+  line-height: 50px;
   background-color: #fff;
   padding-left: 20px;
   position: relative;
   border-top-left-radius: 6px;
   border-bottom: 1px solid #dae9f9;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 .taskright-title .fontt {
   position: absolute;

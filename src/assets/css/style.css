@@ -66,8 +66,8 @@ ul, ol {
   height: 100%;
 }
 .applyfor-top {
-  height: 50px;
-  line-height: 50px;
+  height: 48px;
+  line-height: 48px;
   border-top: 1px solid #dae9f9;
   border-bottom: 1px solid #dae9f9;
   background-color: #fff;
@@ -84,9 +84,9 @@ ul, ol {
   background-color: #fff;
   border-top: 1px solid #dae9f9;
   border-bottom: 1px solid #dae9f9;
-  height: 110px;
+  height: 100px;
   padding-left: 20px;
-  padding-top: 16px;
+  padding-top: 8px;
   box-sizing: border-box;
 }
 .statusbox {
@@ -102,8 +102,8 @@ ul, ol {
   color: #7e8b8e;
 }
 .taskSliderBox {
-  height: 30px;
-  line-height: 30px;
+  height: 26px;
+  line-height: 26px;
   font-size: 18px;
   color: #7e8b8e;
   margin-top: 10px;

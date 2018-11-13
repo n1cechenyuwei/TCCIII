@@ -114,6 +114,61 @@
               </div>
             </div>
           </div>
+          <div class="approval-information-box">
+            <div class="information-box">
+              <span>合同金额：</span>
+              <div class="information-box-input">
+                <el-input
+                  size="small"
+                  placeholder="请输入金额"
+                  v-model="approvalinput">
+                </el-input>
+              </div>
+            </div>
+            <div class="information-boxa">
+              <span>合同状态：</span>
+              <span class="information-box-fontt">待签订</span>
+            </div>
+          </div>
+          <div class="approval-information-boxe">
+            <div class="information-boxq">
+              <span>合同附件：</span>
+              <div class="information-boxw">
+                <el-tabs>
+                  <el-tab-pane label="初稿">
+                    <el-button type="primary" size="mini" class="chugao-btn">生成初稿</el-button>
+                    <div class="chugao-box scrollbar">
+                      <div class="chugao-list">
+                        <span class="chugao-name">大华公司入围检测项目合同初稿</span>
+                        <a href="" class="chugao-icon">
+                          <i class="el-icon-download"></i>
+                        </a>
+                      </div>
+                      <div class="chugao-list">
+                        <span class="chugao-name">大华公司入围检测项目合同初稿</span>
+                        <a href="" class="chugao-icon">
+                          <i class="el-icon-download"></i>
+                        </a>
+                      </div>
+                    </div>
+                  </el-tab-pane>
+                  <el-tab-pane label="终稿">
+                    22
+                  </el-tab-pane>
+                </el-tabs>
+              </div>
+            </div>
+            <div class="hetong-isbtn">
+              <el-radio-group v-model="hetongradio" size="small">
+                <el-radio label="1" border>签订成功</el-radio>
+                <el-radio label="2" border>签订失败</el-radio>
+              </el-radio-group>
+            </div>
+          </div>
+          <div class="approval-btn-two">
+            <el-button type="primary" size="medium">保存信息</el-button>
+            <el-button type="primary" size="medium" @click="handletasksubmit">提交任务</el-button>
+          </div>
         </div>
       </div>
     </div>
@@ -125,12 +180,27 @@ export default {
   data() {
     return {
       taskvalue: 0, //任务进度，必须是数字
-      approvaldata: ["2018-10-15", "2018-11-16"] //合同绑定日期
+      approvaldata: ["2018-10-15", "2018-11-16"], //合同绑定日期
+      approvalinput: "拾万元整", //合同金额绑定值
+      hetongradio: "" //合同绑定值
     };
   },
   methods: {
+    // 日历组件时间
     datachange() {
       console.log(this.approvaldata);
+    },
+    // 提交任务
+    handletasksubmit() {
+      this.$confirm("确定提交任务吗", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(async () => {
+          this.$message.success("提交成功");
+        })
+        .catch(() => {});
     }
   }
 };
@@ -146,7 +216,7 @@ export default {
 }
 .approvalContent {
   height: 100%;
-  margin-top: 10px;
+  margin-top: 6px;
 }
 .jiafang-title {
   height: 50px;
@@ -175,7 +245,7 @@ export default {
   margin-top: 4px;
   border-top: 1px solid #dae9f9;
   border-bottom: 1px solid #dae9f9;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 .approval-information-box {
   margin-top: 9px;
@@ -254,7 +324,89 @@ export default {
 .approvaldata-box .el-range-editor.el-input__inner {
   padding: 3px;
 }
-/* .approvaldata-box .el-range-editor.el-input__inner {
-  padding: 0;
-} */
+.information-box-fontt {
+  color: #409eff;
+  font-size: 16px;
+}
+.information-box-input {
+  position: relative;
+  top: -1px;
+  width: 200px;
+  display: inline-block;
+  box-sizing: border-box;
+}
+.information-box-input .el-input__inner {
+  border: 0px;
+  font-size: 18px;
+  height: 32px;
+  line-height: 32px;
+  box-sizing: border-box;
+}
+.information-box-input .el-input__inner:hover {
+  border: 1px solid #dcdfe6;
+  padding-left: 14px;
+}
+.information-box-input .el-input__inner:focus {
+  border: 1px solid #409eff;
+  padding-left: 14px;
+}
+.information-boxq {
+  display: inline-block;
+  height: 32px;
+  line-height: 32px;
+  min-width: 300px;
+  /* max-width: 480px; */
+  /* border-bottom: 1px dashed #cacaca; */
+  color: #7e8b8e;
+  font-size: 18px;
+  vertical-align: top;
+}
+.information-boxw {
+  display: inline-block;
+  vertical-align: top;
+  width: 500px;
+  /* margin-left: 16px; */
+  position: relative;
+  top: -7px;
+}
+.approval-information-boxe {
+  margin-top: 9px;
+  position: relative;
+  height: 150px;
+}
+.approval-btn-two {
+  position: absolute;
+  bottom: 10px;
+  right: 350px;
+}
+.chugao-btn {
+  margin-bottom: 4px;
+}
+.chugao-box {
+  height: 90px;
+  overflow: auto;
+}
+.information-boxw .el-tabs__header.is-top {
+  margin-bottom: 4px;
+}
+.chugao-list {
+  position: relative;
+  font-size: 16px;
+  line-height: 16px;
+  margin-top: 6px;
+  /* border-bottom: 1px solid #000; */
+}
+.chugao-name {
+  vertical-align: middle;
+}
+.chugao-icon {
+  position: absolute;
+  right: 0;
+  font-size: 18px;
+  vertical-align: middle;
+}
+.hetong-isbtn {
+  display: inline-block;
+  margin-left: 20px;
+}
 </style>
