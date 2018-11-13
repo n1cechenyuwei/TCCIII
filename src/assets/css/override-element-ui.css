@@ -1,0 +1,20 @@
+.menu .el-menu.el-menu--horizontal {
+  border-bottom: 0px;
+}
+.menu .el-submenu__title {
+  font-size: 20px
+}
+.menu .el-submenu__icon-arrow {
+  color: #fff;
+}
+.gengduo .el-menu-item {
+  background-color: #fff!important;
+  color: #7f8d8b !important;
+  height: 26px !important;
+  line-height: 26px !important;
+}
+.more-menu .el-menu.el-menu--popup.el-menu--popup-bottom-start{
+  background-color: #fff !important;
+  padding: 4px!important;
+  box-shadow: 0px 0px 6px 2px #c3e1ff !important;
+}
