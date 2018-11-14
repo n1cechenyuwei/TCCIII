@@ -2,7 +2,7 @@
   <div class="cardcardcard">
     <div>
       <div class="applyfor-top">
-        <i class="iconfont icon-gongsimingcheng0"></i>
+        <i id="appfor-icon" class="iconfont icon-gongsimingcheng0"></i>
         <i class="font">浙江大华公司入围检测审批申请任务</i>
       </div>
       <div class="statuss">
@@ -179,7 +179,7 @@ export default {
 </script>
 
 <style>
-.icon-gongsimingcheng0 {
+#appfor-icon {
   font-size: 32px;
   color: #1ac7ff;
 }
@@ -212,7 +212,7 @@ export default {
   padding-left: 35px;
 }
 .applyfor-information-box {
-  margin-top: 22px;
+  margin-top: 20px;
   position: relative;
 }
 .information-box {

@@ -25,10 +25,10 @@ ul, ol {
 }
 .scrollbar::-webkit-scrollbar {
   width: 8px;
-  height: 8px
+  height: 8px;
 }
 .scrollbar::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 2px rgba(0,0,0,0.2);
+  -webkit-box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.2);
   box-shadow: inset 0 0 2px rgba(0, 0, 0, .2);
   border-radius: 5px;
   /* background: rgba(0,0,0,0.1); */
@@ -116,3 +116,35 @@ ul, ol {
   margin-right: 14px;
 }
 /* 任务右滑上部分公共部分结束 */
+/* 右滑详情下划线 */
+.applyfor-information-box {
+  margin-top: 20px;
+  position: relative;
+}
+.information-box {
+  display: inline-block;
+  height: 32px;
+  line-height: 32px;
+  min-width: 300px;
+  max-width: 480px;
+  border-bottom: 1px dashed #cacaca;
+  color: #7e8b8e;
+  font-size: 18px;
+}
+.information-box-font {
+  color: #000;
+  font-size: 16px;
+}
+.information-box2 {
+  position: absolute;
+  color: #7e8b8e;
+  top: 0px;
+  left: 490px;
+  display: inline-block;
+  height: 32px;
+  line-height: 32px;
+  min-width: 300px;
+  max-width: 450px;
+  border-bottom: 1px dashed #cacaca;
+  font-size: 18px;
+}

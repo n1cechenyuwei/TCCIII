@@ -1,19 +1,25 @@
 <template>
   <div class="login-wrap">
-    <el-form
-      class="login-form"
-      label-position="top"
-      label-width="80px"
-      :model="formData">
-      <h2>用户登录</h2>
-      <el-form-item label="用户名">
-        <el-input v-model="formData.username"></el-input>
-      </el-form-item>
-      <el-form-item label="密码">
-        <el-input @keyup.enter.native="handleLogin" type="password" v-model="formData.password"></el-input>
-      </el-form-item>
-      <el-button @click="handleLogin" class="login-button" type="primary">登录</el-button>
-    </el-form>
+    <div>
+      <h2 class="login-title">检验测试管理系统</h2>
+      <div>
+        <el-form
+          class="login-form"
+          label-position="top"
+          label-width="80px"
+          :rules="formDatarules"
+          ref="loginFormData"
+          :model="formData">
+          <el-form-item prop="username">
+            <el-input v-model.trim="formData.username" placeholder="用户名"></el-input>
+          </el-form-item>
+          <el-form-item prop="password">
+            <el-input @keyup.enter.native="handleLogin" placeholder="密码" type="password" v-model.trim="formData.password"></el-input>
+          </el-form-item>
+          <el-button @click="handleLogin" class="login-button" type="primary">登录</el-button>
+        </el-form>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -25,27 +31,43 @@ export default {
       formData: {
         username: "",
         password: ""
-      }
+      },
+      formDatarules: {
+        username: [
+          {
+            required: true,
+            message: "请输入用户名",
+            trigger: "blur"
+          }
+        ],
+        password: [
+          {
+            required: true,
+            message: "请输入密码",
+            trigger: "blur"
+          }
+        ]
+      } //新增历史验证规则
     };
   },
   methods: {
     // 点击按钮，登录
     async handleLogin() {
-      // const res = await this.$http.post('login', this.formData);
-      // // 相当于在回调函数中书写的代码
-      // const data = res.data;
-      // const { meta: { status, msg } } = data;
-      // if (status === 200) {
-      //   // 提示
-      //   this.$message.success(msg);
-      //   // 记录token  { data: { token } , meta: {} }
-      //   const { data: { token } } = data;
-      //   sessionStorage.setItem('token', token);
-      //   // 跳转
-      this.$router.push({ name: "home" });
-      // } else {
-      //   this.$message.error(msg);
-      // }
+      this.$refs.loginFormData.validate(async valid => {
+        if (!valid) {
+          return this.$message.error("请完整输入用户名和密码");
+        }
+        const res = await this.$http.post("login", this.formData);
+        if (res.data.status === 200) {
+          this.$message.success(res.data.msg);
+          const token = res.data.token;
+          sessionStorage.setItem("token", token);
+          this.$store.dispatch("handleusername", res.data.username);
+          this.$router.push({ name: "home" });
+        } else {
+          this.$message.error(res.data.msg);
+        }
+      });
     }
   }
 };
@@ -53,7 +75,7 @@ export default {
 
 <style>
 .login-wrap {
-  background-color: #324152;
+  background: url(../assets/background.png) no-repeat;
   height: 100%;
   display: flex;
   justify-content: center;
@@ -61,13 +83,15 @@ export default {
 }
 
 .login-wrap .login-form {
-  background-color: #fff;
-  width: 400px;
-  padding: 30px;
-  border-radius: 5px;
+  width: 350px;
+  margin: 0 auto;
 }
 
 .login-button {
   width: 100%;
+}
+.login-title {
+  font-size: 48px;
+  color: #fff;
 }
 </style>

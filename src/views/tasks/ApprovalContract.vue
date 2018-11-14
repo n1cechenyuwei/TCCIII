@@ -2,7 +2,7 @@
   <div class="approvalbig">
     <div>
       <div class="applyfor-top">
-        <i class="iconfont icon-gongsimingcheng0"></i>
+        <i class="iconfont icon-gongsimingcheng0 appcon"></i>
         <i class="font">浙江大华公司入围检测合同签订任务</i>
       </div>
       <div class="statuss">
@@ -153,16 +153,36 @@
                     </div>
                   </el-tab-pane>
                   <el-tab-pane label="终稿">
-                    22
+                    <div class="zhonggao-box">
+                      <el-upload
+                        class="upload-demo"
+                        action="https://jsonplaceholder.typicode.com/posts/"
+                        :on-remove="handleRemove"
+                        :before-remove="beforeRemove"
+                        multiple
+                        :limit="3"
+                        :file-list="fileList">
+                        <el-button size="mini" type="primary">点击上传</el-button>
+                      </el-upload>
+                    </div>
                   </el-tab-pane>
                 </el-tabs>
               </div>
             </div>
             <div class="hetong-isbtn">
-              <el-radio-group v-model="hetongradio" size="small">
-                <el-radio label="1" border>签订成功</el-radio>
-                <el-radio label="2" border>签订失败</el-radio>
-              </el-radio-group>
+              <el-radio v-model="hetongradio" label="1" border size="small" @change="radiochange">通过</el-radio>
+              <el-radio v-model="hetongradio" label="2" border size="small" @change="radiochange">不通过</el-radio>
+              <el-form :model="formhetong" ref="formhetong" v-if="Isshow">
+                <el-form-item prop="why" :rules="[{ required: true, message: '原因不能为空'}]">
+                  <el-input
+                    class="textaree"
+                    type="textarea"
+                    :autosize="{ minRows: 3, maxRows: 4}"
+                    placeholder="请输入合同签订失败原因"
+                    v-model="formhetong.why">
+                  </el-input>
+                </el-form-item>
+              </el-form>
             </div>
           </div>
           <div class="approval-btn-two">
@@ -182,25 +202,78 @@ export default {
       taskvalue: 0, //任务进度，必须是数字
       approvaldata: ["2018-10-15", "2018-11-16"], //合同绑定日期
       approvalinput: "拾万元整", //合同金额绑定值
-      hetongradio: "" //合同绑定值
+      hetongradio: "", //合同绑定值
+      fileList: [
+        {
+          name: "food.jpeg",
+          url: "https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100"
+        },
+        {
+          name: "food2.jpeg",
+          url: "https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100"
+        }
+      ],
+      Isshow: false, //合同不通过原因绑定值
+      formhetong: {
+        why: "" //文本绑定值
+      }
     };
   },
   methods: {
+    //是否通过显示文本框
+    radiochange() {
+      if (this.hetongradio === "2") {
+        this.Isshow = true;
+      } else {
+        this.Isshow = false;
+      }
+    },
     // 日历组件时间
     datachange() {
       console.log(this.approvaldata);
     },
     // 提交任务
     handletasksubmit() {
-      this.$confirm("确定提交任务吗", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(async () => {
-          this.$message.success("提交成功");
-        })
-        .catch(() => {});
+      if (this.hetongradio === "") {
+        this.$message.error("请选择合同签订结果");
+      } else if (this.hetongradio === "1") {
+        if (this.fileList.length === 0) {
+          this.$message.error("请上传终稿");
+        } else {
+          this.$confirm("确定提交任务吗", "提示", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning"
+          })
+            .then(async () => {
+              this.$message.success("任务提交成功");
+            })
+            .catch(() => {});
+        }
+      } else {
+        this.$refs.formhetong.validate(valid => {
+          if (!valid) {
+            return this.$message.error("请输入签订失败原因");
+          }
+          this.$confirm("确定提交任务吗", "提示", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning"
+          })
+            .then(async () => {
+              this.$message.success("任务提交成功");
+            })
+            .catch(() => {});
+        });
+      }
+    },
+    // 文件移除
+    handleRemove(file) {
+      console.log(file);
+    },
+    // 文件移除之前提示
+    beforeRemove(file) {
+      return this.$confirm(`确定移除 ${file.name}？`);
     }
   }
 };
@@ -210,7 +283,7 @@ export default {
 .approvalbig {
   height: 100%;
 }
-.icon-gongsimingcheng0 {
+.approvalbig .icon-gongsimingcheng0.appcon {
   font-size: 32px;
   color: #1ac7ff;
 }
@@ -408,5 +481,26 @@ export default {
 .hetong-isbtn {
   display: inline-block;
   margin-left: 20px;
+}
+.zhonggao-box .el-upload-list.el-upload-list--text {
+  overflow: auto !important;
+  height: 100px !important;
+}
+.zhonggao-box .el-upload-list.el-upload-list--text::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.zhonggao-box .el-upload-list.el-upload-list--text::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+}
+.zhonggao-box .el-upload-list.el-upload-list--text::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background: rgba(202, 12, 12, 0.2);
+}
+.textaree {
+  margin-top: 10px;
+  width: 280px;
 }
 </style>

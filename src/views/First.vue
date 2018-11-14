@@ -134,8 +134,14 @@
     </el-dialog>
     <!-- 公告详情dialog模块 -->
     <el-dialog title="公告详情" :visible.sync="dialogannouncementcontent" width="50%">
-      <div class="announcementTwo-tittle">{{announcementTwo.title}}</div>
-      <div class="announcementTwo-content">{{announcementTwo.content}}</div>
+      <div class="announcementTwo-boxbox">
+        <div class="announcementTwo-tittle">
+          {{announcementTwo.title}}
+        </div>
+        <div class="announcementTwo-content scrollbar">  
+          <p>{{announcementTwo.content}}</p>
+        </div>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -251,6 +257,7 @@ export default {
     async showannouncement(id) {
       this.dialogannouncementcontent = true;
       const resdata = await this.$http.get(`notidetail/${id}`);
+      console.log(resdata);
       if (resdata.status === 200) {
         this.announcementTwo = resdata.data;
       } else {
@@ -297,7 +304,6 @@ export default {
     //获取文档列表
     async docment() {
       const resdata = await this.$http.get("doclist");
-      console.log(resdata);
       if (resdata.status === 200) {
         this.doclist = resdata.data.data;
       } else {

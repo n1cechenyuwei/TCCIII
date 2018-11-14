@@ -2,7 +2,10 @@
   <el-container class="sec">
     <el-header class="header">
       <el-row class="menu">
-        <el-col :span="4"><div class="logo">LOGO</div></el-col>
+        <el-col :span="4">
+          <div class="logo">
+          </div>
+        </el-col>
         <el-col :span="16">
           <el-menu 
           :router="true"
@@ -45,7 +48,20 @@
             </el-submenu>
           </el-menu>
         </el-col>
-        <el-col :span="4"><div class="logo">修改密码</div></el-col>
+        <el-col :span="4">
+          <div class="user-right">
+            <el-dropdown @command="handleCommandUser" class="user-dropdown" placement="bottom-start">
+              <span class="el-dropdown-link">
+                <i class="iconfont icon-weixintupian_"></i>                
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="handlepassword">修改密码</el-dropdown-item>
+                <el-dropdown-item command="logout">退出登录</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+            <span class="user-name">{{$store.state.username}}</span>
+          </div>
+        </el-col>
       </el-row>
     </el-header>
     <el-main class="content">
@@ -71,6 +87,13 @@ export default {
       // } else {
       this.$router.push({ name: "first" });
       // }
+    },
+    handleCommandUser(command) {
+      if (command === "logout") {
+        sessionStorage.clear();
+        this.$router.push({ name: "login" });
+        this.$message.success("退出成功");
+      }
     }
   }
 };
@@ -93,6 +116,8 @@ export default {
   line-height: 60px;
   color: #fff;
   text-align: center;
+  background: url(../assets/LOGO.png) no-repeat;
+  background-position: 10px 14px;
 }
 .menuitem {
   min-width: 500px;
@@ -121,5 +146,26 @@ export default {
 .content {
   padding: 10px 0px 0px 0;
   height: 100%;
+}
+.icon-weixintupian_ {
+  font-size: 24px;
+  color: #fff;
+  position: relative;
+  top: 3px;
+}
+.user-name {
+  position: relative;
+  margin-left: 5px;
+}
+.user-dropdown {
+  height: 24px;
+  line-height: 24px;
+}
+.user-right {
+  height: 60px;
+  line-height: 60px;
+  color: #fff;
+  text-align: center;
+  margin-left: 50px;
 }
 </style>

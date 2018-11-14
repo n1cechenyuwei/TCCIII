@@ -13,6 +13,7 @@
             </template>
             <el-menu-item index="/mytask" class="zuobian">我的任务</el-menu-item>
             <el-menu-item index="/tasked" class="zuobian">已完成任务</el-menu-item>
+            <el-menu-item index="/alltask" class="zuobian">全部任务</el-menu-item>
           </el-submenu>
           <el-menu-item index="2">
             <span slot="title" class="taskmenu-tittle">任务统计</span>
