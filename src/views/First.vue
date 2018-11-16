@@ -40,6 +40,9 @@
             </div>
             <div class="events-content">
               <div class="events-list-box scrollbar">
+                <div v-if="screenlist.length === 0" class="noevents">
+                  当前时间没有任务
+                </div>
                 <div class="events-list" v-for="(item, index) in screenlist" :key="index">
                   <div class="events-list-dian"></div>
                   <div class="events-list-name">{{item.title}}</div>
@@ -379,7 +382,7 @@ export default {
       let screen = this.demoEvents.filter(canshu => {
         return canshu.date === datestring ? true : false;
       });
-      const titletime = screen[0].date.split("-");
+      const titletime = datestring.split("-");
       this.screenlisttime = titletime;
       this.screenlist = screen;
     },
@@ -734,5 +737,9 @@ export default {
   margin-top: 4px;
   color: #606266;
   font-size: 14px;
+}
+.noevents {
+  text-align: center;
+  color: #606266;
 }
 </style>
