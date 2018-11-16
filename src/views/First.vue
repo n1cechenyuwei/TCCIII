@@ -31,7 +31,7 @@
             :lunar="calendar.lunar" 
             :value="calendar.value" 
             :weeks="calendar.weeks" 
-            :months="calendar.months" 
+            :months="calendar.months"
             @select="select">
           </calendar>
           <div class="events-box">
@@ -277,11 +277,11 @@ export default {
     formatDate(now) {
       const date = new Date(now);
       const Y = date.getFullYear();
-      const M =
-        date.getMonth() + 1 < 10
-          ? "0" + (date.getMonth() + 1)
-          : date.getMonth() + 1;
-      const D = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+      const M = date.getMonth() + 1;
+        // date.getMonth() + 1 < 10
+        //   ? "0" + (date.getMonth() + 1)
+        //   : date.getMonth() + 1;
+      const D = date.getDate();
       return Y + "-" + M + "-" + D;
     },
     //提交公告
@@ -375,13 +375,9 @@ export default {
     },
     // 日历点击出现任务
     select(value) {
-      let qwe = value[2].toString();
-      if (qwe.length === 1) {
-        qwe = "0" + qwe;
-      }
-      const datestring = value[0] + "-" + value[1] + "-" + qwe;
-      let screen = this.demoEvents.filter(value => {
-        return value.date === datestring ? true : false;
+      const datestring = value[0] + "-" + value[1] + "-" + value[2];
+      let screen = this.demoEvents.filter(canshu => {
+        return canshu.date === datestring ? true : false;
       });
       const titletime = screen[0].date.split("-");
       this.screenlisttime = titletime;
