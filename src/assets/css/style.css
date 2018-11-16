@@ -148,3 +148,6 @@ ul, ol {
   border-bottom: 1px dashed #cacaca;
   font-size: 18px;
 }
+.height-auto {
+  height: 100%;
+}

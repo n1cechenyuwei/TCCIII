@@ -1,5 +1,6 @@
 import Vue from "vue";
 import Router from "vue-router";
+// import { Message } from "element-ui";
 const Login = () => import("@/views/Login.vue");
 const Home = () => import("@/views/Home.vue");
 const Task = () => import("@/views/tasks/Task.vue");
@@ -11,7 +12,8 @@ const Alltask = () => import("@/views/tasks/Alltask.vue");
 const Applyfor = () => import("@/views/tasks/Applyfor.vue");
 const ApprovalContract = () => import("@/views/tasks/ApprovalContract.vue");
 const PutStorage = () => import("@/views/tasks/PutStorage.vue");
-import { Message } from "element-ui";
+const EqConfig = () => import("@/views/tasks/Eqconfig.vue");
+const Detection = () => import("@/views/tasks/Detection.vue");
 
 Vue.use(Router);
 
@@ -58,6 +60,16 @@ const router = new Router({
                   name: "putstorage",
                   path: "/putstorage",
                   component: PutStorage
+                },
+                {
+                  name: "eqconfig",
+                  path: "/eqconfig",
+                  component: EqConfig
+                },
+                {
+                  name: "detection",
+                  path: "/detection",
+                  component: Detection
                 }
               ]
             },
@@ -83,24 +95,24 @@ const router = new Router({
   ]
 });
 
-router.beforeEach((to, from, next) => {
-  // console.log(to, from);
-  // 判断当前访问的路由是否是login，如果是login直接next
-  if (to.name === "login") {
-    next();
-  } else {
-    // 判断有没有token
-    const token = sessionStorage.getItem("token");
-    if (!token) {
-      // 跳转到登录页面
-      router.push({ name: "login" });
-      // 提示
-      Message.warning("请先登录");
-      return;
-    }
-    next();
-  }
-});
+// router.beforeEach((to, from, next) => {
+//   // console.log(to, from);
+//   // 判断当前访问的路由是否是login，如果是login直接next
+//   if (to.name === "login") {
+//     next();
+//   } else {
+//     // 判断有没有token
+//     const token = sessionStorage.getItem("token");
+//     if (!token) {
+//       // 跳转到登录页面
+//       router.push({ name: "login" });
+//       // 提示
+//       Message.warning("请先登录");
+//       return;
+//     }
+//     next();
+//   }
+// });
 
 export default router;
 

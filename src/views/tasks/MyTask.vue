@@ -163,7 +163,7 @@
         </el-form>
       </div>
       <div class="dialogeq-open-btn">
-        <el-button type="success" size="small" @click="$store.commit('putstoragedialogclose')">取消</el-button>
+        <el-button plain type="success" size="small" @click="$store.commit('putstoragedialogclose')">取消</el-button>
         <el-button type="primary" size="small" class="dialogbtn-right" @click="$store.dispatch('putstoragedialogsubmit')">确定</el-button>
       </div>
     </el-dialog>
@@ -201,7 +201,7 @@ export default {
       console.log(row);
       this.noShow = false;
       this.isShow = true;
-      this.$router.push({ name: "putstorage" });
+      this.$router.push({ name: "approvalcontract" });
     },
     close() {
       this.noShow = true;

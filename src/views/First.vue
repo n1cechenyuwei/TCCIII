@@ -25,9 +25,32 @@
          </div>
          <div class="richeng">日程安排</div>
          <div id="calendar">
-          <vue-event-calendar
+          <calendar
+            ref="calendar"
+            :events="calendar.events" 
+            :lunar="calendar.lunar" 
+            :value="calendar.value" 
+            :weeks="calendar.weeks" 
+            :months="calendar.months" 
+            @select="select">
+          </calendar>
+          <div class="events-box">
+            <div class="evente-title-box">
+              <div class="evente-title">{{screenlisttime[0]}} 年 {{screenlisttime[1]}} 月 {{screenlisttime[2]}} 日</div>
+            </div>
+            <div class="events-content">
+              <div class="events-list-box scrollbar">
+                <div class="events-list" v-for="(item, index) in screenlist" :key="index">
+                  <div class="events-list-dian"></div>
+                  <div class="events-list-name">{{item.title}}</div>
+                  <div class="events-list-time">{{item.date}}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- <vue-event-calendar
             :events="demoEvents">
-          </vue-event-calendar>
+          </vue-event-calendar> -->
          </div>
         </div>
       </el-col>
@@ -147,6 +170,7 @@
 </template>
 
 <script>
+import calendar from "../components/calendar.vue";
 import Mytabs from "../components/Mytabs";
 export default {
   data() {
@@ -184,7 +208,34 @@ export default {
       announcementTwo: "", //公告详情内容
       number: "", //左上角数量
       news: "", //最新公告内容
-      doclist: [] //文档列表
+      doclist: [], //文档列表
+      calendar: {
+        value: [2018, 9, 6], //默认日期
+        weeks: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+        months: [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December"
+        ],
+        events: {
+          "2017-7-7": "$408",
+          "2017-7-20": "$408",
+          "2017-7-21": "$460",
+          "2017-7-22": "$500"
+        },
+        lunar: true //是否显示农历
+      },
+      screenlist: [], // 日历任务列表
+      screenlisttime: [] //任务列表标题时间
     };
   },
   created() {
@@ -193,15 +244,17 @@ export default {
     this.noticehostory();
     this.task();
     this.docment();
+    this.calendarTwo();
   },
   methods: {
     // 日历模块数据处理
     initialize() {
-      //判断日期是否是数组，如果是，拆分成单天，并循环
       this.demoEventsone.forEach(element => {
         const date = element.start_end;
-        const s1 = new Date(date[0].replace(/-/g, "/"));
-        const s2 = new Date(date[1].replace(/-/g, "/"));
+        // const s1 = new Date(date[0].replace(/-/g, "/"));
+        const s1 = new Date(date[0]);
+        const s2 = new Date(date[1]);
+        // const s2 = new Date(date[1].replace(/-/g, "/"));
         const days = s2.getTime() - s1.getTime();
         const time = parseInt(days / (1000 * 60 * 60 * 24));
         for (let i = 0; i < time + 1; i++) {
@@ -228,8 +281,8 @@ export default {
         date.getMonth() + 1 < 10
           ? "0" + (date.getMonth() + 1)
           : date.getMonth() + 1;
-      const D = date.getDate();
-      return Y + "/" + M + "/" + D;
+      const D = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+      return Y + "-" + M + "-" + D;
     },
     //提交公告
     async SubmitNewAnnouncement() {
@@ -257,7 +310,6 @@ export default {
     async showannouncement(id) {
       this.dialogannouncementcontent = true;
       const resdata = await this.$http.get(`notidetail/${id}`);
-      console.log(resdata);
       if (resdata.status === 200) {
         this.announcementTwo = resdata.data;
       } else {
@@ -294,9 +346,10 @@ export default {
     //获取任务
     async task() {
       const resdata = await this.$http.get("tasklist");
-      if (resdata.status === 200) {
+      if (resdata.data.status === 200) {
         this.demoEventsone = resdata.data.data;
         this.initialize();
+        this.screenall();
       } else {
         this.$message.error(resdata.data.msg);
       }
@@ -309,10 +362,50 @@ export default {
       } else {
         this.$message.error(resdata.data.msg);
       }
+    },
+    // v2.0日历初始化函数
+    calendarTwo() {
+      const date = new Date();
+      const Y = date.getFullYear();
+      const M = date.getMonth() + 1;
+      const D = date.getDate();
+      this.calendar.value[0] = Y;
+      this.calendar.value[1] = M;
+      this.calendar.value[2] = D;
+    },
+    // 日历点击出现任务
+    select(value) {
+      let qwe = value[2].toString();
+      if (qwe.length === 1) {
+        qwe = "0" + qwe;
+      }
+      const datestring = value[0] + "-" + value[1] + "-" + qwe;
+      let screen = this.demoEvents.filter(value => {
+        return value.date === datestring ? true : false;
+      });
+      const titletime = screen[0].date.split("-");
+      this.screenlisttime = titletime;
+      this.screenlist = screen;
+    },
+    // 所有日历任务转换为calendar的任务,并且默认显示当天的任务
+    screenall() {
+      const eventslist = {};
+      this.demoEvents.forEach(element => {
+        eventslist[element.date] = element.title;
+      });
+      this.calendar.events = eventslist;
+      const todaytime = this.formatDate(new Date());
+      let screentwo = this.demoEvents.filter(value => {
+        return value.date === todaytime ? true : false;
+      });
+      const titletimetwo = todaytime.split("-");
+      this.screenlisttime = titletimetwo;
+      this.screenlist = screentwo;
     }
   },
   components: {
-    Mytabs
+    Mytabs,
+    calendar
   }
 };
 </script>
@@ -587,5 +680,63 @@ export default {
 }
 .center-bottom {
   height: 100%;
+}
+.events-box {
+  height: 322px;
+  background-color: #fff;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+.evente-title-box {
+  background-color: #409eff;
+}
+.evente-title {
+  color: #fff;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+}
+.events-content {
+  height: 282px;
+  padding: 10px 0px 10px 10px;
+  box-sizing: border-box;
+}
+.events-list-box {
+  overflow: auto;
+  height: 262px;
+}
+.events-list {
+  box-sizing: border-box;
+  padding-top: 3px;
+  background-color: #fff;
+  height: 70px;
+  border-radius: 4px;
+  border: 1px solid #c0c4cc;
+  margin-bottom: 4px;
+  margin-right: 10px;
+}
+.events-list-dian {
+  margin-left: 4px;
+  height: 6px;
+  width: 6px;
+  border-radius: 3px;
+  background-color: blue;
+}
+.events-list-name {
+  margin-left: 10px;
+  overflow: hidden;
+  margin-top: 4px;
+  width: 328px;
+  color: #303133;
+  height: 24px;
+  line-height: 20px;
+  border-bottom: 1px dashed #606266;
+}
+.events-list-time {
+  margin-left: 10px;
+  width: 328px;
+  margin-top: 4px;
+  color: #606266;
+  font-size: 14px;
 }
 </style>
