@@ -1,8 +1,12 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import axios from "axios";
+import MyAxios from "@/components/MyAxios";
 import { Message } from "element-ui";
 
 Vue.use(Vuex);
+// Vue.prototype.$http = axios;
+// Vue.use(MyAxios);
 
 export default new Vuex.Store({
   state: {
@@ -129,6 +133,10 @@ export default new Vuex.Store({
     diaeqopen: {} // 设备dialog信息
   },
   mutations: {
+    // 任务读取
+    loadingMytask(state) {
+      
+    },
     //审批任务设备详情dialog是否显示
     applyEquipment(state) {
       state.DialogEquipment = true;
@@ -168,6 +176,13 @@ export default new Vuex.Store({
     //设备入库任务设备详情dialog确定按钮提交
     putstoragedialogsubmit(context) {
       context.commit("putstoragedialogsubmit");
+    },
+    // 任务读取
+    loadingMytask(context) {
+      axios.get("tasks/1")
+        .then(function(res) {
+          console.log(res)
+        })
     }
   }
 });

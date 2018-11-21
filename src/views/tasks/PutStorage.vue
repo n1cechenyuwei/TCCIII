@@ -24,6 +24,12 @@
             <i>超时</i>
           </div>
         </div>
+        <div>
+          <div class="gong-information-box">
+            <span>单位名称：</span>
+            <span class="information-box-font">浙江大华公司</span>
+          </div>
+        </div>
         <div class="taskSliderBox">
           <span>任务进度:</span>
           <div class="Slider">
@@ -67,7 +73,7 @@
       <el-table
         :data="$store.state.equipment"
         style="width: 100%"
-        height="350">
+        height="320">
         <el-table-column
           fixed
           prop="bianhao"

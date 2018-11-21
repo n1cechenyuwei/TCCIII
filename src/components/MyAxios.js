@@ -32,17 +32,18 @@ MyAxios.install = function (Vue) {
   );
 
   // // Add a response interceptor
-  // // 添加响应的拦截器
-  // instance.interceptors.response.use(
-  //   function(response) {
-  //     // Do something with response data
-  //     return response;
-  //   },
-  //   function(error) {
-  //     // Do something with response error
-  //     return Promise.reject(error);
-  //   }
-  // );
+  // 添加响应的拦截器
+  instance.interceptors.response.use(
+    function(response) {
+      // Do something with response data
+      // console.log(response)
+      return response.data;
+    },
+    function(error) {
+      // Do something with response error
+      return Promise.reject(error);
+    }
+  );
 
   Vue.prototype.$http = instance;
 };

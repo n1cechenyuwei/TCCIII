@@ -1,5 +1,6 @@
 <template>
   <el-tabs tab-position="top"
+    v-loading="tabsloading"
     @tab-click="handleTabClickDate"
     class="tabs-date"
     v-model="datedate">
@@ -38,7 +39,8 @@ export default {
       projectpagetotal: 0, //顶部项目模块总共多少条
       currentPage: 1, //默认第几页
       date: [], //年
-      datetwo: "" //请求日期
+      datetwo: "", //请求日期
+      tabsloading: true //加载效果
     };
   },
   created() {
@@ -56,7 +58,6 @@ export default {
     project(pro) {
       pro.forEach(obj => {
         if (obj.sechedule === 100) {
-          // console.log(11)
           obj.status = "success";
         } else {
           obj.status = "";
@@ -82,9 +83,12 @@ export default {
         `${this.url}/${this.datetwo}/${this.currentPage}`
       );
       if (resdata.status === 200) {
-        this.projectpagetotal = resdata.data.data_total;
-        this.projectlist = resdata.data.pro_list;
+        this.projectpagetotal = resdata.data_total;
+        this.projectlist = resdata.pro_list;
         this.project(this.projectlist);
+        this.tabsloading = false;
+      } else {
+        this.$message.error(resdata.msg);
       }
     },
     //分页
@@ -117,7 +121,7 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-weight: 700;
+  color: #606266;
 }
 .progress-line {
   display: inline-block;

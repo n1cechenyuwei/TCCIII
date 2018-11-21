@@ -58,14 +58,14 @@ export default {
           return this.$message.error("请完整输入用户名和密码");
         }
         const res = await this.$http.post("login", this.formData);
-        if (res.data.status === 200) {
-          this.$message.success(res.data.msg);
-          const token = res.data.token;
+        if (res.status === 200) {
+          this.$message.success(res.msg);
+          const token = res.token;
           sessionStorage.setItem("token", token);
-          this.$store.dispatch("handleusername", res.data.username);
-          this.$router.push({ name: "home" });
+          this.$store.dispatch("handleusername", res.username);
+          this.$router.push({ name: "navigation" });
         } else {
-          this.$message.error(res.data.msg);
+          this.$message.error(res.msg);
         }
       });
     }

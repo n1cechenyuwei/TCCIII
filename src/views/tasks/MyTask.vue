@@ -171,6 +171,7 @@
 </template>
 
 <script>
+var that = this;
 export default {
   data() {
     return {
@@ -183,7 +184,9 @@ export default {
       loading: false //加载图标
     };
   },
-  created() {},
+  created() {
+    this.mytasklist()
+  },
   methods: {
     //筛选按钮时间
     handleCommand(command) {
@@ -201,13 +204,17 @@ export default {
       console.log(row);
       this.noShow = false;
       this.isShow = true;
-      this.$router.push({ name: "approvalcontract" });
+      this.$router.push({ name: "detection" });
     },
     close() {
       this.noShow = true;
       this.isShow = false;
+    },
+    async mytasklist() {
+      // const res = await this.$http.get(`tasks/${this.currentPage}`);
+      // console.log(res.data)
+      this.$store.dispatch("loadingMytask", this.currentPage, that)
     }
-    // $store.state.Dialogshebei
   }
 };
 </script>
@@ -295,8 +302,8 @@ export default {
   transform: translateX(110%);
 }
 .taskright-title {
-  height: 50px;
-  line-height: 50px;
+  height: 46px;
+  line-height: 46px;
   background-color: #fff;
   padding-left: 20px;
   position: relative;

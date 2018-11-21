@@ -24,6 +24,10 @@
             <i>超时</i>
           </div>
         </div>
+        <div class="gong-information-box">
+          <span>所属项目：</span>
+          <span class="gong-box-font">浙江大华公司入围检测项目</span>
+        </div>
         <div class="taskSliderBox">
           <span>任务进度:</span>
           <div class="Slider">
@@ -104,7 +108,7 @@
       <i class="EqconfigContentfont">受检单位信息</i>
     </div>
     <div class="eqconfig-shebei-content">
-      <div class="applyfor-information-box">
+      <div class="eqconfig-information-box">
         <div class="information-box">
           <span>单位名称：</span>
           <span class="information-box-font">浙江大华公司</span>
@@ -130,7 +134,7 @@
       <i class="EqconfigContentfont">工作台信息</i>
     </div>
     <div class="eqconfig-shebei-content bot-height">
-      <div class="applyfor-information-box">
+      <div class="eqconfig-information-box">
         <div class="information-box">
           <span>工作台编号：</span>
           <span class="information-box-font">001</span>
@@ -213,17 +217,13 @@ export default {
   border-bottom: 1px solid #dae9f9;
   background-color: #fff;
   padding-left: 20px;
-  padding-bottom: 16px;
+  padding-bottom: 14px;
 }
 .eqconfig-information-box {
-  margin-top: 8px;
+  margin-top: 6px;
   position: relative;
 }
 .bot-height {
   height: 100%;
-}
-.eqconfig-bot-btn {
-  text-align: center;
-  margin-top: 16px;
 }
 </style>

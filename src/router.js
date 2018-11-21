@@ -2,9 +2,9 @@ import Vue from "vue";
 import Router from "vue-router";
 // import { Message } from "element-ui";
 const Login = () => import("@/views/Login.vue");
-const Home = () => import("@/views/Home.vue");
+const Navigation = () => import("@/views/Navigation.vue");
 const Task = () => import("@/views/tasks/Task.vue");
-const First = () => import("@/views/First.vue");
+const Home = () => import("@/views/Home.vue");
 const Project = () => import("@/views/Project.vue");
 const MyTask = () => import("@/views/tasks/MyTask.vue");
 const Tasked = () => import("@/views/tasks/Tasked.vue");
@@ -14,6 +14,9 @@ const ApprovalContract = () => import("@/views/tasks/ApprovalContract.vue");
 const PutStorage = () => import("@/views/tasks/PutStorage.vue");
 const EqConfig = () => import("@/views/tasks/Eqconfig.vue");
 const Detection = () => import("@/views/tasks/Detection.vue");
+const Contractor = () => import("@/views/tasks/Contractor.vue");
+const ReportAudit = () => import("@/views/tasks/ReportAudit.vue");
+const OutStorage = () => import("@/views/tasks/OutStorage.vue");
 
 Vue.use(Router);
 
@@ -27,14 +30,14 @@ const router = new Router({
       component: Login
     },
     {
-      name: "home",
-      path: "/home",
-      component: Home,
+      name: "navigation",
+      path: "/navigation",
+      component: Navigation,
       children: [
         {
-          name: "first",
-          path: "/first",
-          component: First
+          name: "home",
+          path: "/home",
+          component: Home
         },
         {
           name: "task",
@@ -70,6 +73,21 @@ const router = new Router({
                   name: "detection",
                   path: "/detection",
                   component: Detection
+                },
+                {
+                  name: "contractor",
+                  path: "/contractor",
+                  component: Contractor
+                },
+                {
+                  name: "reportaudit",
+                  path: "/reportaudit",
+                  component: ReportAudit
+                },
+                {
+                  name: "outstorage",
+                  path: "/outstorage",
+                  component: OutStorage
                 }
               ]
             },

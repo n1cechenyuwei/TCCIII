@@ -24,6 +24,10 @@
             <i>超时</i>
           </div>
         </div>
+        <div class="gong-information-box">
+          <span>所属项目：</span>
+          <span class="gong-box-font">浙江大华公司入围检测项目</span>
+        </div>
         <div class="taskSliderBox">
           <span>任务进度:</span>
           <div class="Slider">
