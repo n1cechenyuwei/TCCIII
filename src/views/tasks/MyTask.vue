@@ -36,7 +36,7 @@
             stripe
             style="width: 100%">
             <el-table-column
-              prop="objid"
+              prop="id"
               align="center"
               label="编号"
               width="120">
@@ -44,30 +44,31 @@
             <el-table-column
               label="名称">
               <template slot-scope="scope">
-                <span class="colcell">{{ scope.row.objname }}</span>
+                <span class="colcell">{{ scope.row.taskname }}</span>
               </template>
             </el-table-column>
             <el-table-column
-              prop="objproject"
+              prop="pro_name"
+              width="300"
               label="所属项目">
             </el-table-column>
             <el-table-column
-              prop="objpeople"
+              prop="username"
               label="负责人"
               width="180">
             </el-table-column>
             <el-table-column
-              prop="objtime[0]"
+              prop="start_end[0]"
               label="起始日"
               width="180">
             </el-table-column>
             <el-table-column
-              prop="objtime[1]"
+              prop="start_end[1]"
               label="到期日"
               width="180">
             </el-table-column>
             <el-table-column
-              prop="objprogress"
+              prop="sechedule"
               width="100"
               label="进度">
             </el-table-column>
@@ -75,19 +76,20 @@
               width="150"
               label="状态">
               <template slot-scope="scope">
-                <span v-bind:class="{warning: (scope.row.objstatus === '超时')}">{{ scope.row.objstatus}}</span>
+                <span v-show="scope.row.istimeout === '未超时'" >{{scope.row.state}}</span>
+                <span v-show="scope.row.istimeout === '超时'" v-bind:class="{warning: (scope.row.istimeout === '超时')}">超时</span>
               </template>
             </el-table-column>
           </el-table>
-          <el-pagination
-            class="page"
-            :current-page.sync="currentPage"
-            @current-change="handlePageChange"
-            :page-size="taskpagesize"
-            layout="total, prev, pager, next, jumper"
-            :total="taskpagetotal">
-          </el-pagination>
         </div>
+        <el-pagination
+          class="page"
+          :current-page.sync="currentPage"
+          @current-change="handlePageChange"
+          :page-size="taskpagesize"
+          layout="total, prev, pager, next, jumper"
+          :total="$store.state.mytasktotal">
+        </el-pagination>
         <div :class="{ 'hidden': noShow, 'sard': isShow }">
           <div class="taskright-title">
             <i class="iconfont icon-renwu"></i>
@@ -171,21 +173,19 @@
 </template>
 
 <script>
-var that = this;
 export default {
   data() {
     return {
       mytasksearch: "", //搜索框内容
-      taskpagetotal: 100, //任务总条数
       currentPage: 1, //默认第几页
-      taskpagesize: 10, //每页显示几条
+      taskpagesize: 14, //每页显示几条
       isShow: true, //显示右侧卡片
       noShow: true, //控制是否滑出卡片
       loading: false //加载图标
     };
   },
   created() {
-    this.mytasklist()
+    this.$store.dispatch("loadingMytask", this.currentPage);
   },
   methods: {
     //筛选按钮时间
@@ -197,23 +197,17 @@ export default {
       }
     },
     handlePageChange(val) {
-      console.log(val);
+      this.$store.dispatch("loadingMytask", val);
     },
     //表格行点击
     rowclick(row) {
-      console.log(row);
       this.noShow = false;
       this.isShow = true;
-      this.$router.push({ name: "detection" });
+      this.$router.push({ name: "contractor" });
     },
     close() {
       this.noShow = true;
       this.isShow = false;
-    },
-    async mytasklist() {
-      // const res = await this.$http.get(`tasks/${this.currentPage}`);
-      // console.log(res.data)
-      this.$store.dispatch("loadingMytask", this.currentPage, that)
     }
   }
 };
@@ -253,6 +247,9 @@ export default {
 }
 .mytask-content-middle .page {
   margin-left: 30px;
+  /* position: absolute;
+  left: 30px;
+  bottom: 60px; */
 }
 .warning {
   color: #e6a23c;
@@ -261,7 +258,7 @@ export default {
   cursor: Pointer;
 }
 .mytask-content-table {
-  height: 100%;
+  height: 720px;
 }
 .mytask-content-table-one {
   font-size: 16px;
@@ -352,8 +349,6 @@ export default {
   padding: 15px 25px 30px 25px;
 }
 .dialogeq-open-btn {
-  /* display: inline-block; */
-  /* margin-left: 110px; */
   text-align: center;
 }
 .wwwwww {

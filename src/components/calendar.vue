@@ -327,7 +327,6 @@ export default {
       type: Boolean,
       default: false
     },
-
     // 自定义星期名称
     weeks: {
       type: Array,

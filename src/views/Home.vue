@@ -232,12 +232,7 @@ export default {
           "November",
           "December"
         ],
-        events: {
-          "2017-7-7": "$408",
-          "2017-7-20": "$408",
-          "2017-7-21": "$460",
-          "2017-7-22": "$500"
-        },
+        events: {},
         lunar: true //是否显示农历
       },
       screenlist: [], // 日历任务列表

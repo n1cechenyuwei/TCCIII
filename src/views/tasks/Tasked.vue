@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="tasked-box">
     <div class="mytask-content-top">
       <el-dropdown
         @command="handleCommand"
@@ -27,22 +27,22 @@
     </div>
     <div class="mytask-content-middle">
       <div class="tasked-list">
-        <div class="tasked-list-one" v-for="(item, index) in $store.state.task" :key="index" :class="{singular: index % 2 === 0}">
+        <div class="tasked-list-one" v-for="(item, index) in $store.state.tasked" :key="index" :class="{singular: index % 2 === 0}" @click="rightopen(item)">
           <span class="tasked-list-index">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{index + 1}}.&nbsp;&nbsp;</span>
-          <span class="tasked-list-name">{{item.objname}}</span>
-          <el-tag type="success" size="small" class="tasked-list-tag">100%</el-tag>
-          <span class="tasked-list-time">2018-09-12</span>
+          <span class="tasked-list-name">{{item.taskname}}</span>
+          <el-tag type="success" size="small" class="tasked-list-tag">{{item.sechedule}}%</el-tag>
+          <span class="tasked-list-time">{{item.starttime}}</span>
         </div>
       </div>
-       <el-pagination
-          class="page"
-          :current-page.sync="currentPage"
-          @current-change="handlePageChange"
-          :page-size="taskpagesize"
-          layout="total, prev, pager, next, jumper"
-          :total="taskpagetotal">
-        </el-pagination>
     </div>
+     <el-pagination
+        class="pagetwo"
+        :current-page.sync="currentPage"
+        @current-change="handlePageChange"
+        :page-size="taskpagesize"
+        layout="total, prev, pager, next, jumper"
+        :total="$store.state.taskedtotal">
+      </el-pagination>
   </div>
 </template>
 
@@ -52,9 +52,11 @@ export default {
     return {
       taskedsearch: "", //搜索框
       currentPage: 1, //默认第几页
-      taskpagesize: 18, //每页几条
-      taskpagetotal: 100 //总共多少条
+      taskpagesize: 14 //每页几条
     };
+  },
+  created() {
+    this.$store.dispatch("loadingTasked", this.currentPage);
   },
   methods: {
     //按钮事件案例
@@ -67,13 +69,21 @@ export default {
     },
     //分页事件
     handlePageChange(val) {
-      console.log(val);
+      this.$store.dispatch("loadingTasked", val);
+    },
+    // 点击右弹出
+    rightopen(route) {
+      console.log(route);
     }
   }
 };
 </script>
 
 <style>
+.tasked-box {
+  box-sizing: border-box;
+  position: relative;
+}
 .mytask-content-top {
   height: 54px;
   background-color: #fbfbfb;
@@ -98,7 +108,7 @@ export default {
 .mytask-content-middle {
   border-top: 1px solid #c6e7ff;
   margin-top: 10px;
-  height: 100%;
+  height: 700px;
 }
 .tasked-list-one {
   height: 46px;
@@ -115,6 +125,7 @@ export default {
 }
 .tasked-list {
   margin-top: 10px;
+  height: 680px;
 }
 .tasked-list-tag {
   margin-left: 10px;
@@ -127,5 +138,8 @@ export default {
 }
 .singular {
   background-color: #fafafa;
+}
+.pagetwo {
+  margin-left: 30px;
 }
 </style>

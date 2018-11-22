@@ -1,7 +1,7 @@
 import axios from "axios";
 
 var MyAxios = {};
-MyAxios.install = function (Vue) {
+MyAxios.install = function(Vue) {
   // axios.defaults.baseURL = "http://192.168.1.186:8888/api/v1.0/";
   // Vue.prototype.$http = axios;
   // 创建自定义的axios实例
@@ -11,7 +11,7 @@ MyAxios.install = function (Vue) {
   // // Add a request interceptor
   // // 添加请求的拦截器
   instance.interceptors.request.use(
-    function (config) {
+    function(config) {
       // 请求被发送之前要做的处理
       // Do something before request is sent
       // console.log('拦截器', config);
@@ -25,7 +25,7 @@ MyAxios.install = function (Vue) {
       }
       return config;
     },
-    function (error) {
+    function(error) {
       // Do something with request error
       return Promise.reject(error);
     }

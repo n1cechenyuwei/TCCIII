@@ -1,117 +1,16 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import axios from "axios";
-import MyAxios from "@/components/MyAxios";
+import http from "@/components/vuexajax";
 import { Message } from "element-ui";
 
 Vue.use(Vuex);
-// Vue.prototype.$http = axios;
-// Vue.use(MyAxios);
 
 export default new Vuex.Store({
   state: {
-    task: [
-      {
-        objid: 1,
-        objname: "大华公司申请审批任务",
-        objtime: ["2018-11-16", "2018-11-27"],
-        objtype: "申请审批任务",
-        objproject: "浙江大华公司入围检测项目",
-        objprogress: 50,
-        objstatus: "进行中",
-        objpeople: "郝佳贺"
-      },
-      {
-        objid: 2,
-        objname: "大华公司合同签订任务",
-        objtime: ["2018-11-05", "2018-11-15"],
-        objtype: "合同签订",
-        objproject: "浙江大华公司入围检测项目",
-        objprogress: 50,
-        objstatus: "进行中",
-        objpeople: "郝佳贺"
-      },
-      {
-        objid: 3,
-        objname: "大华公司设备入库任务",
-        objtime: ["2018-11-05", "2018-11-15"],
-        objtype: "设备入库",
-        objproject: "浙江大华公司入围检测项目",
-        objprogress: 80,
-        objstatus: "超时",
-        objpeople: "郝佳贺"
-      },
-      {
-        objid: 4,
-        objname: "大华公司检测配置任务",
-        objtime: ["2018-11-05", "2018-11-15"],
-        objtype: "检测配置任务",
-        objproject: "浙江大华公司入围检测项目",
-        objprogress: 50,
-        objstatus: "进行中",
-        objpeople: "郝佳贺"
-      },
-      {
-        objid: 5,
-        objname: "大华公司检测配置任务",
-        objtime: ["2018-11-05", "2018-11-15"],
-        objtype: "检测配置任务",
-        objproject: "浙江大华公司入围检测项目",
-        objprogress: 50,
-        objstatus: "超时",
-        objpeople: "郝佳贺"
-      },
-      {
-        objid: 6,
-        objname: "大华公司检测配置任务",
-        objtime: ["2018-11-05", "2018-11-15"],
-        objtype: "检测配置任务",
-        objproject: "浙江大华公司入围检测项目",
-        objprogress: 50,
-        objstatus: "进行中",
-        objpeople: "郝佳贺"
-      },
-      {
-        objid: 7,
-        objname: "大华公司检测配置任务",
-        objtime: ["2018-11-05", "2018-11-15"],
-        objtype: "检测配置任务",
-        objproject: "浙江大华公司入围检测项目",
-        objprogress: 50,
-        objstatus: "进行中",
-        objpeople: "郝佳贺"
-      },
-      {
-        objid: 8,
-        objname: "大华公司检测配置任务",
-        objtime: ["2018-11-05", "2018-11-15"],
-        objtype: "检测配置任务",
-        objproject: "浙江大华公司入围检测项目",
-        objprogress: 50,
-        objstatus: "进行中",
-        objpeople: "郝佳贺"
-      },
-      {
-        objid: 9,
-        objname: "大华公司检测配置任务",
-        objtime: ["2018-11-05", "2018-11-15"],
-        objtype: "检测配置任务",
-        objproject: "浙江大华公司入围检测项目",
-        objprogress: 50,
-        objstatus: "进行中",
-        objpeople: "郝佳贺"
-      },
-      {
-        objid: 10,
-        objname: "大华公司检测配置任务",
-        objtime: ["2018-11-05", "2018-11-15"],
-        objtype: "检测配置任务",
-        objproject: "浙江大华公司入围检测项目",
-        objprogress: 50,
-        objstatus: "进行中",
-        objpeople: "郝佳贺"
-      }
-    ],
+    task: [], //我的任务列表
+    mytasktotal: 0, //我的任务总条数
+    tasked: [], //已完成任务列表
+    taskedtotal: 0, //已完成任务总条数
     DialogEquipment: false, //审批任务设备详情dialog是否显示
     username: "", //login存入的用户名，home页面使用
     Dialogshebei: false, //设备入库设备操作是否显示
@@ -134,8 +33,14 @@ export default new Vuex.Store({
   },
   mutations: {
     // 任务读取
-    loadingMytask(state) {
-      
+    loadingMytask(state, data) {
+      this.state.task = data.data;
+      this.state.mytasktotal = data.total;
+    },
+    // 已完成任务读取
+    loadingTasked(state, data) {
+      this.state.tasked = data.data;
+      this.state.taskedtotal = data.total;
     },
     //审批任务设备详情dialog是否显示
     applyEquipment(state) {
@@ -178,11 +83,18 @@ export default new Vuex.Store({
       context.commit("putstoragedialogsubmit");
     },
     // 任务读取
-    loadingMytask(context) {
-      axios.get("tasks/1")
-        .then(function(res) {
-          console.log(res)
-        })
+    async loadingMytask(context, page) {
+      const res = await http.get(`tasks/${page}`);
+      if (res.status === 200) {
+        context.commit("loadingMytask", { data: res.data, total: res.total });
+      }
+    },
+    // 已完成任务
+    async loadingTasked(context, page) {
+      const res = await http.get(`comtasks/${page}`);
+      if (res.status === 200) {
+        context.commit("loadingTasked", { data: res.data, total: res.total });
+      }
     }
   }
 });
