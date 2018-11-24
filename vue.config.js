@@ -52,20 +52,23 @@ module.exports = {
 
 //   // webpack 链接 API，用于生成和修改 webapck 配置
 //   // https://github.com/mozilla-neutrino/webpack-chain
-//   chainWebpack: (config) => {
-//     // 因为是多页面，所以取消 chunks，每个页面只对应一个单独的 JS / CSS
-//     config.optimization
-//       .splitChunks({
-//         cacheGroups: {}
-//       });
+  chainWebpack: (config) => {
+    config
+    .entry('index')
+      .add('babel-polyfill')
+    // 因为是多页面，所以取消 chunks，每个页面只对应一个单独的 JS / CSS
+    // config.optimization
+    //   .splitChunks({
+    //     cacheGroups: {}
+    //   });
 
-//     // 'src/lib' 目录下为外部库文件，不参与 eslint 检测
-//     config.module
-//       .rule('eslint')
-//       .exclude
-//       .add('/Users/maybexia/Downloads/FE/community_built-in/src/lib')
-//       .end()
-//   },
+    // // 'src/lib' 目录下为外部库文件，不参与 eslint 检测
+    // config.module
+    //   .rule('eslint')
+    //   .exclude
+    //   .add('/Users/maybexia/Downloads/FE/community_built-in/src/lib')
+    //   .end()
+  },
 
 //   // 配置高于chainWebpack中关于 css loader 的配置
 //   css: {
@@ -110,4 +113,9 @@ module.exports = {
 
 //   // 第三方插件配置
 //   pluginOptions: {}
+  // chainWebpack:  config => {
+  //   config
+  //   .entry('index')
+  //     .add('babel-polyfill')
+  // }
 };

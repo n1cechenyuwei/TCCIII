@@ -169,6 +169,15 @@
         <el-button type="primary" size="small" class="dialogbtn-right" @click="$store.dispatch('putstoragedialogsubmit')">确定</el-button>
       </div>
     </el-dialog>
+    <!-- 营业执照弹窗 -->
+    <el-dialog
+      class="yyxxcla"
+      :visible.sync="$store.state.opyyzz"
+      width="50%">
+      <div class="oppforimg-box">
+        <img class="oppforimg" src="http://192.168.1.186:8888/api/v1.0/show/license4.jpg" alt="照片丢失了">
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -201,9 +210,10 @@ export default {
     },
     //表格行点击
     rowclick(row) {
+      console.log(row);
       this.noShow = false;
       this.isShow = true;
-      this.$router.push({ name: "contractor" });
+      this.$router.push({ name: "applyfor" });
     },
     close() {
       this.noShow = true;
@@ -357,4 +367,22 @@ export default {
 .dialogbtn-right {
   margin-left: 30px !important;
 }
+.oppforimg-box {
+  text-align: center;
+}
+.oppforimg {
+  height: 600px;
+}
+.yyxxcla .el-dialog {
+  background-color: transparent;
+  /* background-color: #fff; */
+  box-shadow: none;
+}
+.yyxxcla .el-dialog__close.el-icon.el-icon-close {
+  /* color: transparent; */
+  color: #fff;
+}
+/* .yyxxcla .el-dialog__body {
+  background-color: rgba(0, 0, 0, 0.1);
+} */
 </style>

@@ -46,7 +46,7 @@
           </div>
           <div class="information-box2">
             <span>营业执照：</span>
-            <i class="iconfont icon-yingyezhizhao"></i>
+            <i class="iconfont icon-yingyezhizhao" @click="$store.commit('openyyzz')"></i>
           </div>
         </div>
         <div class="applyfor-information-box">

@@ -29,7 +29,8 @@ export default new Vuex.Store({
         status: "已入库"
       }
     ],
-    diaeqopen: {} // 设备dialog信息
+    diaeqopen: {}, // 设备dialog信息
+    opyyzz: false //营业执照dialog
   },
   mutations: {
     // 任务读取
@@ -63,6 +64,10 @@ export default new Vuex.Store({
     putstoragedialogsubmit(state) {
       state.Dialogshebei = false;
       Message.success("修改成功");
+    },
+    //打开申请营业执照
+    openyyzz(state) {
+      state.opyyzz = true;
     }
   },
   actions: {

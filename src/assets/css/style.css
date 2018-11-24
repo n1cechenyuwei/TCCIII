@@ -192,3 +192,50 @@ ul, ol {
   color: #4d5d71;
   margin-left: 12px;
 }
+#detection-icon {
+  font-size: 32px;
+  color: #1ac7ff;
+}
+.sbck {
+  background-color: #409eff;
+}
+.bgsh {
+  background-color: #f04864;
+}
+.wwjc {
+  background-color: #2fc25b;
+}
+.jcsh {
+  background-color: #e6a23c;
+}
+.sysjc {
+  background-color: #f56c6c;
+}
+.hjpz {
+  background-color: #909399;
+}
+.sbrk {
+  background-color: #b258f8;
+}
+.htqd {
+  background-color: #0488a9;
+}
+.sqsp {
+  background-color: #f61c11;
+}
+.tubiao-tool {
+  position: absolute;
+  border-radius: 4px;
+  background-color: rgba(256, 256, 256, 0.9);
+  box-shadow: 0 0 6px #9b9b9b;
+  padding: 7px 10px 7px 10px;
+}
+.tool-box {
+  font-size: 14px;
+  height: 28px;
+  line-height: 28px;
+}
+.tool-span {
+  display: inline-block;
+  color: #575757;
+}
