@@ -194,6 +194,88 @@
         </div>
       </div>
     </el-dialog>
+    <!-- 审批任务设备详情弹出框 -->
+    <el-dialog
+      title="设备详情"
+      :visible.sync="$store.state.DialogEquipment"
+      width="70%"
+      center>
+      <el-table
+        :data="$store.state.appeqlist"
+        border
+        height="480"
+        style="width: 100%">
+        <el-table-column
+          prop="temdid"
+          align="center"
+          label="设备编号"
+          width="100">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          show-overflow-tooltip
+          label="设备名称">
+        </el-table-column>
+        <el-table-column
+          prop="type"
+          show-overflow-tooltip
+          width="160"
+          label="设备类型">
+        </el-table-column>
+        <el-table-column
+          prop="model"
+          width="160"
+          show-overflow-tooltip
+          label="硬件型号">
+        </el-table-column>
+        <el-table-column
+          prop="version"
+          show-overflow-tooltip
+          width="100"
+          label="软件版本">
+        </el-table-column>
+        <el-table-column
+          width="160"
+          show-overflow-tooltip
+          prop="serialnumber"
+          label="出厂序列号">
+        </el-table-column>
+        <el-table-column
+          width="200"
+          prop="manufacturers"
+          show-overflow-tooltip
+          label="生产厂家">
+        </el-table-column>
+        <el-table-column
+          width="140"
+          align="center"
+          show-overflow-tooltip
+          label="生产厂家营业执照">
+          <template slot-scope="scope">
+            <i class="iconfont icon-yingyezhizhao" @click="eqimg(scope.row.filename)"></i>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-dialog
+        width="50%"
+        center
+        title="生产厂家营业执照"
+        :visible.sync="eqimgshow"
+        append-to-body>
+        <div class="eqimgdata-box">
+          <img :src="eqimgdata" alt="图片丢失了" class="eqimgdata">
+        </div>
+      </el-dialog>
+    </el-dialog>
+    <!-- 营业执照弹窗 -->
+    <el-dialog
+      class="yyxxcla"
+      :visible.sync="$store.state.opyyzz"
+      width="50%">
+      <div class="oppforimg-box">
+        <img class="oppforimg" :src="$store.state.appforcompany.license" alt="照片丢失了">
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -270,7 +352,9 @@ export default {
       screenlisttime: [], //任务列表标题时间
       dateloading: true, // 日历loading动画
       taskid: 0, //任务id
-      route: "" //任务组件别名
+      route: "", //任务组件别名
+      eqimgshow: false, //设备生产厂家照片显示
+      eqimgdata: "" //生厂厂家照片
     };
   },
   created() {
@@ -452,6 +536,11 @@ export default {
     close() {
       this.$store.commit("taskhuakuaihidden");
     },
+    // 点击设备图标，查看图片
+    async eqimg(img) {
+      this.eqimgshow = true;
+      this.eqimgdata = "http://192.168.1.186:8888/api/v1.0/show/" + img;
+    }
   },
   components: {
     Mytabs,
@@ -471,7 +560,7 @@ export default {
 
 <style>
 .big-box-home {
-  min-width: 1920px;
+  /* min-width: 1900px; */
   position: relative;
   overflow: hidden;
 }
@@ -487,7 +576,8 @@ export default {
 }
 .right-box {
   display: inline-block;
-  width: 660px;
+  width: 34.2%;
+  /* width: auto; */
   vertical-align: top;
 }
 .home-right-write {
@@ -868,5 +958,17 @@ export default {
 .icon-renwu {
   font-size: 32px;
   color: #1ac7ff;
+}
+.oppforimg-box {
+  text-align: center;
+}
+.oppforimg {
+  height: 600px;
+}
+.eqimgdata-box {
+  text-align: center;
+}
+.eqimgdata {
+  max-width: 850px;
 }
 </style>

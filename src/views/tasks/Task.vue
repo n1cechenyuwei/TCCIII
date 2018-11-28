@@ -56,7 +56,7 @@ export default {
 .task-box {
   height: 100%;
   box-sizing: border-box;
-  min-width: 1920px;
+  /* min-width: 1920px; */
 }
 .taskmenu-box {
   width: 220px;

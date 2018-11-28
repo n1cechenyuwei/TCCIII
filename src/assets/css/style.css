@@ -257,7 +257,7 @@ ul, ol {
   -o-transition: all 0.5s;
   -os-transition: all 0.5s;
   -os-transform: translateX(0%);
-  z-index: 9999;
+  z-index: 2;
   transform: translateX(0%);
 }
 .hidden {
@@ -269,7 +269,7 @@ ul, ol {
   box-shadow: 0px 0px 4px 3px #acd2fa;
   border-radius: 6px;
   height: 100%;
-  z-index: 9999;
+  z-index: 2;
   width: 940px;
   transition: all 0.5s;
   -moz-transition: all 0.5s;
@@ -299,7 +299,7 @@ ul, ol {
 }
 .taskright-title .iicon {
   position: absolute;
-  right: 17px;
+  right: 60px;
   top: 14px;
   color: #777777;
   font-size: 24px;
