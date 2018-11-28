@@ -7,6 +7,8 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
+    isShow: false, //显示右侧卡片
+    noShow: true, //控制是否滑出卡片
     task: [], //我的任务列表
     mytasktotal: 0, //我的任务总条数
     tasked: [], //已完成任务列表
@@ -30,7 +32,12 @@ export default new Vuex.Store({
       }
     ],
     diaeqopen: {}, // 设备dialog信息
-    opyyzz: false //营业执照dialog
+    opyyzz: false, //营业执照dialog
+    appfordata: "", // 申请审批详情
+    appforcompany: "", // 审批详情公司信息
+    tasksechedule: 0, //任务进度
+    disable: false, //任务进度条是否可以调整
+    appeqlist: [] // 申请页面设备列表数据
   },
   mutations: {
     // 任务读取
@@ -43,9 +50,34 @@ export default new Vuex.Store({
       this.state.tasked = data.data;
       this.state.taskedtotal = data.total;
     },
+    //右侧滑块显示
+    taskhuakuaishow(state) {
+      state.noShow = false;
+      state.isShow = true;
+    },
+    //右侧滑块隐藏
+    taskhuakuaihidden(state) {
+      state.noShow = true;
+      state.isShow = false;
+    },
+    // 我的任务点击表格发请求并带入任务id  和刷新右侧页面
+    routerright(state, data) {
+      if (data.route === "applyfor") {
+        state.appfordata = data.data;
+        // console.log(state.appfordata)
+        state.appforcompany = data.data.companyinfo;
+        state.tasksechedule = data.data.sechedule;
+        if (data.data.state === "已完成") {
+          state.disable = true;
+        } else {
+          state.disable = false;
+        }
+      }
+    },
     //审批任务设备详情dialog是否显示
-    applyEquipment(state) {
+    applyEquipment(state, appeqlist) {
       state.DialogEquipment = true;
+      state.appeqlist = appeqlist;
     },
     //login存入的用户名，home页面使用
     handleusername(state, user) {
@@ -72,8 +104,11 @@ export default new Vuex.Store({
   },
   actions: {
     //审批任务设备详情dialog是否显示
-    applyEquipment(context) {
-      context.commit("applyEquipment");
+    async applyEquipment(context, applyid) {
+      const resapplyeqdata = await http.get(`temdevicies/${applyid}`);
+      if (resapplyeqdata.status === 200) {
+        context.commit("applyEquipment", resapplyeqdata.divice_list);
+      }
     },
     //login存入的用户名，home页面使用
     handleusername(context, user) {
@@ -99,6 +134,31 @@ export default new Vuex.Store({
       const res = await http.get(`comtasks/${page}`);
       if (res.status === 200) {
         context.commit("loadingTasked", { data: res.data, total: res.total });
+      }
+    },
+    // 我的任务点击表格发请求并带入任务id  和刷新右侧页面
+    async routerright(context, reqdata) {
+      const resdataappfor = await http.get(
+        `${reqdata.route}/${reqdata.taskid}`
+      );
+      if (resdataappfor.data.status === 200) {
+        context.commit("routerright", {
+          data: resdataappfor.data,
+          route: reqdata.route
+        });
+      } else {
+        Message.error(resdataappfor.data.msg);
+      }
+    },
+    // 任务进度提交
+    async handletasksechedule(comtext, taskid) {
+      const res = await http.put(`updatesechedule/${taskid}`, {
+        sechedule: this.state.tasksechedule
+      });
+      if (res.status === 200) {
+        Message.success("任务状态更新成功");
+      } else {
+        Message.error(res.msg);
       }
     }
   }

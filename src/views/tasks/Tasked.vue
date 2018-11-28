@@ -26,16 +26,34 @@
       <el-button type="primary" size="mini">搜索</el-button>
     </div>
     <div class="mytask-content-middle">
-      <div class="tasked-list">
-        <div class="tasked-list-one" v-for="(item, index) in $store.state.tasked" :key="index" :class="{singular: index % 2 === 0}" @click="rightopen(item)">
-          <span class="tasked-list-index">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{index + 1}}.&nbsp;&nbsp;</span>
-          <span class="tasked-list-name">{{item.taskname}}</span>
-          <el-tag type="success" size="small" class="tasked-list-tag">{{item.sechedule}}%</el-tag>
-          <span class="tasked-list-time">{{item.starttime}}</span>
-        </div>
+      <div class="table-box">
+        <el-table
+          :data="$store.state.tasked"
+          stripe
+          class="table"
+          style="width: 100%">
+          <el-table-column
+            prop="id"
+            align="center"
+            label="任务编号"
+            width="100">
+          </el-table-column>
+          <el-table-column
+            label="任务名称">
+            <template slot-scope="scope">
+              <span class="tablespan" @click="taskedright(scope.row)">{{scope.row.taskname}}</span>
+              <el-tag type="success" size="small">{{scope.row.sechedule}}%</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="reality_endtime"
+            width="160"
+            align="center"
+            label="任务完成时间">
+          </el-table-column>
+        </el-table>
       </div>
-    </div>
-     <el-pagination
+      <el-pagination
         class="pagetwo"
         :current-page.sync="currentPage"
         @current-change="handlePageChange"
@@ -43,16 +61,136 @@
         layout="total, prev, pager, next, jumper"
         :total="$store.state.taskedtotal">
       </el-pagination>
+    </div>
+    <div :class="{ 'hidden': $store.state.noShow, 'sard': $store.state.isShow }">
+      <div class="taskright-title">
+        <i class="iconfont icon-renwu"></i>
+        <i class="fontt">任务</i>
+        <i class="el-icon-close iicon" @click="close"></i>
+      </div>
+      <div class="height-auto">
+        <Applyfor v-if="route === 'applyfor'" :taskid="taskid">
+        </Applyfor>
+        <ApprovalContract v-if="route === 'approvalcontract'">
+        </ApprovalContract>
+        <Contractor v-if="route === 'contractor'">
+        </Contractor>
+        <Detection v-if="route === 'detection'">
+        </Detection>
+        <Eqconfig v-if="route === 'eqconfig'">
+        </Eqconfig>
+        <PutStorage v-if="route === 'putstorage'">
+        </PutStorage>
+        <OutStorage v-if="route === 'outstorage'">
+        </OutStorage>
+        <ReportAudit v-if="route === 'reportaudit'">
+        </ReportAudit>
+      </div>
+    </div>
+    <!-- 审批任务设备详情弹出框 -->
+    <el-dialog
+      title="设备详情"
+      :visible.sync="$store.state.DialogEquipment"
+      width="70%"
+      center>
+      <el-table
+        :data="$store.state.appeqlist"
+        border
+        height="480"
+        style="width: 100%">
+        <el-table-column
+          prop="temdid"
+          align="center"
+          label="设备编号"
+          width="100">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          show-overflow-tooltip
+          label="设备名称">
+        </el-table-column>
+        <el-table-column
+          prop="type"
+          show-overflow-tooltip
+          width="160"
+          label="设备类型">
+        </el-table-column>
+        <el-table-column
+          prop="model"
+          width="160"
+          show-overflow-tooltip
+          label="硬件型号">
+        </el-table-column>
+        <el-table-column
+          prop="version"
+          show-overflow-tooltip
+          width="100"
+          label="软件版本">
+        </el-table-column>
+        <el-table-column
+          width="160"
+          show-overflow-tooltip
+          prop="serialnumber"
+          label="出厂序列号">
+        </el-table-column>
+        <el-table-column
+          width="200"
+          prop="manufacturers"
+          show-overflow-tooltip
+          label="生产厂家">
+        </el-table-column>
+        <el-table-column
+          width="140"
+          align="center"
+          show-overflow-tooltip
+          label="生产厂家营业执照">
+          <template slot-scope="scope">
+            <i class="iconfont icon-yingyezhizhao" @click="eqimg(scope.row.filename)"></i>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-dialog
+        width="50%"
+        center
+        title="生产厂家营业执照"
+        :visible.sync="eqimgshow"
+        append-to-body>
+        <div class="eqimgdata-box">
+          <img :src="eqimgdata" alt="图片丢失了" class="eqimgdata">
+        </div>
+      </el-dialog>
+    </el-dialog>
+    <!-- 营业执照弹窗 -->
+    <el-dialog
+      class="yyxxcla"
+      :visible.sync="$store.state.opyyzz"
+      width="50%">
+      <div class="oppforimg-box">
+        <img class="oppforimg" :src="$store.state.appforcompany.license" alt="照片丢失了">
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import Applyfor from "../tasks/Applyfor";
+import ApprovalContract from "../tasks/ApprovalContract";
+import Contractor from "../tasks/Contractor";
+import Detection from "../tasks/Detection";
+import Eqconfig from "../tasks/Eqconfig";
+import PutStorage from "../tasks/PutStorage";
+import OutStorage from "../tasks/OutStorage";
+import ReportAudit from "../tasks/ReportAudit";
 export default {
   data() {
     return {
       taskedsearch: "", //搜索框
       currentPage: 1, //默认第几页
-      taskpagesize: 14 //每页几条
+      taskpagesize: 14, //每页几条
+      eqimgshow: false, //设备生产厂家照片显示
+      eqimgdata: "", //生厂厂家照片
+      taskid: 0, //任务id
+      route: "" //任务组件别名
     };
   },
   created() {
@@ -72,9 +210,31 @@ export default {
       this.$store.dispatch("loadingTasked", val);
     },
     // 点击右弹出
-    rightopen(route) {
-      console.log(route);
+    taskedright(row) {
+      this.$store.commit("taskhuakuaishow");
+      this.taskid = row.id;
+      this.route = row.route;
+      this.$store.dispatch("routerright", { taskid: row.id, route: row.route });
+    },
+    // 右侧滑块关闭按钮
+    close() {
+      this.$store.commit("taskhuakuaihidden");
+    },
+    // 点击设备图标，查看图片
+    async eqimg(img) {
+      this.eqimgshow = true;
+      this.eqimgdata = "http://192.168.1.186:8888/api/v1.0/show/" + img;
     }
+  },
+  components: {
+    Applyfor,
+    ApprovalContract,
+    Contractor,
+    Detection,
+    Eqconfig,
+    PutStorage,
+    OutStorage,
+    ReportAudit
   }
 };
 </script>
@@ -83,12 +243,14 @@ export default {
 .tasked-box {
   box-sizing: border-box;
   position: relative;
+  overflow: hidden;
+  height: 100%;
+  min-height: 798px;
 }
 .mytask-content-top {
   height: 54px;
   background-color: #fbfbfb;
   border-top-left-radius: 6px;
-  /* border-top-right-radius: 6px; */
   border-bottom: 1px solid #e8e8e8;
 }
 .mytasksearch {
@@ -108,38 +270,28 @@ export default {
 .mytask-content-middle {
   border-top: 1px solid #c6e7ff;
   margin-top: 10px;
-  height: 700px;
+  min-height: 800px;
 }
-.tasked-list-one {
-  height: 46px;
-  line-height: 46px;
-  color: #515b6f;
-  font-size: 18px;
-  position: relative;
-  cursor: pointer;
-  /* margin-left: 30px; */
-  border-bottom: 1px solid #ebeef5;
-}
-.tasked-list-one:hover {
-  background-color: #f5f7fa;
-}
-.tasked-list {
-  margin-top: 10px;
-  height: 680px;
-}
-.tasked-list-tag {
-  margin-left: 10px;
-  vertical-align: middle;
-  margin-bottom: 4px;
-}
-.tasked-list-time {
-  position: absolute;
-  right: 60px;
+.mytask-content-middle .el-table::before {
+  height: 0 !important;
 }
 .singular {
   background-color: #fafafa;
 }
+.table-box {
+  height: 760px;
+}
 .pagetwo {
-  margin-left: 30px;
+ margin-left: 20px;
+}
+.table {
+  font-size: 16px;
+}
+.tablespan {
+  margin-right: 10px;
+}
+.tablespan:hover {
+  color: #409eff;
+  cursor: Pointer;
 }
 </style>

@@ -12,6 +12,7 @@
           mode="horizontal"
           default-active="/home"
           class="menuitem"
+          @select="handleSelect"
           background-color="#004fa1"
           text-color="#fff"
           active-text-color="#fff">
@@ -95,6 +96,10 @@ export default {
         this.$router.push({ name: "login" });
         this.$message.success("退出成功");
       }
+    },
+    // 选中菜单关闭右侧滑块
+    handleSelect() {
+      this.$store.commit("taskhuakuaihidden");
     }
   }
 };

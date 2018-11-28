@@ -30,7 +30,6 @@
         <div class="mytask-content-table">
           <el-table
             v-loading="loading"
-            @row-click="rowclick"
             :data="$store.state.task"
             class="mytask-content-table-one"
             stripe
@@ -38,13 +37,13 @@
             <el-table-column
               prop="id"
               align="center"
-              label="编号"
+              label="任务编号"
               width="120">
             </el-table-column>
             <el-table-column
               label="名称">
               <template slot-scope="scope">
-                <span class="colcell">{{ scope.row.taskname }}</span>
+                <span class="colcell" @click="rownameclick(scope.row)">{{ scope.row.taskname }}</span>
               </template>
             </el-table-column>
             <el-table-column
@@ -71,6 +70,9 @@
               prop="sechedule"
               width="100"
               label="进度">
+              <template slot-scope="scope">
+                <span>{{scope.row.sechedule}}%</span>
+              </template>
             </el-table-column>
             <el-table-column
               width="150"
@@ -90,13 +92,30 @@
           layout="total, prev, pager, next, jumper"
           :total="$store.state.mytasktotal">
         </el-pagination>
-        <div :class="{ 'hidden': noShow, 'sard': isShow }">
+        <div :class="{ 'hidden': $store.state.noShow, 'sard': $store.state.isShow }">
           <div class="taskright-title">
             <i class="iconfont icon-renwu"></i>
             <i class="fontt">任务</i>
             <i class="el-icon-close iicon" @click="close"></i>
           </div>
-          <router-view></router-view>
+          <div class="height-auto">
+            <Applyfor v-if="route === 'applyfor'" :taskid="taskid">
+            </Applyfor>
+            <ApprovalContract v-if="route === 'approvalcontract'">
+            </ApprovalContract>
+            <Contractor v-if="route === 'contractor'">
+            </Contractor>
+            <Detection v-if="route === 'detection'">
+            </Detection>
+            <Eqconfig v-if="route === 'eqconfig'">
+            </Eqconfig>
+            <PutStorage v-if="route === 'putstorage'">
+            </PutStorage>
+            <OutStorage v-if="route === 'outstorage'">
+            </OutStorage>
+            <ReportAudit v-if="route === 'reportaudit'">
+            </ReportAudit>
+          </div>
         </div>
       </div>
     </div>
@@ -105,9 +124,74 @@
     <el-dialog
       title="设备详情"
       :visible.sync="$store.state.DialogEquipment"
-      width="30%"
+      width="70%"
       center>
-      1111111111111
+      <el-table
+        :data="$store.state.appeqlist"
+        border
+        height="480"
+        style="width: 100%">
+        <el-table-column
+          prop="temdid"
+          align="center"
+          label="设备编号"
+          width="100">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          show-overflow-tooltip
+          label="设备名称">
+        </el-table-column>
+        <el-table-column
+          prop="type"
+          show-overflow-tooltip
+          width="160"
+          label="设备类型">
+        </el-table-column>
+        <el-table-column
+          prop="model"
+          width="160"
+          show-overflow-tooltip
+          label="硬件型号">
+        </el-table-column>
+        <el-table-column
+          prop="version"
+          show-overflow-tooltip
+          width="100"
+          label="软件版本">
+        </el-table-column>
+        <el-table-column
+          width="160"
+          show-overflow-tooltip
+          prop="serialnumber"
+          label="出厂序列号">
+        </el-table-column>
+        <el-table-column
+          width="200"
+          prop="manufacturers"
+          show-overflow-tooltip
+          label="生产厂家">
+        </el-table-column>
+        <el-table-column
+          width="140"
+          align="center"
+          show-overflow-tooltip
+          label="生产厂家营业执照">
+          <template slot-scope="scope">
+            <i class="iconfont icon-yingyezhizhao" @click="eqimg(scope.row.filename)"></i>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-dialog
+        width="50%"
+        center
+        title="生产厂家营业执照"
+        :visible.sync="eqimgshow"
+        append-to-body>
+        <div class="eqimgdata-box">
+          <img :src="eqimgdata" alt="图片丢失了" class="eqimgdata">
+        </div>
+      </el-dialog>
     </el-dialog>
     <!-- 设备入库任务操作弹出框 -->
     <el-dialog
@@ -175,22 +259,32 @@
       :visible.sync="$store.state.opyyzz"
       width="50%">
       <div class="oppforimg-box">
-        <img class="oppforimg" src="http://192.168.1.186:8888/api/v1.0/show/license4.jpg" alt="照片丢失了">
+        <img class="oppforimg" :src="$store.state.appforcompany.license" alt="照片丢失了">
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
+import Applyfor from "../tasks/Applyfor";
+import ApprovalContract from "../tasks/ApprovalContract";
+import Contractor from "../tasks/Contractor";
+import Detection from "../tasks/Detection";
+import Eqconfig from "../tasks/Eqconfig";
+import PutStorage from "../tasks/PutStorage";
+import OutStorage from "../tasks/OutStorage";
+import ReportAudit from "../tasks/ReportAudit";
 export default {
   data() {
     return {
       mytasksearch: "", //搜索框内容
       currentPage: 1, //默认第几页
       taskpagesize: 14, //每页显示几条
-      isShow: true, //显示右侧卡片
-      noShow: true, //控制是否滑出卡片
-      loading: false //加载图标
+      loading: false, //加载图标
+      eqimgshow: false, //设备生产厂家照片显示
+      eqimgdata: "", //生厂厂家照片
+      taskid: 0, //任务id
+      route: "" //任务组件别名
     };
   },
   created() {
@@ -208,32 +302,49 @@ export default {
     handlePageChange(val) {
       this.$store.dispatch("loadingMytask", val);
     },
-    //表格行点击
-    rowclick(row) {
-      console.log(row);
-      this.noShow = false;
-      this.isShow = true;
-      this.$router.push({ name: "applyfor" });
+    //表格名称点击
+    rownameclick(row) {
+      this.$store.commit("taskhuakuaishow");
+      this.taskid = row.id;
+      this.route = row.route;
+      this.$store.dispatch("routerright", { taskid: row.id, route: row.route });
     },
     close() {
-      this.noShow = true;
-      this.isShow = false;
+      this.$store.commit("taskhuakuaihidden");
+    },
+    // 点击设备图标，查看图片
+    async eqimg(img) {
+      this.eqimgshow = true;
+      this.eqimgdata = "http://192.168.1.186:8888/api/v1.0/show/" + img;
     }
+  },
+  components: {
+    Applyfor,
+    ApprovalContract,
+    Contractor,
+    Detection,
+    Eqconfig,
+    PutStorage,
+    OutStorage,
+    ReportAudit
   }
 };
 </script>
 
 <style>
 .aaaaa {
+  box-sizing: border-box;
   height: 100%;
   position: relative;
   overflow: hidden;
+}
+.mytask-boxbox {
+  height: 798px;
 }
 .mytask-content-top {
   height: 54px;
   background-color: #fbfbfb;
   border-top-left-radius: 6px;
-  /* border-top-right-radius: 6px; */
   border-bottom: 1px solid #e8e8e8;
 }
 .mytasksearch {
@@ -257,82 +368,19 @@ export default {
 }
 .mytask-content-middle .page {
   margin-left: 30px;
-  /* position: absolute;
-  left: 30px;
-  bottom: 60px; */
-}
-.warning {
-  color: #e6a23c;
 }
 .mytask-content-middle .colcell {
   cursor: Pointer;
 }
+.mytask-content-middle .colcell:hover {
+  color: #409eff;
+}
 .mytask-content-table {
   height: 720px;
+  min-width: 1670px;
 }
 .mytask-content-table-one {
   font-size: 16px;
-}
-.sard {
-  top: 0;
-  right: 0;
-  position: absolute;
-  background-color: #f0f4f8;
-  box-shadow: 0px 0px 4px 3px #acd2fa;
-  border-radius: 6px;
-  height: 100%;
-  width: 940px;
-  transition: all 0.5s;
-  -moz-transition: all 0.5s;
-  -webkit-transition: all 0.5s;
-  -o-transition: all 0.5s;
-  -os-transition: all 0.5s;
-  -os-transform: translateX(0%);
-  transform: translateX(0%);
-}
-.hidden {
-  top: 0;
-  right: 0;
-  z-index: 99999;
-  position: absolute;
-  background-color: #f0f4f8;
-  box-shadow: 0px 0px 4px 3px #acd2fa;
-  border-radius: 6px;
-  height: 100%;
-  width: 940px;
-  transition: all 0.5s;
-  -moz-transition: all 0.5s;
-  -webkit-transition: all 0.5s;
-  -o-transition: all 0.5s;
-  -os-transition: all 0.5s;
-  -os-transform: translateX(110%);
-  transform: translateX(110%);
-}
-.taskright-title {
-  height: 46px;
-  line-height: 46px;
-  background-color: #fff;
-  padding-left: 20px;
-  position: relative;
-  border-top-left-radius: 6px;
-  border-bottom: 1px solid #dae9f9;
-  margin-bottom: 4px;
-}
-.taskright-title .fontt {
-  position: absolute;
-  top: 0px;
-  left: 60px;
-  font-size: 22px;
-  color: #4d5d71;
-  font-family: Microsoft YaHei;
-}
-.taskright-title .iicon {
-  position: absolute;
-  right: 17px;
-  top: 14px;
-  color: #777777;
-  font-size: 24px;
-  cursor: Pointer;
 }
 .icon-renwu {
   font-size: 32px;
@@ -375,14 +423,13 @@ export default {
 }
 .yyxxcla .el-dialog {
   background-color: transparent;
-  /* background-color: #fff; */
+  background-color: #fff;
   box-shadow: none;
 }
-.yyxxcla .el-dialog__close.el-icon.el-icon-close {
-  /* color: transparent; */
-  color: #fff;
+.eqimgdata-box {
+  text-align: center;
 }
-/* .yyxxcla .el-dialog__body {
-  background-color: rgba(0, 0, 0, 0.1);
-} */
+.eqimgdata {
+  max-width: 850px;
+}
 </style>

@@ -239,3 +239,69 @@ ul, ol {
   display: inline-block;
   color: #575757;
 }
+.warning {
+  color: #e6a23c;
+}
+.sard {
+  top: 0;
+  right: 0;
+  position: absolute;
+  background-color: #f0f4f8;
+  box-shadow: 0px 0px 4px 3px #acd2fa;
+  border-radius: 6px;
+  height: 100%;
+  width: 940px;
+  transition: all 0.5s;
+  -moz-transition: all 0.5s;
+  -webkit-transition: all 0.5s;
+  -o-transition: all 0.5s;
+  -os-transition: all 0.5s;
+  -os-transform: translateX(0%);
+  z-index: 9999;
+  transform: translateX(0%);
+}
+.hidden {
+  top: 0;
+  right: 0;
+  z-index: 99999;
+  position: absolute;
+  background-color: #f0f4f8;
+  box-shadow: 0px 0px 4px 3px #acd2fa;
+  border-radius: 6px;
+  height: 100%;
+  z-index: 9999;
+  width: 940px;
+  transition: all 0.5s;
+  -moz-transition: all 0.5s;
+  -webkit-transition: all 0.5s;
+  -o-transition: all 0.5s;
+  -os-transition: all 0.5s;
+  -os-transform: translateX(110%);
+  transform: translateX(110%);
+}
+.taskright-title {
+  height: 46px;
+  line-height: 46px;
+  background-color: #fff;
+  padding-left: 20px;
+  position: relative;
+  border-top-left-radius: 6px;
+  border-bottom: 1px solid #dae9f9;
+  margin-bottom: 4px;
+}
+.taskright-title .fontt {
+  position: absolute;
+  top: 0px;
+  left: 60px;
+  font-size: 22px;
+  color: #4d5d71;
+  font-family: Microsoft YaHei;
+}
+.taskright-title .iicon {
+  position: absolute;
+  right: 17px;
+  top: 14px;
+  color: #777777;
+  font-size: 24px;
+  cursor: Pointer;
+}

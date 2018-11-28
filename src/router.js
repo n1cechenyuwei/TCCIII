@@ -8,15 +8,7 @@ const Home = () => import("@/views/Home.vue");
 const Project = () => import("@/views/Project.vue");
 const MyTask = () => import("@/views/tasks/MyTask.vue");
 const Tasked = () => import("@/views/tasks/Tasked.vue");
-const Alltask = () => import("@/views/tasks/Alltask.vue");
-const Applyfor = () => import("@/views/tasks/Applyfor.vue");
-const ApprovalContract = () => import("@/views/tasks/ApprovalContract.vue");
-const PutStorage = () => import("@/views/tasks/PutStorage.vue");
-const EqConfig = () => import("@/views/tasks/Eqconfig.vue");
-const Detection = () => import("@/views/tasks/Detection.vue");
-const Contractor = () => import("@/views/tasks/Contractor.vue");
-const ReportAudit = () => import("@/views/tasks/ReportAudit.vue");
-const OutStorage = () => import("@/views/tasks/OutStorage.vue");
+const Alltask = () => import("@/views/tasks/Alltask.vue")
 
 Vue.use(Router);
 
@@ -47,49 +39,7 @@ const router = new Router({
             {
               name: "mytask",
               path: "/mytask",
-              component: MyTask,
-              children: [
-                {
-                  name: "applyfor",
-                  path: "/applyfor",
-                  component: Applyfor
-                },
-                {
-                  name: "approvalcontract",
-                  path: "/approvalcontract",
-                  component: ApprovalContract
-                },
-                {
-                  name: "putstorage",
-                  path: "/putstorage",
-                  component: PutStorage
-                },
-                {
-                  name: "eqconfig",
-                  path: "/eqconfig",
-                  component: EqConfig
-                },
-                {
-                  name: "detection",
-                  path: "/detection",
-                  component: Detection
-                },
-                {
-                  name: "contractor",
-                  path: "/contractor",
-                  component: Contractor
-                },
-                {
-                  name: "reportaudit",
-                  path: "/reportaudit",
-                  component: ReportAudit
-                },
-                {
-                  name: "outstorage",
-                  path: "/outstorage",
-                  component: OutStorage
-                }
-              ]
+              component: MyTask
             },
             {
               name: "tasked",

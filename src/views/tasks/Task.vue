@@ -4,6 +4,7 @@
       <div class="taskmenu-box">
         <el-menu
           default-active="/mytask"
+          @select="handleSelect"
           class="el-menu-vertical-demo taskmenu"
           :router="true"
           >
@@ -41,6 +42,12 @@ export default {
   },
   created() {
     this.$router.push({ name: "mytask" });
+  },
+  methods: {
+    // 选中菜单关闭右侧滑块
+    handleSelect() {
+      this.$store.commit("taskhuakuaihidden");
+    }
   }
 };
 </script>
@@ -49,6 +56,7 @@ export default {
 .task-box {
   height: 100%;
   box-sizing: border-box;
+  min-width: 1920px;
 }
 .taskmenu-box {
   width: 220px;

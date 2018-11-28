@@ -235,7 +235,7 @@ export default {
   margin-top: 14px;
 }
 .detec-conteng {
-  height: 100%;
+  height: 600px;
   background-color: #fff;
   border-top: 1px solid #dae9f9;
   border-bottom: 1px solid #dae9f9;

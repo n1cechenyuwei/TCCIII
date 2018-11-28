@@ -3,33 +3,33 @@
     <div>
       <div class="applyfor-top">
         <i id="appfor-icon" class="iconfont icon-gongsimingcheng0"></i>
-        <i class="font">浙江大华公司入围检测审批申请任务</i>
+        <i class="font">{{appfordata.taskname}}</i>
       </div>
       <div class="statuss">
         <div>
           <div class="statusbox">
             <i class="statusbox-font">负责人：</i>
-            <i>郝佳贺</i>
+            <i>{{appfordata.user}}</i>
           </div>
           <div class="statusbox">
             <i class="statusbox-font">起始日：</i>
-            <i>2018-11-12</i>
+            <i>{{appfordata.starttime}}</i>
           </div>
           <div class="statusbox">
             <i class="statusbox-font">到期日：</i>
-            <i>2018-11-16</i>
+            <i>{{appfordata.endtime}}</i>
           </div>
           <div class="statusbox">
             <i class="statusbox-font">任务状态：</i>
-            <i>超时</i>
+            <i :class="{warning: (appfordata.state === '超时')}">{{appfordata.state}}</i>
           </div>
         </div>
         <div class="taskSliderBox">
           <span>任务进度:</span>
           <div class="Slider">
-            <el-slider v-model="taskvalue"></el-slider>
+            <el-slider v-model="$store.state.tasksechedule" :disabled="disable" @change="handletasksechedule"></el-slider>
           </div>
-          <span>{{taskvalue}}%</span>
+          <span>{{$store.state.tasksechedule}}%</span>
         </div>
       </div>
     </div>
@@ -42,7 +42,7 @@
         <div class="applyfor-information-box">
           <div class="information-box">
             <span>单位名称：</span>
-            <span class="information-box-font">浙江大华公司</span>
+            <span class="information-box-font">{{appforcompany.company}}</span>
           </div>
           <div class="information-box2">
             <span>营业执照：</span>
@@ -52,56 +52,56 @@
         <div class="applyfor-information-box">
           <div class="information-box">
             <span>单位地址：</span>
-            <span class="information-box-font">杭州市滨江区滨安路119号</span>
+            <span class="information-box-font">{{appforcompany.address}}</span>
           </div>
           <div class="information-box2">
             <span>联系人：</span>
-            <span class="information-box-font">郝佳贺</span>
+            <span class="information-box-font">{{appforcompany.linkman}}</span>
           </div>
         </div>
         <div class="applyfor-information-box">
           <div class="information-box">
             <span>联系电话：</span>
-            <span class="information-box-font">18614211121</span>
+            <span class="information-box-font">{{appforcompany.phone}}</span>
           </div>
           <div class="information-box2">
             <span>电子邮箱：</span>
-            <span class="information-box-font">21548484@163.com</span>
+            <span class="information-box-font">{{appforcompany.email}}</span>
           </div>
         </div>
         <div class="applyfor-information-box">
           <div class="information-box">
             <span>法定代表人：</span>
-            <span class="information-box-font">赵龙</span>
+            <span class="information-box-font">{{appforcompany.legalperson}}</span>
           </div>
           <div class="information-box2">
             <span>法人联系方式：</span>
-            <span class="information-box-font">18612412000</span>
+            <span class="information-box-font">{{appforcompany.legalpersonphone}}</span>
           </div>
         </div>
         <div class="applyfor-information-box"> 
           <div class="information-box">
             <span>纳税人识别号：</span>
-            <span class="information-box-font">123131123SA21</span>
+            <span class="information-box-font">{{appforcompany.identifynumber}}</span>
           </div>
           <div class="information-box2">
             <span>检测目的：</span>
-            <span class="information-box-font">入围检测</span>
+            <span class="information-box-font">{{appforcompany.testtarget}}</span>
           </div>
         </div>
         <div class="applyfor-information-box"> 
           <div class="information-box3">
             <span>设备信息：</span>
-            <el-button size="small" type="primary" class="informationBtn" @click="$store.dispatch('applyEquipment')">查看详情</el-button>
+            <el-button size="small" type="primary" class="informationBtn" @click="$store.dispatch('applyEquipment', appforcompany.apply_id)">查看详情</el-button>
           </div>
           <div class="information-box2">
-            <span>检测目的：</span>
-            <span class="information-box-font">入围检测</span>
+            <span>审批状态：</span>
+            <span class="information-box-font">{{appforcompany.approve_state}}</span>
           </div>
         </div>
-        <div class="applyfor-information-box4">
-          <el-radio v-model="radio" label="1" border size="small" @change="radiochange">通过</el-radio>
-          <el-radio v-model="radio" label="2" border size="small" @change="radiochange">不通过</el-radio>
+        <div class="applyfor-information-box4" v-if="appfordata.state !== '已完成'">
+          <el-radio v-model="radio" label="通过" border size="small" @change="radiochange">通过</el-radio>
+          <el-radio v-model="radio" label="未通过" border size="small" @change="radiochange">不通过</el-radio>
           <el-form :model="formInline" ref="formInline" v-if="Isshow">
             <el-form-item prop="why" :rules="[{ required: true, message: '原因不能为空'}]">
               <el-input
@@ -114,7 +114,7 @@
             </el-form-item>
           </el-form>
         </div>
-        <div>
+        <div v-if="appfordata.state !== '已完成'">
           <el-button type="primary" size="small" class="applyfor-btn-obj" @click="objsubmit">提交任务</el-button>
         </div>
       </div>
@@ -123,10 +123,12 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
+  props: ["taskid"],
   data() {
     return {
-      taskvalue: 0, //任务进度绑定值
+      tasksechedule: 0, //任务进度绑定值
       radio: "", //是否通过绑定值
       Isshow: false, //是否显示文本框
       formInline: {
@@ -137,7 +139,7 @@ export default {
   methods: {
     //是否通过显示文本框
     radiochange() {
-      if (this.radio === "2") {
+      if (this.radio === "未通过") {
         this.Isshow = true;
       } else {
         this.Isshow = false;
@@ -147,14 +149,23 @@ export default {
     objsubmit() {
       if (this.radio === "") {
         this.$message.error("请选择审核结果");
-      } else if (this.radio === "1") {
+      } else if (this.radio === "通过") {
         this.$confirm("确定提交任务吗", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning"
         })
           .then(async () => {
-            this.$message.success("提交成功");
+            const res = await this.$http.put(`applyfor/${this.taskid}`, {
+              state: "通过"
+            });
+            if (res.status === 200) {
+              this.$message.success("任务提交成功");
+              this.$store.commit("taskhuakuaihidden");
+              this.$store.dispatch("loadingMytask", 1);
+            } else {
+              this.$message.error(res.meg);
+            }
           })
           .catch(() => {});
       } else {
@@ -168,23 +179,45 @@ export default {
             type: "warning"
           })
             .then(async () => {
-              this.$message.success("提交成功");
+              const res = await this.$http.put(`applyfor/${this.taskid}`, {
+                state: "通过",
+                remarks: this.formInline.why
+              });
+              if (res.status === 200) {
+                this.$message.success("任务提交成功");
+                this.$store.commit("taskhuakuaihidden");
+                this.$store.dispatch("loadingMytask", 1);
+              } else {
+                this.$message.error(res.meg);
+              }
             })
             .catch(() => {});
         });
       }
+    },
+    // 任务进度改变
+    handletasksechedule() {
+      this.$store.dispatch("handletasksechedule", this.taskid);
     }
-  }
+  },
+  computed: mapState({
+    appfordata: "appfordata",
+    appforcompany: "appforcompany",
+    disable: "disable"
+  })
 };
 </script>
 
 <style>
+.cardcardcard {
+  height: 100%;
+}
 #appfor-icon {
   font-size: 32px;
   color: #1ac7ff;
 }
 .applyforContent {
-  height: 100%;
+  height: 700px;
 }
 .applyforContent-title {
   height: 54px;
@@ -254,6 +287,7 @@ export default {
 .icon-yingyezhizhao {
   color: #19c6ff;
   font-size: 22px;
+  cursor: pointer;
 }
 .informationBtn {
   vertical-align: top;
