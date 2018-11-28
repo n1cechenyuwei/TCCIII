@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Router from "vue-router";
-// import { Message } from "element-ui";
+import { Message } from "element-ui";
 const Login = () => import("@/views/Login.vue");
 const Navigation = () => import("@/views/Navigation.vue");
 const Task = () => import("@/views/tasks/Task.vue");
@@ -63,24 +63,24 @@ const router = new Router({
   ]
 });
 
-// router.beforeEach((to, from, next) => {
-//   // console.log(to, from);
-//   // 判断当前访问的路由是否是login，如果是login直接next
-//   if (to.name === "login") {
-//     next();
-//   } else {
-//     // 判断有没有token
-//     const token = sessionStorage.getItem("token");
-//     if (!token) {
-//       // 跳转到登录页面
-//       router.push({ name: "login" });
-//       // 提示
-//       Message.warning("请先登录");
-//       return;
-//     }
-//     next();
-//   }
-// });
+router.beforeEach((to, from, next) => {
+  // console.log(to, from);
+  // 判断当前访问的路由是否是login，如果是login直接next
+  if (to.name === "login") {
+    next();
+  } else {
+    // 判断有没有token
+    const token = sessionStorage.getItem("token");
+    if (!token) {
+      // 跳转到登录页面
+      router.push({ name: "login" });
+      // 提示
+      Message.warning("请登录");
+      return;
+    }
+    next();
+  }
+});
 
 export default router;
 
