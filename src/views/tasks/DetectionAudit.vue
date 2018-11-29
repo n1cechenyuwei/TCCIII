@@ -2,7 +2,7 @@
   <div class="height-auto">
     <div class="applyfor-top">
       <i id="detection-icon" class="iconfont icon-gongsimingcheng0"></i>
-      <i class="font">浙江大华公司入围检测实验室检测任务</i>
+      <i class="font">浙江大华公司入围检测实验室检测审核任务</i>
     </div>
     <div class="detection-jibenxinxi">
       <div>
@@ -142,8 +142,17 @@
         </el-table-column>
         <el-table-column
           label="审核结果"
-          width="100"
-          prop="shenheres">
+          width="120">
+          <template slot-scope="scope">
+            <el-select v-model="value4" clearable placeholder="请选择" size="mini">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </template>
         </el-table-column>
       </el-table>
       <div class="eqconfig-bot-btn">
@@ -200,7 +209,17 @@ export default {
           ]
         }
       ],
-      isok: true
+      isok: true,
+      options: [
+        {
+          value: "选项1",
+          label: "通过"
+        }, {
+          value: "选项2",
+          label: "未通过"
+        }
+      ],
+      value4: ""
     };
   },
   methods: {

@@ -62,6 +62,7 @@
         :total="$store.state.taskedtotal">
       </el-pagination>
     </div>
+    <!-- 任务详情右滑 -->
     <div :class="{ 'hidden': $store.state.noShow, 'sard': $store.state.isShow }">
       <div class="taskright-title">
         <i class="iconfont icon-renwu"></i>
@@ -85,6 +86,8 @@
         </OutStorage>
         <ReportAudit v-if="route === 'reportaudit'">
         </ReportAudit>
+        <DetectionAudit v-if="route === 'detectionaudit'">
+        </DetectionAudit>
       </div>
     </div>
     <!-- 审批任务设备详情弹出框 -->
@@ -181,6 +184,7 @@ import Eqconfig from "../tasks/Eqconfig";
 import PutStorage from "../tasks/PutStorage";
 import OutStorage from "../tasks/OutStorage";
 import ReportAudit from "../tasks/ReportAudit";
+import DetectionAudit from "../tasks/DetectionAudit";
 export default {
   data() {
     return {
@@ -234,7 +238,8 @@ export default {
     Eqconfig,
     PutStorage,
     OutStorage,
-    ReportAudit
+    ReportAudit,
+    DetectionAudit
   }
 };
 </script>

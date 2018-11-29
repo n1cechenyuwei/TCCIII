@@ -160,6 +160,9 @@ ul, ol {
 .height-auto {
   height: 100%;
 }
+.detec-mt {
+  margin-top: 14px;
+}
 .eqconfig-information-box {
   margin-top: 6px;
   position: relative;

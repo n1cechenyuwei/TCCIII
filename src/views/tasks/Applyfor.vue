@@ -114,8 +114,8 @@
             </el-form-item>
           </el-form>
         </div>
-        <div v-if="appfordata.state !== '已完成'">
-          <el-button type="primary" size="small" class="applyfor-btn-obj" @click="objsubmit">提交任务</el-button>
+        <div v-if="appfordata.state !== '已完成'" class="eqconfig-bot-btn">
+          <el-button type="primary" size="small" @click="objsubmit">提交任务</el-button>
         </div>
       </div>
     </div>

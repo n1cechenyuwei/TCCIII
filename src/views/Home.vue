@@ -56,7 +56,7 @@
       </div>
     </div> 
     <!-- 中间模块 -->
-    <div class="center-box">
+    <div class="center-box" v-if="false">
       <div class="card2">
         <el-tabs v-model="activeName" class="tabs" >
           <el-tab-pane label="当前项目" name="first" class="tabs1">
@@ -87,7 +87,7 @@
       </div>
     </div>
     <!-- 右侧模块 -->
-    <div class="right-box">
+    <div class="right-box" v-if="false">
       <!-- 公告模块 -->
       <div class="rightbox">
         <!-- 公告模块 -->
@@ -97,14 +97,14 @@
           <!-- 公告内容 -->
           <div class="announcementbox">
             <!-- 主体内容 -->
-            <div class="announcement" v-show="seehistoryone">
+            <div class="announcement" v-if="seehistoryone">
               <div class="announcement-tittle">{{news.title}}</div>
               <div class="announcement-connet scrollbar">
                 {{news.content}}
               </div>
             </div>
             <!-- 历史内容 -->
-            <div class="achistory scrollbar" v-show="seehistorytwo">
+            <div class="achistory scrollbar" v-if="seehistorytwo">
               <div v-for="item in history" :key="item.noti_id" class="historylist">
                 <div class="hislisttittle inblock" @click="showannouncement(item.noti_id)">{{item.title}}</div>
                 <div class="hislisttime inblock">{{item.datetime}}</div>
@@ -112,11 +112,11 @@
             </div>
           </div>
           <!-- 公告底栏 -->
-          <div class="botton-bar" v-show="seehistoryone">
+          <div class="botton-bar" v-if="seehistoryone">
             <el-button plain size="mini" class="btnone" @click="dialogannouncement = true">新增</el-button>
             <el-button plain size="mini" class="btntwo" @click="seehistoryone = false, seehistorytwo = true">历史</el-button>
           </div>
-          <div class="botton-bartwo" v-show="seehistorytwo">
+          <div class="botton-bartwo" v-if="seehistorytwo">
             <el-button type="text" @click="seehistorytwo = false, seehistoryone = true">返回</el-button> 
           </div>
         </div>
@@ -138,7 +138,7 @@
       </div>
     </div> 
     <!-- 图表模块 -->
-    <Chart v-if="false">
+    <Chart v-if="true" class="chart-box-home">
     </Chart>
     <!-- 任务右滑模块 -->
     <div :class="{ 'hiddenhome': $store.state.noShow, 'sardhome': $store.state.isShow }">
@@ -164,6 +164,8 @@
         </OutStorage>
         <ReportAudit v-if="route === 'reportaudit'">
         </ReportAudit>
+        <DetectionAudit v-if="route === 'detectionaudit'">
+        </DetectionAudit>
       </div>
     </div>
     <!-- 新增公告dialog模块 -->
@@ -291,6 +293,7 @@ import Eqconfig from "./tasks/Eqconfig";
 import PutStorage from "./tasks/PutStorage";
 import OutStorage from "./tasks/OutStorage";
 import ReportAudit from "./tasks/ReportAudit";
+import DetectionAudit from "./tasks/DetectionAudit";
 export default {
   data() {
     return {
@@ -553,14 +556,15 @@ export default {
     Eqconfig,
     PutStorage,
     OutStorage,
-    ReportAudit
+    ReportAudit,
+    DetectionAudit
   }
 };
 </script>
 
 <style>
 .big-box-home {
-  /* min-width: 1900px; */
+  min-width: 1920px;
   position: relative;
   overflow: hidden;
 }
@@ -970,5 +974,9 @@ export default {
 }
 .eqimgdata {
   max-width: 850px;
+}
+.chart-box-home {
+  display: inline-block;
+  width: 78.3%;
 }
 </style>

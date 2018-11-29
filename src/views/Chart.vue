@@ -5,12 +5,13 @@
       <div>
         <span class="gone-title">工作台统计</span>
         <span class="gthree-title">工作台统计</span>
+        <span class="gfour-title">任务统计</span>
       </div>
       <div class="gzt-box">
         <div id="Gone" class="gongzuotai"></div>
         <div id="Gthree" class="gongzuotai"></div>
+        <div id="Gfour" class="gongzuotai"></div>
       </div>
-      
       <div class="gtwo-title-box"><span class="gtwo-title">人员统计</span></div>
       <div>
         <el-tabs v-model="jcryName" class="jceytabs">
@@ -374,6 +375,32 @@ export default {
           name: "VMS进行中项目",
           number: 5
         }
+      ],
+      taskdatalist: [
+        {
+        taskname: "VMS已完成任务",
+        tasknumber: 43
+        },
+        {
+        taskname: "VMS进行中任务",
+        tasknumber: 52
+        },
+        {
+        taskname: "VMS已超时任务",
+        tasknumber: 40
+        },
+        {
+        taskname: "PIS已完成任务",
+        tasknumber: 46
+        },
+        {
+        taskname: "PIS进行中任务",
+        tasknumber: 40
+        },
+        {
+        taskname: "PIS已超时任务",
+        tasknumber: 23
+        },
       ]
     };
   },
@@ -639,6 +666,30 @@ export default {
       });
     });
     chartthree.render();
+
+    // Gfour 图表
+    const taskdatalist = this.taskdatalist;
+    var chartfour = new G2.Chart({
+      container: "Gfour",
+      height: 370,
+      padding: [0, 60, 0, 0]
+    });
+    chartfour.source(taskdatalist);
+    chartfour.coord("polar", {
+      innerRadius: 0.2
+    });
+    chartfour.legend({
+      position: "right",
+      offsetY: -100,
+      offsetX: -50
+    });
+    chartfour.axis(false);
+    chartfour.interval().position("taskname*tasknumber").color("taskname", G2.Global.colors_pie_16).style({
+      lineWidth: 1,
+      stroke: "#fff"
+    });
+    chartfour.render();
+
   }
 };
 </script>
@@ -646,11 +697,14 @@ export default {
 <style>
 .chart-box {
   display: inline-block;
+  /* min-width: 1400px; */
+  width: 100%;
 }
 .tubiao-box {
   background-color: #fff;
   box-sizing: border-box;
-  width: 1506px;
+  /* width: 1500px; */
+  width: 100%;
   height: 882px;
   display: inline-block;
   border: 1px solid #d4d7d7;
@@ -698,5 +752,14 @@ export default {
   font-size: 16px;
   color: #e6a23c;
   margin-left: 350px;
+}
+.gfour-title {
+  display: inline-block;
+  height: 20px;
+  line-height: 30px;
+  margin-top: 4px;
+  font-size: 16px;
+  color: #e6a23c;
+  margin-left: 410px;
 }
 </style>

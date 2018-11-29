@@ -107,6 +107,8 @@
             </Contractor>
             <Detection v-if="route === 'detection'">
             </Detection>
+            <DetectionAudit v-if="route === 'detectionaudit'">
+            </DetectionAudit>
             <Eqconfig v-if="route === 'eqconfig'">
             </Eqconfig>
             <PutStorage v-if="route === 'putstorage'">
@@ -274,6 +276,7 @@ import Eqconfig from "../tasks/Eqconfig";
 import PutStorage from "../tasks/PutStorage";
 import OutStorage from "../tasks/OutStorage";
 import ReportAudit from "../tasks/ReportAudit";
+import DetectionAudit from "../tasks/DetectionAudit";
 export default {
   data() {
     return {
@@ -326,7 +329,8 @@ export default {
     Eqconfig,
     PutStorage,
     OutStorage,
-    ReportAudit
+    ReportAudit,
+    DetectionAudit
   }
 };
 </script>
