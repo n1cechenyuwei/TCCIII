@@ -148,7 +148,14 @@ export default {
     return {
       taskvalue: 0, // 任务进度条
       raactive: "first",
-      fileList: [{name: 'food.jpeg'}, {name: 'food2.jpeg'}]
+      fileList: [
+        {
+          name: "food.jpeg"
+        },
+        {
+          name: "food2.jpeg"
+        }
+      ]
     };
   },
   methods: {
@@ -173,12 +180,15 @@ export default {
       console.log(file);
     },
     // 超出文件限制
-    handleExceed(files, fileList) {
-      this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，请重新选择上传文件数量`);
+    handleExceed(files) {
+      this.$message.warning(
+        `当前限制选择 3 个文件，
+        本次选择了 ${files.length} 个文件，请重新选择上传文件数量`
+      );
     },
     // 文件移除之前弹窗提示
-    beforeRemove(file, fileList) {
-      return this.$confirm(`确定移除 ${ file.name }？`);
+    beforeRemove(file) {
+      return this.$confirm(`确定移除 ${file.name}？`);
     }
   }
 };

@@ -11,7 +11,7 @@
           ref="loginFormData"
           :model="formData">
           <el-form-item prop="username">
-            <el-input v-model.trim="formData.username" placeholder="用户名"></el-input>
+            <el-input v-model.trim.number="formData.username" placeholder="用户名"></el-input>
           </el-form-item>
           <el-form-item prop="password">
             <el-input @keyup.enter.native="handleLogin" placeholder="密码" type="password" v-model.trim="formData.password"></el-input>
@@ -29,7 +29,7 @@ export default {
     return {
       // 绑定表单数据
       formData: {
-        username: "",
+        username: "" - 0,
         password: ""
       },
       formDatarules: {
@@ -38,6 +38,10 @@ export default {
             required: true,
             message: "请输入用户名",
             trigger: "blur"
+          },
+          {
+            type: "number",
+            message: "用户名必须为数字"
           }
         ],
         password: [

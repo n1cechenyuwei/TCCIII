@@ -44,22 +44,22 @@
     <div class="op-shebei-box">
       <div class="ra-information-box">
         <div class="information-box">
-          <span>设备名称：</span>
-          <span class="information-box-font">海康威视球机</span>
+          <span>单位名称：</span>
+          <span class="information-box-font">浙江大华公司</span>
         </div>
         <div class="information-box2">
-          <span>设备编号：</span>
-          <span class="information-box-font">1001</span>
+          <span>单位地址：</span>
+          <span class="information-box-font">杭州市滨江区滨安路199号</span>
         </div>
       </div>
       <div class="ra-information-box">
         <div class="information-box">
-          <span>硬件类型：</span>
-          <span class="information-box-font">球机</span>
+          <span>联系人：</span>
+          <span class="information-box-font">赵龙</span>
         </div>
         <div class="information-box2">
-          <span>设备序列号：</span>
-          <span class="information-box-font">AS45648151564</span>
+          <span>联系电话：</span>
+          <span class="information-box-font">15652265789</span>
         </div>
       </div>
     </div>
@@ -86,6 +86,7 @@
         </div>
       </div>
       <el-table
+        height="300"
         :data="tableData"
         stripe
         style="width: 100%">
@@ -98,25 +99,30 @@
         <el-table-column
           prop="name"
           fixed
+          show-overflow-tooltip
           label="设备名称"
           width="180">
         </el-table-column>
         <el-table-column
           prop="type"
+          show-overflow-tooltip
           label="设备类型">
         </el-table-column>
         <el-table-column
           prop="xinghao"
           width="120"
+          show-overflow-tooltip
           label="硬件型号">
         </el-table-column>
         <el-table-column
           prop="xuliehao"
           label="出厂序列号"
+          show-overflow-tooltip
           width="180">
         </el-table-column>
         <el-table-column
           prop="people"
+          show-overflow-tooltip
           label="接收人">
         </el-table-column>
         <el-table-column
@@ -142,6 +148,9 @@
           </template>
         </el-table-column>
       </el-table>
+    </div>
+    <div class="eqconfig-bot-btn">
+      <el-button size="small" type="primary" @click="eqconfigsubmit">提交任务</el-button>
     </div>
   </div>
 </template>
@@ -206,7 +215,22 @@ export default {
           waiguan: "异常",
           zhuangtai: "已入库"
         }
-      ]
+      ],
+      taskvalue: 0
+    };
+  },
+  methods: {
+    // 提交任务
+    eqconfigsubmit() {
+      this.$confirm("确定提交任务吗", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(async () => {
+          this.$message.success("提交成功");
+        })
+        .catch(() => {});
     }
   }
 };
@@ -234,7 +258,7 @@ export default {
 .op-shebei-title {
   height: 20px;
   line-height: 20px;
-  /* background-color: red; */
+  margin-bottom: 10px;
 }
 .title-box-op {
   display: inline-block;

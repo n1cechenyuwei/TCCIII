@@ -2,15 +2,19 @@
   <div class="chart-box">
     <!-- 图表模块 -->
     <div class="tubiao-box" >
-      <div>
-        <span class="gone-title">工作台统计</span>
-        <span class="gthree-title">工作台统计</span>
-        <span class="gfour-title">任务统计</span>
-      </div>
       <div class="gzt-box">
-        <div id="Gone" class="gongzuotai"></div>
-        <div id="Gthree" class="gongzuotai"></div>
-        <div id="Gfour" class="gongzuotai"></div>
+        <div class="gongzuotaione">
+          <div class="gone-title">工作台统计</div>
+          <div id="Gone"></div>
+        </div>
+        <div class="gongzuotaithree">
+          <div class="gone-title">项目统计</div>
+          <div id="Gthree"></div>
+        </div>
+        <div class="gongzuotaifour">
+          <div class="gone-title">项目统计</div>
+          <div id="Gfour"></div>
+        </div>
       </div>
       <div class="gtwo-title-box"><span class="gtwo-title">人员统计</span></div>
       <div>
@@ -378,29 +382,29 @@ export default {
       ],
       taskdatalist: [
         {
-        taskname: "VMS已完成任务",
-        tasknumber: 43
+          taskname: "VMS已完成任务",
+          tasknumber: 43
         },
         {
-        taskname: "VMS进行中任务",
-        tasknumber: 52
+          taskname: "VMS进行中任务",
+          tasknumber: 52
         },
         {
-        taskname: "VMS已超时任务",
-        tasknumber: 40
+          taskname: "VMS已超时任务",
+          tasknumber: 40
         },
         {
-        taskname: "PIS已完成任务",
-        tasknumber: 46
+          taskname: "PIS已完成任务",
+          tasknumber: 46
         },
         {
-        taskname: "PIS进行中任务",
-        tasknumber: 40
+          taskname: "PIS进行中任务",
+          tasknumber: 40
         },
         {
-        taskname: "PIS已超时任务",
-        tasknumber: 23
-        },
+          taskname: "PIS已超时任务",
+          tasknumber: 23
+        }
       ]
     };
   },
@@ -423,8 +427,8 @@ export default {
     const chartone = new G2.Chart({
       container: "Gtwo", // 指定图表容器 ID
       width: 1450, // 指定图表宽度
-      height: 400, // 指定图表高度
-      padding: [0, 170, 60, 60]
+      height: 360, // 指定图表高度
+      padding: [0, 170, 30, 60]
     });
     // chartone.legend(fasle);
     pisjcry.forEach(function(obj) {
@@ -672,7 +676,7 @@ export default {
     var chartfour = new G2.Chart({
       container: "Gfour",
       height: 370,
-      padding: [0, 60, 0, 0]
+      padding: [0, 140, 0, 0]
     });
     chartfour.source(taskdatalist);
     chartfour.coord("polar", {
@@ -681,15 +685,18 @@ export default {
     chartfour.legend({
       position: "right",
       offsetY: -100,
-      offsetX: -50
+      offsetX: -10
     });
     chartfour.axis(false);
-    chartfour.interval().position("taskname*tasknumber").color("taskname", G2.Global.colors_pie_16).style({
-      lineWidth: 1,
-      stroke: "#fff"
-    });
+    chartfour
+      .interval()
+      .position("taskname*tasknumber")
+      .color("taskname", G2.Global.colors_pie_16)
+      .style({
+        lineWidth: 1,
+        stroke: "#fff"
+      });
     chartfour.render();
-
   }
 };
 </script>
@@ -697,27 +704,19 @@ export default {
 <style>
 .chart-box {
   display: inline-block;
-  /* min-width: 1400px; */
   width: 100%;
 }
 .tubiao-box {
-  background-color: #fff;
   box-sizing: border-box;
-  /* width: 1500px; */
   width: 100%;
   height: 882px;
   display: inline-block;
-  border: 1px solid #d4d7d7;
   border-radius: 6px;
-  margin-left: 6px;
 }
 .gone-title {
-  display: inline-block;
   height: 20px;
   line-height: 30px;
-  margin-top: 4px;
-  margin-left: 220px;
-  font-size: 16px;
+  font-size: 14px;
   color: #e6a23c;
 }
 .gtwo-title-box {
@@ -732,34 +731,48 @@ export default {
   color: #e6a23c;
 }
 .gzt-box {
-  display: inline-block;
+  width: 100%;
 }
 .jceytabs {
   width: 1460px;
   height: 390px;
   padding-left: 30px;
 }
-.gongzuotai {
+.gongzuotaione {
   vertical-align: top;
   display: inline-block;
-  width: 470px;
+  background-color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  border: 1px solid #d4d7d7;
+  width: 31.4%;
 }
-.gthree-title {
+.gongzuotaithree {
+  vertical-align: top;
   display: inline-block;
-  height: 20px;
-  line-height: 30px;
-  margin-top: 4px;
-  font-size: 16px;
-  color: #e6a23c;
-  margin-left: 350px;
+  background-color: #fff;
+  border-radius: 6px;
+  border: 1px solid #d4d7d7;
+  width: 33%;
+  height: 396px;
+  box-sizing: border-box;
+  margin-left: 6px;
+  margin-right: 6px;
+  text-align: center;
 }
-.gfour-title {
+.gongzuotaifour {
+  vertical-align: top;
   display: inline-block;
-  height: 20px;
-  line-height: 30px;
-  margin-top: 4px;
-  font-size: 16px;
-  color: #e6a23c;
-  margin-left: 410px;
+  background-color: #fff;
+  border-radius: 6px;
+  border: 1px solid #d4d7d7;
+  width: 518px;
+  height: 396px;
+  box-sizing: border-box;
+  text-align: center;
+}
+#Gone {
+  width: 480px;
+  margin-right: 6px;
 }
 </style>

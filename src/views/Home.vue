@@ -56,7 +56,7 @@
       </div>
     </div> 
     <!-- 中间模块 -->
-    <div class="center-box" v-if="false">
+    <div class="center-box" v-if="true">
       <div class="card2">
         <el-tabs v-model="activeName" class="tabs" >
           <el-tab-pane label="当前项目" name="first" class="tabs1">
@@ -87,7 +87,7 @@
       </div>
     </div>
     <!-- 右侧模块 -->
-    <div class="right-box" v-if="false">
+    <div class="right-box" v-if="true">
       <!-- 公告模块 -->
       <div class="rightbox">
         <!-- 公告模块 -->
@@ -138,7 +138,7 @@
       </div>
     </div> 
     <!-- 图表模块 -->
-    <Chart v-if="true" class="chart-box-home">
+    <Chart v-if="false" class="chart-box-home">
     </Chart>
     <!-- 任务右滑模块 -->
     <div :class="{ 'hiddenhome': $store.state.noShow, 'sardhome': $store.state.isShow }">
@@ -333,20 +333,20 @@ export default {
       doclist: [], //文档列表
       calendar: {
         value: [2018, 9, 6], //默认日期
-        weeks: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+        weeks: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"],
         months: [
-          "January",
-          "February",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July",
-          "August",
-          "September",
-          "October",
-          "November",
-          "December"
+          "一月",
+          "二月",
+          "三月",
+          "四月",
+          "五月",
+          "六月",
+          "七月",
+          "八月",
+          "九月",
+          "十月",
+          "十一月",
+          "十二月",
         ],
         events: {},
         lunar: true //是否显示农历
@@ -518,7 +518,7 @@ export default {
     },
     // 日历点击今天
     today() {
-      // const todaytime = this.formatDate(new Date());
+      this.yaerisshow = true;
       this.$refs.calendar.setToday();
       const todaytime = this.formatDate(new Date());
       let screentwo = this.demoEvents.filter(value => {
@@ -534,7 +534,10 @@ export default {
       this.$store.commit("taskhuakuaishow");
       this.taskid = item.taskid;
       this.route = item.route;
-      this.$store.dispatch("routerright", { taskid: item.taskid, route: item.route });
+      this.$store.dispatch("routerright", {
+        taskid: item.taskid,
+        route: item.route
+      });
     },
     close() {
       this.$store.commit("taskhuakuaihidden");
@@ -564,9 +567,12 @@ export default {
 
 <style>
 .big-box-home {
-  min-width: 1920px;
+  width: 100%;
+  min-width: 1903px;
   position: relative;
   overflow: hidden;
+  min-height: 875px;
+  height: 100%;
 }
 .left-box {
   display: inline-block;
@@ -923,6 +929,7 @@ export default {
   top: 2px;
 }
 .sardhome {
+  overflow: hidden;
   top: 0;
   right: 0;
   position: absolute;
@@ -941,6 +948,7 @@ export default {
   transform: translateX(0%);
 }
 .hiddenhome {
+  overflow: hidden;
   top: 0;
   right: 0;
   z-index: 2;
@@ -977,6 +985,8 @@ export default {
 }
 .chart-box-home {
   display: inline-block;
-  width: 78.3%;
+  width: 78.6%;
+  min-width: 1497px;
+  margin-left: 6px;
 }
 </style>
