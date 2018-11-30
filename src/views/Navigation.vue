@@ -158,6 +158,7 @@ export default {
   color: #fff;
   position: relative;
   top: 3px;
+  cursor: pointer;
 }
 .user-name {
   position: relative;

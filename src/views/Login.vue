@@ -29,7 +29,7 @@ export default {
     return {
       // 绑定表单数据
       formData: {
-        username: "" - 0,
+        username: "",
         password: ""
       },
       formDatarules: {
