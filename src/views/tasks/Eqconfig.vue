@@ -2,7 +2,7 @@
   <div class="eqconfig-big">
     <div>
       <div class="applyfor-top">
-        <i id="eqconfig-icon" class="iconfont icon-gongsimingcheng0"></i>
+        <i id="eqconfig-icon" class="iconfont icon-gongsimingcheng"></i>
         <i class="font">浙江大华公司入围检测设备配置任务</i>
       </div>
       <div class="statuss">

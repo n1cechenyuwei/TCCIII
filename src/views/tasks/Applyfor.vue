@@ -2,7 +2,7 @@
   <div class="cardcardcard">
     <div>
       <div class="applyfor-top">
-        <i id="appfor-icon" class="iconfont icon-gongsimingcheng0"></i>
+        <i id="appfor-icon" class="iconfont icon-gongsimingcheng"></i>
         <i class="font">{{appfordata.taskname}}</i>
       </div>
       <div class="statuss">

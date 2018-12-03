@@ -1,7 +1,7 @@
 <template>
   <div class="height-auto">
     <div class="applyfor-top">
-      <i id="detection-icon" class="iconfont icon-gongsimingcheng0"></i>
+      <i id="detection-icon" class="iconfont icon-gongsimingcheng"></i>
       <i class="font">浙江大华公司入围检测设备出库任务</i>
     </div>
     <div class="detection-jibenxinxi">

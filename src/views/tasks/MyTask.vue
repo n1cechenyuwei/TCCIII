@@ -101,21 +101,21 @@
           <div class="height-auto">
             <Applyfor v-if="route === 'applyfor'" :taskid="taskid">
             </Applyfor>
-            <ApprovalContract v-if="route === 'approvalcontract'">
+            <ApprovalContract v-if="route === 'approvalcontract'" :taskid="taskid">
             </ApprovalContract>
-            <Contractor v-if="route === 'contractor'">
+            <Contractor v-if="route === 'contractor'" :taskid="taskid">
             </Contractor>
-            <Detection v-if="route === 'detection'">
+            <Detection v-if="route === 'detection'" :taskid="taskid">
             </Detection>
-            <DetectionAudit v-if="route === 'detectionaudit'">
+            <DetectionAudit v-if="route === 'detectionaudit'" :taskid="taskid">
             </DetectionAudit>
-            <Eqconfig v-if="route === 'eqconfig'">
+            <Eqconfig v-if="route === 'eqconfig'" :taskid="taskid">
             </Eqconfig>
-            <PutStorage v-if="route === 'putstorage'">
+            <PutStorage v-if="route === 'putstorage'" :taskid="taskid">
             </PutStorage>
-            <OutStorage v-if="route === 'outstorage'">
+            <OutStorage v-if="route === 'outstorage'" :taskid="taskid">
             </OutStorage>
-            <ReportAudit v-if="route === 'reportaudit'">
+            <ReportAudit v-if="route === 'reportaudit'" :taskid="taskid">
             </ReportAudit>
           </div>
         </div>

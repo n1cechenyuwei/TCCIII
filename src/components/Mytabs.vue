@@ -20,7 +20,7 @@
           :current-page.sync="currentPage"
           @current-change="handleCurrentChange"
           :page-size="projectpagesize"
-          layout="total, prev, pager, next"
+          layout="total, prev, pager, next, jumper"
           :total="projectpagetotal">
         </el-pagination>
       </div>
@@ -35,7 +35,7 @@ export default {
     return {
       projectlist: [], //项目数据
       datedate: "", //年份tab绑定数据
-      projectpagesize: 2, //顶部项目模块分页每页多少条
+      projectpagesize: 5, //顶部项目模块分页每页多少条
       projectpagetotal: 0, //顶部项目模块总共多少条
       currentPage: 1, //默认第几页
       date: [], //年
@@ -137,5 +137,6 @@ export default {
 }
 .page {
   margin-top: 20px;
+  text-align: center;
 }
 </style>

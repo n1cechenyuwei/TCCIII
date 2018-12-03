@@ -1,7 +1,7 @@
 <template>
   <div class="concard">
     <div class="applyfor-top">
-      <i id="detection-icon" class="iconfont icon-gongsimingcheng0"></i>
+      <i id="detection-icon" class="iconfont icon-gongsimingcheng"></i>
       <i class="font">浙江大华公司入围检测外委任务</i>
     </div>
     <div class="statuss">
@@ -114,31 +114,34 @@ export default {
     return {
       taskvalue: 0,
       fileList: [
-        {name: 'food.jpeg'},
-        {name: 'food.jpeg'},
-        {name: 'food.jpeg'},
-        {name: 'food.jpeg'}
+        { name: "food.jpeg" },
+        { name: "food.jpeg" },
+        { name: "food.jpeg" },
+        { name: "food.jpeg" }
       ]
-    }
+    };
   },
   methods: {
-    // 点击上传的文件
+    // 点击上传的文件实现下载
     handlePreview(val) {
       // window.open('http://192.168.1.186:8888/api/v1.0/download/1');
-      // console.log(val);
+      console.log(val);
       var _form = document.createElement("FORM");
       _form.setAttribute("method", "get");
-      _form.setAttribute("action", "http://192.168.1.186:8888/api/v1.0/download/1");
+      _form.setAttribute(
+        "action",
+        "http://192.168.1.186:8888/api/v1.0/download/1"
+      );
       document.body.appendChild(_form);
       _form.submit();
     },
     // 移除上传的文件之前
-    beforeRemove(file, fileList) {
-      return this.$confirm(`确定移除 ${ file.name }？`);
+    beforeRemove(file) {
+      return this.$confirm(`确定移除 ${file.name}？`);
     },
     // 移除上传的文件
     handleRemove(file) {
-      console.log(file, fileList);
+      console.log(file);
     },
     // 提交任务
     eqconfigsubmit() {
@@ -153,7 +156,7 @@ export default {
         .catch(() => {});
     }
   }
-}
+};
 </script>
 
 <style>

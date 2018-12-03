@@ -398,8 +398,7 @@ export default {
       monthshow: false,
       year: 0,
       month: 0,
-      // monthlist: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月",],
-      monthlist: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,],
+      monthlist: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
       day: 0,
       days: [],
       multiDays: [],
@@ -984,7 +983,7 @@ export default {
       this.yearsShow = true;
       this.monthshow = false;
       this.years = [];
-      for (let i = ~~this.year - 15; i < ~~this.year + 15; i++) {
+      for (let i = ~~this.year - 100; i < ~~this.year + 100; i++) {
         this.years.push(i);
       }
     },

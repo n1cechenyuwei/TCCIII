@@ -16,16 +16,18 @@
           <div id="Gfour"></div>
         </div>
       </div>
-      <div class="gtwo-title-box"><span class="gtwo-title">人员统计</span></div>
-      <div>
-        <el-tabs v-model="jcryName" class="jceytabs">
-          <el-tab-pane label="PIS人员" name="PIS">
-            <div id="Gtwo"></div>
-          </el-tab-pane>
-          <el-tab-pane label="VMS人员" name="VMS">
+      <div class="renyuan-gtwo-box">
+        <div class="gtwo-title-box"><span class="gtwo-title">人员统计</span></div>
+        <div>
+          <el-tabs v-model="jcryName" class="jceytabs">
+            <el-tab-pane label="PIS人员" name="PIS">
+              <div id="Gtwo"></div>
+            </el-tab-pane>
+            <el-tab-pane label="VMS人员" name="VMS">
 
-          </el-tab-pane>
-        </el-tabs>
+            </el-tab-pane>
+          </el-tabs>
+        </div>
       </div>
     </div>
     <!-- 图表鼠标移上去显示模块 -->
@@ -721,12 +723,11 @@ export default {
 }
 .gtwo-title-box {
   text-align: center;
+  height: 24px;
+  line-height: 40px;
 }
 .gtwo-title {
-  display: inline-block;
-  height: 20px;
-  line-height: 30px;
-  margin-top: 4px;
+  position: relative;
   font-size: 16px;
   color: #e6a23c;
 }
@@ -774,5 +775,14 @@ export default {
 #Gone {
   width: 480px;
   margin-right: 6px;
+}
+.renyuan-gtwo-box {
+  background-color: #fff;
+  width: 99.65%;
+  border: 1px solid #d4d7d7;
+  border-radius: 6px;
+  margin-top: 6px;
+  height: 480px;
+  box-sizing: border-box;
 }
 </style>

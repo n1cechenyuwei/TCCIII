@@ -31,7 +31,6 @@
           :value="calendar.value" 
           :weeks="calendar.weeks" 
           :months="calendar.months"
-          v-loading="dateloading"
           @select="select">
         </calendar>
         <el-button type="text" class="dangqian" @click="today">Today</el-button>
@@ -99,7 +98,7 @@
             <!-- 主体内容 -->
             <div class="announcement" v-if="seehistoryone">
               <div class="announcement-tittle">{{news.title}}</div>
-              <div class="announcement-connet scrollbar">
+              <div class="announcement-connet">
                 {{news.content}}
               </div>
             </div>
@@ -169,7 +168,7 @@
       </div>
     </div>
     <!-- 新增公告dialog模块 -->
-    <el-dialog title="新增公告" :visible.sync="dialogannouncement" width="40%">
+    <el-dialog title="新增公告" :visible.sync="dialogannouncement" width="40%" @close="closegonggao">
       <el-form label-position="right" label-width="80px" :model="NewAnnouncement" size="medium" :rules="NewAnnouncementRules" ref="NewAnnouncement">
         <el-form-item label="公告名称" prop="title">
           <el-input placeholder="请输入公告标题" v-model="NewAnnouncement.title" class="input"></el-input>
@@ -346,14 +345,13 @@ export default {
           "九月",
           "十月",
           "十一月",
-          "十二月",
+          "十二月"
         ],
         events: {},
         lunar: true //是否显示农历
       },
       screenlist: [], // 日历任务列表
       screenlisttime: [], //任务列表标题时间
-      dateloading: true, // 日历loading动画
       taskid: 0, //任务id
       route: "", //任务组件别名
       eqimgshow: false, //设备生产厂家照片显示
@@ -422,6 +420,10 @@ export default {
           this.$message.error(resdata.msg);
         }
       });
+    },
+    // 添加公告关闭清空信息 
+    closegonggao() {
+      this.$refs.NewAnnouncement.resetFields();
     },
     //历史公告详情
     async showannouncement(id) {
@@ -514,7 +516,6 @@ export default {
       const titletimetwo = todaytime.split("-");
       this.screenlisttime = titletimetwo;
       this.screenlist = screentwo;
-      this.dateloading = false;
     },
     // 日历点击今天
     today() {
@@ -659,25 +660,29 @@ export default {
   font-size: 20px;
   font-weight: 700;
 }
+.announcement {
+  overflow: auto;
+  height: 286px;
+}
 .announcementbox {
   padding: 10px 15px 20px 30px;
   border-bottom: 2px solid #d4d7d7;
   height: 280px;
 }
 .announcementbox .announcement-tittle {
-  height: 40px;
-  line-height: 40px;
+  width: 574px;
+  word-break: break-all;
+  word-wrap: break-word;
   color: #515b6f;
   font-size: 18px;
   font-weight: 700;
   border-bottom: 1px dashed #d4d7d7;
 }
 .announcementbox .announcement-connet {
-  height: 230px;
   word-wrap: break-word;
   line-height: 30px;
+  text-indent: 2em;
   margin-top: 10px;
-  overflow: auto;
 }
 .botton-bar {
   margin: 0 auto;
@@ -714,22 +719,29 @@ export default {
   white-space: nowrap;
 }
 .historylist .hislisttime {
-  /* vertical-align: middle; */
   position: absolute;
   right: 20px;
 }
 .NewAnnouncementBtn {
   margin-left: 45%;
 }
+.announcementTwo-boxbox {
+  overflow: auto;
+}
 .announcementTwo-tittle {
+  word-break: break-all;
+  word-wrap: break-word;
   font-size: 18px;
   margin-bottom: 20px;
+  border-bottom: 1px dashed #d4d7d7;
 }
 .announcementTwo-content {
+  word-break: break-all;
+  word-wrap: break-word;
   text-indent: 2em;
   height: 300px;
+  width: 100%;
   line-height: 24px;
-  overflow: auto;
 }
 .tittle-ps {
   margin-left: 30px;
@@ -831,7 +843,6 @@ export default {
   line-height: 46px;
   font-size: 18px;
   color: #444;
-  /* background-color: #ccc; */
 }
 .MyTaskcontent-icon {
   color: #409efe;

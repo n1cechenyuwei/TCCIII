@@ -37,7 +37,23 @@ export default new Vuex.Store({
     appforcompany: "", // 审批详情公司信息
     tasksechedule: 0, //任务进度
     disable: false, //任务进度条是否可以调整
-    appeqlist: [] // 申请页面设备列表数据
+    appeqlist: [], // 申请页面设备列表数据
+    taskinfo: "", // 任务信息
+    appconbb: "", // 甲方信息
+    appcompactinfo: "", // 合同信息
+    draftfile: [], //合同初稿数据
+    finalfile: [], //合同上传终稿数据
+    comtime: [], //合同期限
+    dateishow: false,
+    dateshow: true,
+    appcomfrom: {
+      com_money: "",
+      com_starttime: "",
+      com_endtime: ""
+    },
+    filehetongid: {
+      com_no: 0
+    }
   },
   mutations: {
     // 任务读取
@@ -64,10 +80,26 @@ export default new Vuex.Store({
     routerright(state, data) {
       if (data.route === "applyfor") {
         state.appfordata = data.data;
-        // console.log(state.appfordata)
         state.appforcompany = data.data.companyinfo;
         state.tasksechedule = data.data.sechedule;
         if (data.data.state === "已完成") {
+          state.disable = true;
+        } else {
+          state.disable = false;
+        }
+      } else if (data.route === "approvalcontract") {
+        state.comtime[0] = data.data.compactinfo.starttime;
+        state.comtime[1] = data.data.compactinfo.endtime;
+        state.taskinfo = data.data.taskinfo;
+        state.appconbb = data.data.companyinfo;
+        state.appcompactinfo = data.data.compactinfo;
+        state.tasksechedule = data.data.taskinfo.sechedule;
+        state.draftfile = data.data.draftlist;
+        state.finalfile = data.data.finallist;
+        state.filehetongid.com_no = data.data.compactinfo.com_no;
+        state.dateishow = false;
+        state.dateshow = true;
+        if (data.data.taskinfo === "已完成") {
           state.disable = true;
         } else {
           state.disable = false;
@@ -100,6 +132,14 @@ export default new Vuex.Store({
     //打开申请营业执照
     openyyzz(state) {
       state.opyyzz = true;
+    },
+    // 生成初稿刷新初稿列表
+    handlecreatdraftfile(state, chugaolist) {
+      state.draftfile = chugaolist;
+    },
+    // 获取终稿
+    handleuoloaddata(state, list) {
+      state.finalfile = list
     }
   },
   actions: {
@@ -141,6 +181,7 @@ export default new Vuex.Store({
       const resdataappfor = await http.get(
         `${reqdata.route}/${reqdata.taskid}`
       );
+      console.log(resdataappfor);
       if (resdataappfor.data.status === 200) {
         context.commit("routerright", {
           data: resdataappfor.data,
@@ -151,7 +192,7 @@ export default new Vuex.Store({
       }
     },
     // 任务进度提交
-    async handletasksechedule(comtext, taskid) {
+    async handletasksechedule(context, taskid) {
       const res = await http.put(`updatesechedule/${taskid}`, {
         sechedule: this.state.tasksechedule
       });
@@ -159,6 +200,40 @@ export default new Vuex.Store({
         Message.success("任务状态更新成功");
       } else {
         Message.error(res.msg);
+      }
+    },
+    // 合同页面保存信息按钮
+    async handlesave(context, hetongid) {
+      this.state.appcomfrom.com_money = this.state.appcompactinfo.com_money;
+      this.state.appcomfrom.com_starttime = this.state.comtime[0];
+      this.state.appcomfrom.com_endtime = this.state.comtime[1];
+      const res = await http.put(`updatecompact/${hetongid}`, this.state.appcomfrom);
+      if (res.status === 200) {
+        Message.success("信息保存成功");
+      } else {
+        Message.error(res.msg);
+      }
+    },
+    // 生成合同初稿
+    async handlecreatdraftfile(context, hetongid) {
+      const res = await http.get(`generatecompact/${hetongid}`);
+      if (res.status === 200) {
+        Message.success("合同初稿生成成功");
+        const resdata = await http.get(`draftaccessorylist/${hetongid}`);
+        if (resdata.data.status === 200) {
+          context.commit("handlecreatdraftfile", resdata.data.draft_list);
+        } else {
+          Message.error(resdata.data.msg);
+        }
+      } else {
+        Message.error(res.msg);
+      }
+    },
+    // 获取终稿信息
+    async handleuoloaddata(context, hetongid) {
+      const res = await http.get(`finalaccessorylist/${hetongid}`);
+      if (res.data.status === 200) {
+        context.commit("handleuoloaddata", res.data.final_list);
       }
     }
   }
