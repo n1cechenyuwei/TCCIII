@@ -16,10 +16,10 @@
             <el-menu-item index="/tasked" class="zuobian">已完成任务</el-menu-item>
             <el-menu-item index="/alltask" class="zuobian">全部任务</el-menu-item>
           </el-submenu>
-          <el-menu-item index="2">
+          <el-menu-item index="/taskStatistical">
             <span slot="title" class="taskmenu-tittle">任务统计</span>
           </el-menu-item>
-          <el-menu-item index="3">
+          <el-menu-item index="/taskallot">
             <span slot="title" class="taskmenu-tittle">任务分配</span>
           </el-menu-item>
         </el-menu>

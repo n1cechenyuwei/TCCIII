@@ -8,7 +8,9 @@ const Home = () => import("@/views/Home.vue");
 const Project = () => import("@/views/Project.vue");
 const MyTask = () => import("@/views/tasks/MyTask.vue");
 const Tasked = () => import("@/views/tasks/Tasked.vue");
-const Alltask = () => import("@/views/tasks/Alltask.vue")
+const Alltask = () => import("@/views/tasks/Alltask.vue");
+const TaskStatistical = () => import("@/views/tasks/TaskStatistical.vue");
+const TaskAllot = () => import("@/views/tasks/TaskAllot.vue");
 
 Vue.use(Router);
 
@@ -50,6 +52,16 @@ const router = new Router({
               name: "alltask",
               path: "/alltask",
               component: Alltask
+            },
+            {
+              name: "taskStatistical",
+              path: "/taskStatistical",
+              component: TaskStatistical
+            },
+            {
+              name: "taskallot",
+              path: "/taskallot",
+              component: TaskAllot
             }
           ]
         },

@@ -1,7 +1,7 @@
 <template>
   <div class="approvalbig">
     <div>
-      <div class="applyfor-top">
+      <div class="appcom-top">
         <i id="appfor-icon" class="iconfont icon-gongsimingcheng"></i>
         <i class="font">{{taskinfo.taskname}}任务</i>
       </div>
@@ -146,8 +146,9 @@
                   <el-tab-pane label="初稿">
                     <el-button type="primary" size="mini" class="chugao-btn" v-if="taskinfo.state !== '已完成'" @click="creatdraftfile">生成初稿</el-button>
                     <div class="chugao-box scrollbar">
-                      <transition-group name="el-fade-in">
+                      <transition-group name="el-zoom-in-center">
                         <div class="chugao-list" v-for="(item, index) in draftfile" :key="index">
+                          <i class="el-icon-document"></i>
                           <span class="chugao-name">{{item.filename}}</span>
                           <a :href="item.down_path" :download="item.down_path" class="chugao-icon">
                             <i class="el-icon-download"></i>
@@ -160,17 +161,31 @@
                     <div class="zhonggao-box">
                       <el-upload
                         class="upload-demo"
+                        ref="upload"
                         accept=".docx, .pdf, .xlsx, .txt"
                         action="http://192.168.1.186:8888/api/v1.0/uploadcompact"
                         :on-remove="handleRemove"
                         :before-remove="beforeRemove"
                         name="compactfile"
+                        :file-list="finalfile"
                         :data="$store.state.filehetongid"
+                        :on-success="uploadsuccess"
+                        :on-error="uploaderror">
+                        <el-button size="mini" type="primary" :disable="disable">点击上传</el-button>
+                      </el-upload>
+                      <!-- <el-upload
+                        class="upload-demo"
+                        accept=".docx, .pdf, .xlsx, .txt"
+                        action=""
+                        :on-change="handleChange"
+                        :on-remove="handleRemove"
+                        :http-request="uploadFile"
+                        :before-remove="beforeRemove"
                         :on-success="uploadsuccess"
                         :on-error="uploaderror"
                         :file-list="finalfile">
                         <el-button size="mini" type="primary" :disable="disable">点击上传</el-button>
-                      </el-upload>
+                      </el-upload> -->
                     </div>
                   </el-tab-pane>
                 </el-tabs>
@@ -221,6 +236,9 @@ export default {
       Isshow: false, //合同不通过原因绑定值
       formhetong: {
         why: "" //文本绑定值
+      },
+      file: {
+        compactfile: ""
       }
     };
   },
@@ -304,6 +322,19 @@ export default {
         });
       }
     },
+    // 上传状态改变
+    handleChange(file) {
+      const date = new Date();
+      const m = date.getMinutes();
+      const s = date.getSeconds();
+      const index = file.name.lastIndexOf(".");
+      const newfilelast = file.name.substring(index, file.name.length);
+      const newfilename = file.name.substring(0, index);
+      const newfile = newfilename + s + newfilelast;
+      file.name = newfile;
+      this.file.compactfile = newfile;
+      // console.log(this.file.compactfile)
+    },
     // 文件移除
     handleRemove(file) {
       console.log(file);
@@ -314,10 +345,11 @@ export default {
     },
     // 文件上传成功
     uploadsuccess(response) {
-      console.log(response);
+      // console.log(response);
       if (response.status === 200) {
         this.$message.success("上传成功");
-        // this.$store.dispatch("handleuoloaddata", this.$store.state.appcompactinfo.com_no);
+        this.$refs.upload.clearFiles();
+        this.$store.dispatch("handleuoloaddata", this.$store.state.appcompactinfo.com_no);
       } else {
         this.$message.error(response.msg);
       }
@@ -358,6 +390,21 @@ export default {
 .approvalbig {
   height: 100%;
 }
+.appcom-top {
+  height: 44px;
+  line-height: 44px;
+  border-top: 1px solid #dae9f9;
+  border-bottom: 1px solid #dae9f9;
+  background-color: #fff;
+  padding-left: 20px;
+  position: relative;
+  margin-bottom: 4px ;
+}
+.appcom-top .font{
+  position: absolute;
+  top: 1px;
+  left: 60px;
+}
 #appfor-icon {
   font-size: 32px;
   color: #1ac7ff;
@@ -371,8 +418,8 @@ export default {
   margin-top: 6px;
 }
 .jiafang-title {
-  height: 50px;
-  line-height: 50px;
+  height: 44px;
+  line-height: 44px;
   border-top: 1px solid #dae9f9;
   border-bottom: 1px solid #dae9f9;
   /* margin-bottom: 4px; */
@@ -554,14 +601,19 @@ export default {
 .chugao-list {
   position: relative;
   font-size: 16px;
-  line-height: 16px;
-  margin-top: 6px;
+  height: 25px;
+  line-height: 25px;
+  margin-top: 5px;
+  /* top: -25px; */
 }
 .chugao-list:hover {
   background-color: #f5f7fa;
 }
 .chugao-name {
   vertical-align: middle;
+  font-size: 14px;
+  color: #606266;
+  margin-left: 5px;
   cursor: pointer;
 }
 .chugao-name:hover {
@@ -569,7 +621,7 @@ export default {
 }
 .chugao-icon {
   position: absolute;
-  right: 0;
+  right: 6px;
   font-size: 18px;
   vertical-align: middle;
 }
@@ -598,4 +650,15 @@ export default {
   margin-top: 10px;
   width: 280px;
 }
+.flip-list {
+  top: -25px;
+}
+.flip-list-enter, .flip-list-to {
+  top: 0px;
+}
+.flip-list-enter-active, .flip-list-leave-active {
+  transition: all 5s;
+}
+
+
 </style>

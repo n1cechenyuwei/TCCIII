@@ -983,7 +983,7 @@ export default {
       this.yearsShow = true;
       this.monthshow = false;
       this.years = [];
-      for (let i = ~~this.year - 100; i < ~~this.year + 100; i++) {
+      for (let i = ~~this.year - 15; i < ~~this.year + 15; i++) {
         this.years.push(i);
       }
     },
