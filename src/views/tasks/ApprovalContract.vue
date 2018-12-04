@@ -162,10 +162,12 @@
                       <el-upload
                         class="upload-demo"
                         ref="upload"
-                        accept=".docx, .pdf, .xlsx, .txt"
+                        accept=".docx, .pdf, .xlsx, .txt, .rar"
                         action="http://192.168.1.186:8888/api/v1.0/uploadcompact"
-                        :on-remove="handleRemove"
-                        :before-remove="beforeRemove"
+                        :before-upload="upload"
+                        :disable="disable"
+                        :on-progress="progress"
+                        :show-file-list="false"
                         name="compactfile"
                         :file-list="finalfile"
                         :data="$store.state.filehetongid"
@@ -173,20 +175,21 @@
                         :on-error="uploaderror">
                         <el-button size="mini" type="primary" :disable="disable">点击上传</el-button>
                       </el-upload>
-                      <!-- <el-upload
-                        class="upload-demo"
-                        accept=".docx, .pdf, .xlsx, .txt"
-                        action=""
-                        :on-change="handleChange"
-                        :on-remove="handleRemove"
-                        :http-request="uploadFile"
-                        :before-remove="beforeRemove"
-                        :on-success="uploadsuccess"
-                        :on-error="uploaderror"
-                        :file-list="finalfile">
-                        <el-button size="mini" type="primary" :disable="disable">点击上传</el-button>
-                      </el-upload> -->
                     </div>
+                    <ul class="zhonggaolist-box">
+                      <li class="zglist" v-for="(item, index) in $store.state.finalfile" :key="index" v-loading="$store.state.uploadloding">
+                        <i class="el-icon-document wendangicon"></i>
+                        <span class="zhonggaoname">{{item.name}}</span>
+                        <i class="el-icon-circle-check upload-success"></i>
+                        <i class="el-icon-close upload-close" @click="handledelete(item)"></i>
+                      </li>
+                      <li class="zglist" v-show="newfile.name !== ''">
+                        <i class="el-icon-document wendangicon"></i>
+                        <span class="zhonggaoname">{{newfile.name}}</span>
+                        <span class="jindutiao">{{newfile.progress}}%</span>
+                        <el-progress v-show="newfile.progress !== 0" :show-text="false" :percentage="newfile.progress" class="zgprogress" :stroke-width="3" color="#409eff"></el-progress>
+                      </li>
+                    </ul>
                   </el-tab-pane>
                 </el-tabs>
               </div>
@@ -225,21 +228,14 @@ export default {
   data() {
     return {
       hetongradio: "",
-      fileList: [
-        {
-          name: "food.jpeg"
-        },
-        {
-          name: "food2.jpeg"
-        }
-      ],
       Isshow: false, //合同不通过原因绑定值
       formhetong: {
         why: "" //文本绑定值
       },
-      file: {
-        compactfile: ""
-      }
+      newfile: {
+        name: "",
+        progress: 0
+      } // 上传进度条
     };
   },
   methods: {
@@ -322,34 +318,45 @@ export default {
         });
       }
     },
-    // 上传状态改变
-    handleChange(file) {
-      const date = new Date();
-      const m = date.getMinutes();
-      const s = date.getSeconds();
-      const index = file.name.lastIndexOf(".");
-      const newfilelast = file.name.substring(index, file.name.length);
-      const newfilename = file.name.substring(0, index);
-      const newfile = newfilename + s + newfilelast;
-      file.name = newfile;
-      this.file.compactfile = newfile;
-      // console.log(this.file.compactfile)
+    // 上传之前
+    upload(file) {
+      this.newfile.name = file.name;
     },
-    // 文件移除
-    handleRemove(file) {
-      console.log(file);
+    // 文件上传钩子
+    progress(event) {
+      let percent = parseInt(event.percent);
+      this.newfile.progress = percent;
     },
-    // 文件移除之前提示
-    beforeRemove(file) {
-      return this.$confirm(`确定移除 ${file.name}？`);
+    // 上传文件删除
+    handledelete(item) {
+      this.$confirm(`确定删除 ${item.name} 吗`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(async () => {
+          const res = await this.$http.delete(`dropfinalcompact/${item.id}`);
+          if (res.status === 200) {
+            this.$store.dispatch(
+              "handleuploaddata",
+              this.$store.state.appcompactinfo.com_no
+            );
+            this.$message.success("删除成功");
+          }
+        })
+        .catch(() => {});
     },
     // 文件上传成功
     uploadsuccess(response) {
-      // console.log(response);
       if (response.status === 200) {
+        this.$store.state.uploadloding = true;
+        this.newfile.name = "";
+        this.newfile.progress = 0;
         this.$message.success("上传成功");
-        this.$refs.upload.clearFiles();
-        this.$store.dispatch("handleuoloaddata", this.$store.state.appcompactinfo.com_no);
+        this.$store.dispatch(
+          "handleuploaddata",
+          this.$store.state.appcompactinfo.com_no
+        );
       } else {
         this.$message.error(response.msg);
       }
@@ -398,9 +405,9 @@ export default {
   background-color: #fff;
   padding-left: 20px;
   position: relative;
-  margin-bottom: 4px ;
+  margin-bottom: 4px;
 }
-.appcom-top .font{
+.appcom-top .font {
   position: absolute;
   top: 1px;
   left: 60px;
@@ -422,7 +429,6 @@ export default {
   line-height: 44px;
   border-top: 1px solid #dae9f9;
   border-bottom: 1px solid #dae9f9;
-  /* margin-bottom: 4px; */
   background-color: #fff;
   padding-left: 20px;
 }
@@ -574,7 +580,6 @@ export default {
   display: inline-block;
   vertical-align: top;
   width: 500px;
-  /* margin-left: 16px; */
   position: relative;
   top: -7px;
 }
@@ -604,7 +609,6 @@ export default {
   height: 25px;
   line-height: 25px;
   margin-top: 5px;
-  /* top: -25px; */
 }
 .chugao-list:hover {
   background-color: #f5f7fa;
@@ -624,6 +628,67 @@ export default {
   right: 6px;
   font-size: 18px;
   vertical-align: middle;
+}
+.zhonggaolist-box {
+  padding-left: 0;
+  margin: 6px 0 0 0;
+  height: 100px;
+  overflow: auto;
+}
+.wendangicon {
+  font-size: 16px;
+  margin-right: 6px;
+}
+.zglist {
+  height: 28px;
+  position: relative;
+  line-height: 26px;
+  margin-top: 4px;
+}
+.zglist:hover {
+  background-color: #f5f7fa;
+}
+.zglist:hover .upload-success {
+  display: none;
+}
+.zglist:hover .upload-close {
+  display: block;
+  font-size: 14px;
+  position: absolute;
+  top: 8px;
+  right: 4px;
+  cursor: pointer;
+}
+.zhonggaoname {
+  font-size: 14px;
+  color: #606266;
+  cursor: pointer;
+}
+.zhonggaoname:hover {
+  color: #409eff;
+}
+.zgprogress {
+  position: absolute;
+  width: 100%;
+  left: 0px;
+  top: 24px;
+  z-index: 2px;
+}
+.upload-success {
+  color: #67c23a;
+  font-size: 14px;
+  position: absolute;
+  top: 8px;
+  right: 4px;
+}
+.upload-close {
+  display: none;
+}
+.jindutiao {
+  font-size: 14px;
+  position: absolute;
+  right: 0;
+  color: #606266;
 }
 .hetong-isbtn {
   display: inline-block;
@@ -653,12 +718,4 @@ export default {
 .flip-list {
   top: -25px;
 }
-.flip-list-enter, .flip-list-to {
-  top: 0px;
-}
-.flip-list-enter-active, .flip-list-leave-active {
-  transition: all 5s;
-}
-
-
 </style>

@@ -53,7 +53,8 @@ export default new Vuex.Store({
     },
     filehetongid: {
       com_no: 0
-    }
+    },
+    uploadloding: false // 上传列表动画
   },
   mutations: {
     // 任务读取
@@ -138,8 +139,9 @@ export default new Vuex.Store({
       state.draftfile = chugaolist;
     },
     // 获取终稿
-    handleuoloaddata(state, list) {
-      state.finalfile = list
+    handleuploaddata(state, list) {
+      state.finalfile = list;
+      state.uploadloding = false;
     }
   },
   actions: {
@@ -207,7 +209,10 @@ export default new Vuex.Store({
       this.state.appcomfrom.com_money = this.state.appcompactinfo.com_money;
       this.state.appcomfrom.com_starttime = this.state.comtime[0];
       this.state.appcomfrom.com_endtime = this.state.comtime[1];
-      const res = await http.put(`updatecompact/${hetongid}`, this.state.appcomfrom);
+      const res = await http.put(
+        `updatecompact/${hetongid}`,
+        this.state.appcomfrom
+      );
       if (res.status === 200) {
         Message.success("信息保存成功");
       } else {
@@ -230,10 +235,10 @@ export default new Vuex.Store({
       }
     },
     // 获取终稿信息
-    async handleuoloaddata(context, hetongid) {
+    async handleuploaddata(context, hetongid) {
       const res = await http.get(`finalaccessorylist/${hetongid}`);
       if (res.data.status === 200) {
-        context.commit("handleuoloaddata", res.data.final_list);
+        context.commit("handleuploaddata", res.data.final_list);
       }
     }
   }
