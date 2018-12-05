@@ -165,7 +165,7 @@
                         accept=".docx, .pdf, .xlsx, .txt, .rar"
                         action="http://192.168.1.186:8888/api/v1.0/uploadcompact"
                         :before-upload="upload"
-                        :disable="disable"
+                        :disabled="disable"
                         :on-progress="progress"
                         :show-file-list="false"
                         name="compactfile"
@@ -173,21 +173,21 @@
                         :data="$store.state.filehetongid"
                         :on-success="uploadsuccess"
                         :on-error="uploaderror">
-                        <el-button size="mini" type="primary" :disable="disable">点击上传</el-button>
+                        <el-button size="mini" type="primary" :disabled="disable">点击上传</el-button>
                       </el-upload>
                     </div>
                     <ul class="zhonggaolist-box">
-                      <li class="zglist" v-for="(item, index) in $store.state.finalfile" :key="index" v-loading="$store.state.uploadloding">
+                      <li class="zglist" v-for="(item, index) in $store.state.finalfile" :key="index">
                         <i class="el-icon-document wendangicon"></i>
                         <span class="zhonggaoname">{{item.name}}</span>
                         <i class="el-icon-circle-check upload-success"></i>
                         <i class="el-icon-close upload-close" @click="handledelete(item)"></i>
                       </li>
-                      <li class="zglist" v-show="newfile.name !== ''">
+                      <li class="zglist" v-if="newfile.name !== ''">
                         <i class="el-icon-document wendangicon"></i>
                         <span class="zhonggaoname">{{newfile.name}}</span>
                         <span class="jindutiao">{{newfile.progress}}%</span>
-                        <el-progress v-show="newfile.progress !== 0" :show-text="false" :percentage="newfile.progress" class="zgprogress" :stroke-width="3" color="#409eff"></el-progress>
+                        <el-progress v-if="newfile.progress !== 0" :show-text="false" :percentage="newfile.progress" class="zgprogress" :stroke-width="3" color="#409eff"></el-progress>
                       </li>
                     </ul>
                   </el-tab-pane>

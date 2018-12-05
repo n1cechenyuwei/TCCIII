@@ -85,7 +85,7 @@
           </el-table>
         </div>
         <el-pagination
-          class="page"
+          class="taskpage"
           :current-page.sync="currentPage"
           @current-change="handlePageChange"
           :page-size="taskpagesize"
@@ -370,7 +370,7 @@ export default {
   margin-top: 10px;
   height: 100%;
 }
-.mytask-content-middle .page {
+.taskpage {
   margin-left: 30px;
 }
 .mytask-content-middle .colcell {

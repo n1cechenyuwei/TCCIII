@@ -26,8 +26,8 @@
         </div>
         <div>
           <div class="gong-information-box">
-            <span>单位名称：</span>
-            <span class="information-box-font">浙江大华公司</span>
+            <span>所属项目：</span>
+            <span class="information-box-font">浙江大华公司入围检测项目</span>
           </div>
         </div>
         <div class="taskSliderBox">

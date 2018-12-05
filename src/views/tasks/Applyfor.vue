@@ -213,7 +213,7 @@ export default {
   height: 100%;
 }
 #appfor-icon {
-  font-size: 32px;
+  font-size: 28px;
   color: #1ac7ff;
 }
 .applyforContent {

@@ -232,6 +232,7 @@ ul, ol {
   background-color: rgba(256, 256, 256, 0.95);
   box-shadow: 0 0 6px #9b9b9b;
   padding: 7px 10px 7px 10px;
+  z-index: 20001;
 }
 .tool-box {
   font-size: 14px;

@@ -172,6 +172,66 @@
         <img class="oppforimg" :src="$store.state.appforcompany.license" alt="照片丢失了">
       </div>
     </el-dialog>
+    <!-- 设备入库任务操作弹出框 -->
+    <el-dialog
+      class="dialogeq-open-box"
+      title="设备详情"
+      :visible.sync="$store.state.Dialogshebei"
+      width="30%">
+      <div class="dialogeq-open">
+        <el-form label-width="100px" :model="$store.state.diaeqopen" label-suffix=":" size="small">
+          <el-form-item label="设备名称">
+            <span class="wwwwww" :model="$store.state.diaeqopen.eqname">{{$store.state.diaeqopen.eqname}}</span>
+          </el-form-item>
+          <el-form-item label="设备类型">
+            <span class="wwwwww" :model="$store.state.diaeqopen.eqtype">{{$store.state.diaeqopen.eqtype}}</span>
+          </el-form-item>
+          <el-form-item label="设备型号">
+            <span class="wwwwww" :model="$store.state.diaeqopen.xinghao">{{$store.state.diaeqopen.xinghao}}</span>
+          </el-form-item>
+          <el-form-item label="设备编号">
+            <el-input class="wwwwww" v-model="$store.state.diaeqopen.bianhao" placeholder="请填写设备编号"></el-input>
+          </el-form-item>
+          <el-form-item label="出厂序列号">
+            <el-input class="wwwwww" v-model="$store.state.diaeqopen.iem" placeholder="请填写出厂序列号"></el-input>
+          </el-form-item>
+          <el-form-item label="送检人">
+            <el-input class="wwwwww" v-model="$store.state.diaeqopen.people" placeholder="请填写送检人"></el-input>
+          </el-form-item>
+          <el-form-item label="送检时间">
+            <el-date-picker
+              class="wwwwww"
+              v-model="$store.state.diaeqopen.time"
+              value-format="yyyy-MM-dd">
+              type="date"
+              placeholder="选择日期">
+            </el-date-picker>
+          </el-form-item>
+          <el-form-item label="设备外观">
+            <el-select class="dialog-open-select wwwwww" v-model="$store.state.diaeqopen.waiguan" placeholder="请选择">
+              <el-option label="正常" value="正常"></el-option>
+              <el-option label="异常" value="异常"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="上电检查">
+            <el-select class="dialog-open-select wwwwww" v-model="$store.state.diaeqopen.dian" placeholder="请选择">
+              <el-option label="正常" value="正常"></el-option>
+              <el-option label="异常" value="异常"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="设备状态">
+            <el-select class="dialog-open-select wwwwww" v-model="$store.state.diaeqopen.status" placeholder="请选择">
+              <el-option label="已入库" value="已入库"></el-option>
+              <el-option label="未入库" value="未入库"></el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+      </div>
+      <div class="dialogeq-open-btn">
+        <el-button plain type="success" size="small" @click="$store.commit('putstoragedialogclose')">取消</el-button>
+        <el-button type="primary" size="small" class="dialogbtn-right" @click="$store.dispatch('putstoragedialogsubmit')">确定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 

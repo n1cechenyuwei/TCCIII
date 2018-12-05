@@ -41,18 +41,21 @@
               width="120">
             </el-table-column>
             <el-table-column
+              show-overflow-tooltip
               label="名称">
               <template slot-scope="scope">
                 <span class="colcell" @click="rownameclick(scope.row)">{{ scope.row.taskname }}</span>
               </template>
             </el-table-column>
             <el-table-column
+              show-overflow-tooltip
               prop="pro_name"
               width="300"
               label="所属项目">
             </el-table-column>
             <el-table-column
               prop="username"
+              show-overflow-tooltip
               label="负责人"
               width="180">
             </el-table-column>
@@ -85,7 +88,7 @@
           </el-table>
         </div>
         <el-pagination
-          class="page"
+          class="taskpage"
           :current-page.sync="currentPage"
           @current-change="handlePageChange"
           :page-size="taskpagesize"
@@ -397,6 +400,9 @@ export default {
   height: 100%;
   width: 500px;
 }
+.mytask-content-table {
+  height: 760px;
+}
 .mytask-content-table .el-table::before {
   height: 0 !important;
 }
@@ -435,5 +441,9 @@ export default {
 }
 .eqimgdata {
   max-width: 850px;
+}
+.taskpage {
+  margin-left: 30px;
+  margin-top: 20px;
 }
 </style>

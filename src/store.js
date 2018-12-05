@@ -100,7 +100,7 @@ export default new Vuex.Store({
         state.filehetongid.com_no = data.data.compactinfo.com_no;
         state.dateishow = false;
         state.dateshow = true;
-        if (data.data.taskinfo === "已完成") {
+        if (data.data.taskinfo.state === "已完成") {
           state.disable = true;
         } else {
           state.disable = false;
@@ -141,7 +141,6 @@ export default new Vuex.Store({
     // 获取终稿
     handleuploaddata(state, list) {
       state.finalfile = list;
-      state.uploadloding = false;
     }
   },
   actions: {
@@ -166,22 +165,25 @@ export default new Vuex.Store({
     },
     // 任务读取
     async loadingMytask(context, page) {
-      const res = await http.get(`tasks/${page}`);
+      const date = new Date().getTime();
+      const res = await http.get(`tasks/${page}?${date}`);
       if (res.status === 200) {
         context.commit("loadingMytask", { data: res.data, total: res.total });
       }
     },
     // 已完成任务
     async loadingTasked(context, page) {
-      const res = await http.get(`comtasks/${page}`);
+      const date = new Date().getTime();
+      const res = await http.get(`comtasks/${page}?${date}`);
       if (res.status === 200) {
         context.commit("loadingTasked", { data: res.data, total: res.total });
       }
     },
     // 我的任务点击表格发请求并带入任务id  和刷新右侧页面
     async routerright(context, reqdata) {
+      const date = new Date().getTime();
       const resdataappfor = await http.get(
-        `${reqdata.route}/${reqdata.taskid}`
+        `${reqdata.route}/${reqdata.taskid}?${date}`
       );
       console.log(resdataappfor);
       if (resdataappfor.data.status === 200) {
@@ -221,10 +223,11 @@ export default new Vuex.Store({
     },
     // 生成合同初稿
     async handlecreatdraftfile(context, hetongid) {
-      const res = await http.get(`generatecompact/${hetongid}`);
+      const date = new Date().getTime();
+      const res = await http.get(`generatecompact/${hetongid}?${date}`);
       if (res.status === 200) {
         Message.success("合同初稿生成成功");
-        const resdata = await http.get(`draftaccessorylist/${hetongid}`);
+        const resdata = await http.get(`draftaccessorylist/${hetongid}?${date}`);
         if (resdata.data.status === 200) {
           context.commit("handlecreatdraftfile", resdata.data.draft_list);
         } else {
@@ -236,7 +239,8 @@ export default new Vuex.Store({
     },
     // 获取终稿信息
     async handleuploaddata(context, hetongid) {
-      const res = await http.get(`finalaccessorylist/${hetongid}`);
+      const date = new Date().getTime();
+      const res = await http.get(`finalaccessorylist/${hetongid}?${date}`);
       if (res.data.status === 200) {
         context.commit("handleuploaddata", res.data.final_list);
       }

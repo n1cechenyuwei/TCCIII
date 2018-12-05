@@ -31,7 +31,7 @@
       </div>
     </div>
     <!-- 图表鼠标移上去显示模块 -->
-    <div v-show="xoffset !== 0" class="tubiao-tool" :style="'top:' + yoffset + 'px' + ';' + 'left:' + xoffset + 'px'">
+    <div id="toolone" v-show="xoffset !== 0" class="tubiao-tool" :style="'top:' + yoffset + 'px' + ';' + 'left:' + xoffset + 'px'">
       <div class="tool-box">
         <i v-bind:class="{sbck: (tasktype === '设备出库'), bgsh: (tasktype === '报告审核'), wwjc: (tasktype === '外委检测'), jcsh: (tasktype === '检测审核'), sysjc: (tasktype === '实验室检测'), hjpz: (tasktype === '环境配置'), sbrk: (tasktype === '设备入库'), htqd: (tasktype === '合同签订'), sqsp: (tasktype === '申请审批')}" style="display: inline-block; height: 6px; width: 6px; border-radius: 3px; margin-right: 8px"></i>
         <div class="tool-span">任务名称：{{taskname}}</div>
@@ -418,9 +418,16 @@ export default {
     // 获取鼠标位置
     getMousePos(event) {
       var e = event || window.event;
-      this.xoffset = e.screenX + 30;
-      this.yoffset = e.screenY - 150;
-      // return {'x':e.screenX,'y':screenY}
+      const aa = 300;
+      // const aa = document.getElementById("toolone").offsetWidth;
+      let bb = 1900 - e.clientX - 260;
+      if (bb < aa) {
+        this.xoffset = e.clientX - aa - 10;
+        this.yoffset = e.clientY - 80;
+      } else {
+        this.xoffset = e.clientX + 50;
+        this.yoffset = e.clientY - 80;
+      }
     }
   },
   mounted() {
