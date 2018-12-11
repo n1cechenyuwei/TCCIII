@@ -201,7 +201,7 @@ export default new Vuex.Store({
         sechedule: this.state.tasksechedule
       });
       if (res.status === 200) {
-        Message.success("任务状态更新成功");
+        Message.success("任务进度更新成功");
       } else {
         Message.error(res.msg);
       }

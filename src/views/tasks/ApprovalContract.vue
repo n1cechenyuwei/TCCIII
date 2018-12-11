@@ -162,7 +162,7 @@
                       <el-upload
                         class="upload-demo"
                         ref="upload"
-                        accept=".docx, .pdf, .xlsx, .txt, .rar"
+                        accept=".docx, .pdf, .xlsx, .txt"
                         action="http://192.168.1.186:8888/api/v1.0/uploadcompact"
                         :before-upload="upload"
                         :disabled="disable"

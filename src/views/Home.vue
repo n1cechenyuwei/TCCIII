@@ -170,10 +170,10 @@
     <!-- 新增公告dialog模块 -->
     <el-dialog title="新增公告" :visible.sync="dialogannouncement" width="40%" @close="closegonggao">
       <el-form label-position="right" label-width="80px" :model="NewAnnouncement" size="medium" :rules="NewAnnouncementRules" ref="NewAnnouncement">
-        <el-form-item label="公告名称" prop="title">
+        <el-form-item label="公告标题" prop="title">
           <el-input placeholder="请输入公告标题" v-model="NewAnnouncement.title" class="input"></el-input>
         </el-form-item>
-        <el-form-item label="公告详情" prop="content">
+        <el-form-item label="公告内容" prop="content">
           <el-input
             :rows="5"
             type="textarea"
@@ -315,14 +315,16 @@ export default {
             required: true,
             message: "请输入公告标题",
             trigger: "blur"
-          }
+          },
+          { max: 66, message: "标题最多 66 个字符", trigger: 'blur' }
         ],
         content: [
           {
             required: true,
             message: "请输入公告详情",
             trigger: "blur"
-          }
+          },
+          { max: 1300, message: "内容最多 1300 个字符", trigger: 'blur' }
         ]
       }, //新增历史验证规则
       dialogannouncementcontent: false, //历史公告详情弹出
