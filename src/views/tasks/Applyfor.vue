@@ -180,7 +180,7 @@ export default {
           })
             .then(async () => {
               const res = await this.$http.put(`applyfor/${this.taskid}`, {
-                state: "通过",
+                state: "不通过",
                 remarks: this.formInline.why
               });
               if (res.status === 200) {
