@@ -54,7 +54,8 @@ export default new Vuex.Store({
     filehetongid: {
       com_no: 0
     },
-    uploadloding: false // 上传列表动画
+    uploadloding: false, // 上传列表动画
+    license: "" // 营业执照
   },
   mutations: {
     // 任务读取
@@ -132,7 +133,12 @@ export default new Vuex.Store({
     },
     //打开申请营业执照
     openyyzz(state) {
+      state.license = state.appforcompany.license;
       state.opyyzz = true;
+    },
+    // 关闭营业执照清空
+    closeyyzz(state) {
+      state.license = "";
     },
     // 生成初稿刷新初稿列表
     handlecreatdraftfile(state, chugaolist) {
