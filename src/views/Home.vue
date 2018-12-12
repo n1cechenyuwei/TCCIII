@@ -253,7 +253,7 @@
           show-overflow-tooltip
           label="生产厂家营业执照">
           <template slot-scope="scope">
-            <i class="iconfont icon-yingyezhizhao" @click="eqimg(scope.row.filename)"></i>
+            <i class="iconfont icon-yingyezhizhao" @click="eqimg(scope.row.temdid)"></i>
           </template>
         </el-table-column>
       </el-table>
@@ -263,9 +263,7 @@
         title="生产厂家营业执照"
         :visible.sync="eqimgshow"
         append-to-body>
-        <div class="eqimgdata-box">
-          <img :src="eqimgdata" alt="图片丢失了" class="eqimgdata">
-        </div>
+        <img :src="eqimgdata" alt="图片丢失了" width="100%">
       </el-dialog>
     </el-dialog>
     <!-- 营业执照弹窗 -->
@@ -546,9 +544,10 @@ export default {
       this.$store.commit("taskhuakuaihidden");
     },
     // 点击设备图标，查看图片
-    async eqimg(img) {
+    async eqimg(id) {
       this.eqimgshow = true;
-      this.eqimgdata = "http://192.168.1.186:8888/api/v1.0/show/" + img;
+      const date = new Date().getTime();
+      this.eqimgdata = `http://192.168.1.186:8888/api/v1.0/showdevicelicense/${id}?${date}`;
     }
   },
   components: {
@@ -989,12 +988,6 @@ export default {
 }
 .oppforimg {
   height: 600px;
-}
-.eqimgdata-box {
-  text-align: center;
-}
-.eqimgdata {
-  max-width: 850px;
 }
 .chart-box-home {
   display: inline-block;
