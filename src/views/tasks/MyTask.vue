@@ -322,7 +322,7 @@ export default {
     async eqimg(id) {
       this.eqimgshow = true;
       const date = new Date().getTime();
-      this.eqimgdata = "http://192.168.1.186:8888/api/v1.0/showdevicelicense/" + id + "?" + date;
+      this.eqimgdata = `http://192.168.1.186:8888/api/v1.0/showdevicelicense/${id}?${date}`;
     }
   },
   components: {
@@ -436,9 +436,6 @@ export default {
   background-color: transparent;
   background-color: #fff;
   box-shadow: none;
-}
-.eqimgdata-box {
-  text-align: center;
 }
 .taskpage {
   margin-left: 30px;
