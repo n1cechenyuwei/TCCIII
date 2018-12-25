@@ -139,6 +139,9 @@ ul, ol {
   border-bottom: 1px dashed #cacaca;
   color: #7e8b8e;
   font-size: 18px;
+  overflow: hidden;
+  text-overflow:ellipsis;
+  white-space: nowrap;
 }
 .information-box-font {
   color: #000;
@@ -156,6 +159,9 @@ ul, ol {
   max-width: 450px;
   border-bottom: 1px dashed #cacaca;
   font-size: 18px;
+  overflow: hidden;
+  text-overflow:ellipsis;
+  white-space: nowrap;
 }
 .height-auto {
   height: 100%;
@@ -273,6 +279,7 @@ ul, ol {
   box-shadow: 0px 0px 4px 3px #acd2fa;
   border-radius: 6px;
   height: 100%;
+  /* height: 890px; */
   z-index: 2;
   width: 940px;
   transition: all 0.5s;
@@ -309,3 +316,136 @@ ul, ol {
   font-size: 24px;
   cursor: Pointer;
 }
+.op-shebei-title {
+  height: 20px;
+  line-height: 20px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+.title-box-op {
+  display: inline-block;
+  margin-right: 66px;
+}
+.lingxing {
+  font-size: 10px;
+  color: #409eff;
+  display: inline-block;
+  margin-left: 105px;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+.shebifont {
+  display: inline-block;
+  vertical-align: middle;
+}
+.shebeinumber {
+  display: inline-block;
+  position: relative;
+  top: -1px;
+  width: 34px;
+  font-size: 12px;
+  height: 16px;
+  line-height: 16px;
+  vertical-align: middle;
+  color: #fff;
+  text-align: center;
+  border-radius: 2px;
+}
+.daichuku {
+  background-color: #e6a23c;
+}
+.yichuku {
+  background-color: #409eff;
+}
+.zongshu {
+  background-color: #0f6ccc;
+}
+.dialogeq-open .timeselect {
+  margin-left: 10px;
+  width: 220px;
+}
+.wendangicon {
+  font-size: 16px;
+  margin-right: 6px;
+}
+.zglist {
+  height: 28px;
+  position: relative;
+  line-height: 26px;
+  margin-top: 4px;
+}
+.zglist:hover {
+  background-color: #f5f7fa;
+}
+.zglist:hover .upload-success {
+  display: none;
+}
+.zglist:hover .upload-close::before  {
+  display: block;
+  font-size: 14px;
+  position: absolute;
+  top: 8px;
+  right: 4px;
+  cursor: pointer;
+}
+.upload-close::before {
+  display: none;
+  /* font-size: 14px;
+  position: absolute;
+  top: 8px;
+  right: 4px;
+  cursor: pointer; */
+}
+.zhonggaoname {
+  font-size: 14px;
+  color: #606266;
+  cursor: pointer;
+}
+.zhonggaoname:hover {
+  color: #409eff;
+}
+.zgprogress {
+  position: absolute;
+  width: 100%;
+  left: 0px;
+  top: 2px;
+  z-index: 2px;
+}
+.upload-success {
+  color: #67c23a;
+  font-size: 14px;
+  position: absolute;
+  top: 8px;
+  right: 4px;
+}
+.upload-close {
+  display: none;
+}
+.jindutiao {
+  font-size: 14px;
+  position: absolute;
+  right: 0;
+  color: #606266;
+}
+.expand-rizhi-listone {
+  height: 36px;
+  line-height: 36px;
+  position: relative;
+}
+.expand-rizhi-listtwo {
+  height: 36px;
+  line-height: 36px;
+  background-color: #f5f7fa;
+  position: relative;
+}
+.list-icon-edit {
+  position: absolute;
+  top: 4px;
+  right: 80px;
+}
+.list-icon-delete {
+  position: absolute;
+  top: 4px;
+  right: 20px;
+}
+

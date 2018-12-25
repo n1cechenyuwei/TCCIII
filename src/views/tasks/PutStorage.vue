@@ -3,39 +3,39 @@
     <div>
       <div class="applyfor-top">
         <i id="put-icon" class="iconfont icon-gongsimingcheng"></i>
-        <i class="font">浙江大华公司入围检测设备入库任务</i>
+        <i class="font">{{taskinfo.taskname}}任务</i>
       </div>
       <div class="statuss">
         <div>
           <div class="statusbox">
             <i class="statusbox-font">负责人：</i>
-            <i>郝佳贺</i>
+            <i>{{taskinfo.user}}</i>
           </div>
           <div class="statusbox">
             <i class="statusbox-font">起始日：</i>
-            <i>2018-11-12</i>
+            <i>{{taskinfo.starttime}}</i>
           </div>
           <div class="statusbox">
             <i class="statusbox-font">到期日：</i>
-            <i>2018-11-16</i>
+            <i>{{taskinfo.endtime}}</i>
           </div>
           <div class="statusbox">
             <i class="statusbox-font">任务状态：</i>
-            <i>超时</i>
+            <i>{{taskinfo.state}}</i>
           </div>
         </div>
         <div>
           <div class="gong-information-box">
             <span>所属项目：</span>
-            <span class="information-box-font">浙江大华公司入围检测项目</span>
+            <span class="information-box-font">{{taskinfo.projectname}}</span>
           </div>
         </div>
         <div class="taskSliderBox">
           <span>任务进度:</span>
           <div class="Slider">
-            <el-slider v-model="taskvalue"></el-slider>
+            <el-slider v-model="$store.state.tasksechedule" :disabled="disable" @change="handletasksechedule"></el-slider>
           </div>
-          <span>{{taskvalue}}%</span>
+          <span>{{$store.state.tasksechedule}}%</span>
         </div>
       </div>
     </div>
@@ -47,77 +47,112 @@
       <div class="applyfor-information-box">
         <div class="information-box-one">
           <span>单位名称：</span>
-          <span class="information-box-font">浙江大华公司</span>
+          <span class="information-box-font">{{appconbb.company}}</span>
         </div>
-        <div class="information-box2-one">
-          <span>单位地址：</span>
-          <span class="information-box-font">杭州市滨安区滨安路199号</span>
-        </div>
+        <el-tooltip :content="appconbb.address" placement="top">
+          <div class="information-box2-one">
+            <span>单位地址：</span>
+            <span class="information-box-font">{{appconbb.address}}</span>
+          </div>
+        </el-tooltip>
       </div>
       <div class="applyfor-information-box">
         <div class="information-box-one">
           <span>联系人：</span>
-          <span class="information-box-font">郝佳贺</span>
+          <span class="information-box-font">{{appconbb.linkman}}</span>
         </div>
         <div class="information-box2-one">
           <span>联系电话：</span>
-          <span class="information-box-font">18602220546</span>
+          <span class="information-box-font">{{appconbb.phone}}</span>
         </div>
       </div>
     </div>
     <div class="shoujian-title">
       <i class="iconfont icon-shebeixinxi"></i>
-      <span>受检单位信息</span>
+      <span>受检设备信息</span>
     </div>
     <div class="shebei-content">
+      <div class="op-shebei-title">
+        <div class="title-box-op">
+          <i class="iconfont icon-iconfont lingxing"></i>
+          <span class="shebifont">待入库：</span>
+          <span class="shebeinumber daichuku">{{$store.state.sbnumber[0]}}</span>
+        </div>
+        <div class="title-box-op">
+          <i class="iconfont icon-iconfont lingxing"></i>
+          <span class="shebifont">已入库：</span>
+          <span class="shebeinumber yichuku">{{$store.state.sbnumber[1]}}</span>
+        </div>
+        <div class="title-box-op">
+          <i class="iconfont icon-iconfont lingxing"></i>
+          <span class="shebifont">设备总数：</span>
+          <span class="shebeinumber zongshu">{{$store.state.sbnumber[2]}}</span>
+        </div>
+      </div>
       <el-table
         :data="$store.state.equipment"
         style="width: 100%"
-        height="320">
+        height="300">
         <el-table-column
           fixed
-          prop="bianhao"
+          prop="id"
           label="编号"
           width="80">
         </el-table-column>
         <el-table-column
-          prop="eqname"
+          show-overflow-tooltip
+          prop="divicename"
           label="名称"
           width="200">
         </el-table-column>
         <el-table-column
-          prop="eqtype"
+          prop="devicetype"
+          show-overflow-tooltip
           label="类型"
-          width="100">
+          width="120">
         </el-table-column>
         <el-table-column
-          prop="xinghao"
+          prop="model"
           label="设备型号"
+          show-overflow-tooltip
           width="120">
         </el-table-column>
         <el-table-column
-          prop="iem"
+          prop="serialnumber"
           label="出厂序列号"
+          show-overflow-tooltip
           width="120">
         </el-table-column>
         <el-table-column
-          prop="people"
+          prop="deliverer"
           label="送检人"
+          show-overflow-tooltip
           width="120">
         </el-table-column>
         <el-table-column
-          prop="time"
+          prop="deliver_time"
           label="送检时间"
+          show-overflow-tooltip
           width="120">
         </el-table-column>
         <el-table-column
-          prop="waiguan"
+          prop="appearance"
           label="外观"
           width="120">
         </el-table-column>
         <el-table-column
-          prop="status"
-          label="状态"
+          prop="power_on"
+          label="上电测试"
+          width="120">
+        </el-table-column>
+        <el-table-column
+          prop="de_size"
+          label="设备尺寸"
+          width="120">
+        </el-table-column>
+        <el-table-column
+          prop="state"
+          label="入库状态"
           width="120">
         </el-table-column>
         <el-table-column
@@ -125,26 +160,32 @@
           fixed="right"
           width="80">
             <template slot-scope="scope">
-              <i class="el-icon-edit-outline putbtncolor" @click="eqopen(scope.row)"></i>
+              <el-button type="warning" :disabled="disable" icon="el-icon-edit-outline" size="mini" plain @click="eqopen(scope.row.id)"></el-button>
             </template>
         </el-table-column>
       </el-table>
-      <el-button class="putstorage-btn" type="primary" size="medium" @click="handleputstorage">提交任务</el-button>
+      <el-button v-if="!disable" class="putstorage-btn" type="primary" size="medium" @click="handleputstorage">提交任务</el-button>
     </div>
   </div>
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
+  props: ["taskid"],
   data() {
     return {
-      taskvalue: 0 //进度条
+      deviceinfo: {}
     };
   },
   methods: {
     // 打开设备dialog
-    eqopen(eq) {
-      this.$store.dispatch("putstoragedialog", eq);
+    async eqopen(id) {
+      this.$store.dispatch("putstoragedialog", id);
+    },
+    // 任务进度改变
+    handletasksechedule() {
+      this.$store.dispatch("handletasksechedule", this.taskid);
     },
     // 提交任务
     handleputstorage() {
@@ -154,11 +195,24 @@ export default {
         type: "warning"
       })
         .then(async () => {
-          this.$message.success("任务提交成功");
+          const res = await this.$http.put(`putstorage/${this.taskid}`);
+          if (res.status === 200) {
+            this.$message.success("任务提交成功");
+            this.$store.commit("taskhuakuaihidden");
+            this.$store.dispatch("loadingMytask", 1);
+            this.$store.dispatch("hometask");
+          } else {
+            this.$message.warning(res.msg);
+          }
         })
         .catch(() => {});
     }
-  }
+  },
+  computed: mapState({
+    taskinfo: "taskinfo",
+    appconbb: "appconbb",
+    disable: "disable"
+  })
 };
 </script>
 
@@ -229,6 +283,9 @@ export default {
   max-width: 460px;
   border-bottom: 1px dashed #cacaca;
   font-size: 18px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .shebei-content {
   /* position: relative; */

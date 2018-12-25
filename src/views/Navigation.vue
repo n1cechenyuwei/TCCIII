@@ -61,7 +61,7 @@
                 <el-dropdown-item command="logout">退出登录</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
-            <span class="user-name">{{$store.state.username}}</span>
+            <span class="user-name">{{username}}</span>
           </div>
         </el-col>
       </el-row>
@@ -76,7 +76,8 @@
 export default {
   data() {
     return {
-      data: "r"
+      data: "r",
+      username: ""
     };
   },
   created() {
@@ -84,11 +85,8 @@ export default {
   },
   methods: {
     router() {
-      // if (this.data === "leader") {
-      //   this.$router.push({ name: "task" });
-      // } else {
+      this.username = sessionStorage.getItem("username");
       this.$router.push({ name: "home" });
-      // }
     },
     handleCommandUser(command) {
       if (command === "logout") {

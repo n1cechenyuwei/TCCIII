@@ -73,8 +73,14 @@
         <el-table-column
           width="160"
           show-overflow-tooltip
-          prop="serialnumber"
-          label="出厂序列号">
+          prop="serialnumber1"
+          label="设备一出厂序列号">
+        </el-table-column>
+        <el-table-column
+          width="160"
+          show-overflow-tooltip
+          prop="serialnumber2"
+          label="设备二出厂序列号">
         </el-table-column>
         <el-table-column
           width="200"
@@ -99,7 +105,7 @@
         title="生产厂家营业执照"
         :visible.sync="eqimgshow"
         append-to-body>
-        <img :src="eqimgdata" alt="图片丢失了" width="100%">
+        <img id="eqimgloading" :src="eqimgdata" alt="图片丢失了" width="100%">
       </el-dialog>
     </el-dialog>
     <!-- 营业执照弹窗 -->
@@ -113,51 +119,55 @@
     <el-dialog
       class="dialogeq-open-box"
       title="设备详情"
+      @closed="eqputclose"
       :visible.sync="$store.state.Dialogshebei"
       width="30%">
       <div class="dialogeq-open">
-        <el-form label-width="100px" :model="$store.state.diaeqopen" label-suffix=":" size="small">
+        <el-form label-width="130px" :model="$store.state.diaeqopen" ref="putfrom" :rules="putfromrules" label-suffix=":" size="small">
           <el-form-item label="设备名称">
-            <span class="wwwwww" :model="$store.state.diaeqopen.eqname">{{$store.state.diaeqopen.eqname}}</span>
+            <span class="wwwwww">{{$store.state.diaeqopen.divicename}}</span>
           </el-form-item>
           <el-form-item label="设备类型">
-            <span class="wwwwww" :model="$store.state.diaeqopen.eqtype">{{$store.state.diaeqopen.eqtype}}</span>
+            <span class="wwwwww">{{$store.state.diaeqopen.devicetype}}</span>
           </el-form-item>
           <el-form-item label="设备型号">
-            <span class="wwwwww" :model="$store.state.diaeqopen.xinghao">{{$store.state.diaeqopen.xinghao}}</span>
+            <span class="wwwwww">{{$store.state.diaeqopen.model}}</span>
           </el-form-item>
           <el-form-item label="设备编号">
-            <el-input class="wwwwww" v-model="$store.state.diaeqopen.bianhao" placeholder="请填写设备编号"></el-input>
+            <span class="wwwwww">{{$store.state.diaeqopen.id}}</span>
           </el-form-item>
-          <el-form-item label="出厂序列号">
-            <el-input class="wwwwww" v-model="$store.state.diaeqopen.iem" placeholder="请填写出厂序列号"></el-input>
+          <el-form-item label="出厂序列号" prop="serialnumber">
+            <el-input class="timeselect" v-model="$store.state.diaeqopen.serialnumber" placeholder="请填写出厂序列号"></el-input>
           </el-form-item>
-          <el-form-item label="送检人">
-            <el-input class="wwwwww" v-model="$store.state.diaeqopen.people" placeholder="请填写送检人"></el-input>
+          <el-form-item label="送检人" prop="deliverer">
+            <el-input class="timeselect" v-model="$store.state.diaeqopen.deliverer" placeholder="请填写送检人"></el-input>
           </el-form-item>
-          <el-form-item label="送检时间">
+          <el-form-item label="送检时间" prop="deliver_time">
             <el-date-picker
-              class="wwwwww"
-              v-model="$store.state.diaeqopen.time"
+              class="timeselect"
+              v-model="$store.state.diaeqopen.deliver_time"
               value-format="yyyy-MM-dd">
               type="date"
               placeholder="选择日期">
             </el-date-picker>
           </el-form-item>
-          <el-form-item label="设备外观">
-            <el-select class="dialog-open-select wwwwww" v-model="$store.state.diaeqopen.waiguan" placeholder="请选择">
+          <el-form-item label="设备外观" prop="appearance">
+            <el-select class="dialog-open-select timeselect" v-model="$store.state.diaeqopen.appearance" placeholder="请选择">
+              <el-option label="完好" value="完好"></el-option>
+              <el-option label="破损" value="破损"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="上电检查" prop="power_on">
+            <el-select class="dialog-open-select timeselect" v-model="$store.state.diaeqopen.power_on" placeholder="请选择">
               <el-option label="正常" value="正常"></el-option>
               <el-option label="异常" value="异常"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="上电检查">
-            <el-select class="dialog-open-select wwwwww" v-model="$store.state.diaeqopen.dian" placeholder="请选择">
-              <el-option label="正常" value="正常"></el-option>
-              <el-option label="异常" value="异常"></el-option>
-            </el-select>
+          <el-form-item label="设备尺寸（cm）" prop="de_size">
+            <el-input class="timeselect" v-model="$store.state.diaeqopen.de_size" placeholder="请填写设备尺寸"></el-input>
           </el-form-item>
-          <el-form-item label="设备状态">
-            <el-select class="dialog-open-select wwwwww" v-model="$store.state.diaeqopen.status" placeholder="请选择">
+          <el-form-item label="入库状态" prop="state">
+            <el-select class="dialog-open-select timeselect" v-model="$store.state.diaeqopen.state" placeholder="请选择">
               <el-option label="已入库" value="已入库"></el-option>
               <el-option label="未入库" value="未入库"></el-option>
             </el-select>
@@ -166,7 +176,24 @@
       </div>
       <div class="dialogeq-open-btn">
         <el-button plain type="success" size="small" @click="$store.commit('putstoragedialogclose')">取消</el-button>
-        <el-button type="primary" size="small" class="dialogbtn-right" @click="$store.dispatch('putstoragedialogsubmit')">确定</el-button>
+        <el-button type="primary" size="small" class="dialogbtn-right" @click="putsubmit">确定</el-button>
+      </div>
+    </el-dialog>
+    <!-- 检测任务日志编辑弹窗 -->
+    <el-dialog
+      title="报文详情"
+      @closed="detectionclose"
+      :visible.sync="$store.state.caselogshow"
+      width="50%">
+      <el-input
+        type="textarea"
+        spellcheck ="false"
+        :autosize="{ minRows: 14, maxRows: 15}"
+        v-model="$store.state.log.data">
+      </el-input>
+      <div class="dialog-open-dec">
+        <el-button plain type="success" size="small" @click="$store.state.caselogshow = false">取消</el-button>
+        <el-button type="primary" size="small" class="dialogbtn-right" @click="$store.dispatch('handlelog')">更新报文</el-button>
       </div>
     </el-dialog>
   </el-container>
@@ -179,6 +206,35 @@ export default {
       abc: "",
       eqimgshow: false, //设备生产厂家照片显示
       eqimgdata: "", //生厂厂家照片
+      putfromrules: {
+        serialnumber: [
+          { required: true, message: "请输入出厂序列号", trigger: "blur" }
+        ],
+        deliverer: [
+          { required: true, message: "请输入送检人", trigger: "blur" }
+        ],
+        deliver_time: [
+          { required: true, message: "请选择送检时间", trigger: "blur" }
+        ],
+        appearance: [
+          {
+            required: true,
+            message: "请选择设备外观",
+            trigger: ["blur", "change"]
+          }
+        ],
+        power_on: [
+          {
+            required: true,
+            message: "请选择上电检查",
+            trigger: ["blur", "change"]
+          }
+        ],
+        de_size: [
+          { required: true, message: "请选择设备尺寸", trigger: "blur" }
+        ],
+        state: [{ required: true, message: "请选择入库状态", trigger: "blur" }]
+      }
     };
   },
   created() {
@@ -198,6 +254,26 @@ export default {
     // dialog关闭设备营业图片消失
     yyzzimgclose() {
       this.eqimgdata = "";
+    },
+    // 提交设备信息
+    putsubmit() {
+      this.$refs.putfrom.validate(async valid => {
+        if (!valid) {
+          return this.$message.error("请完整填写设备信息");
+        }
+        this.$store.dispatch(
+          "putstoragedialogsubmit",
+          this.$store.state.diaeqopen.id
+        );
+      });
+    },
+    // 设备入库dialog关闭
+    eqputclose() {
+      this.$refs.putfrom.resetFields();
+    },
+    // 日志弹窗关闭
+    detectionclose() {
+      this.$store.state.log = "";
     }
   }
 };
@@ -266,13 +342,12 @@ export default {
   width: 320px;
 }
 .dialogeq-open-btn {
+  margin-top: 100px;
   text-align: center;
 }
-.dialog-open-select {
-  width: 220px;
-}
-.wwwwww {
-  margin-left: 10px;
+.dialog-open-dec {
+  margin-top: 50px;
+  text-align: center;
 }
 .dialogbtn-right {
   margin-left: 30px !important;

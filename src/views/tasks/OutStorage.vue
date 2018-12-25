@@ -32,9 +32,9 @@
       <div class="taskSliderBox">
         <span>任务进度:</span>
         <div class="Slider">
-          <el-slider v-model="taskvalue"></el-slider>
+          <el-slider v-model="$store.state.tasksechedule" :disabled="disable" @change="handletasksechedule"></el-slider>
         </div>
-        <span>{{taskvalue}}%</span>
+        <span>{{$store.state.tasksechedule}}%</span>
       </div>
     </div>
     <div class="shoujian-title">
@@ -47,10 +47,12 @@
           <span>单位名称：</span>
           <span class="information-box-font">浙江大华公司</span>
         </div>
-        <div class="information-box2">
-          <span>单位地址：</span>
-          <span class="information-box-font">杭州市滨江区滨安路199号</span>
-        </div>
+        <el-tooltip :content="appconbb.address" placement="top">
+          <div class="information-box2">
+            <span>单位地址：</span>
+            <span class="information-box-font">杭州市滨江区滨安路199号</span>
+          </div>
+        </el-tooltip>
       </div>
       <div class="ra-information-box">
         <div class="information-box">
@@ -70,17 +72,17 @@
     <div class="op-tb-content">
       <div class="op-shebei-title">
         <div class="title-box-op">
-          <i id="lingxing" class="iconfont icon-iconfont"></i>
+          <i class="iconfont icon-iconfont"></i>
           <span class="shebifont">待出库：</span>
           <span class="shebeinumber daichuku">4</span>
         </div>
         <div class="title-box-op">
-          <i id="lingxing" class="iconfont icon-iconfont"></i>
+          <i class="iconfont icon-iconfont"></i>
           <span class="shebifont">已出库：</span>
           <span class="shebeinumber yichuku">4</span>
         </div>
         <div class="title-box-op">
-          <i id="lingxing" class="iconfont icon-iconfont"></i>
+          <i class="iconfont icon-iconfont"></i>
           <span class="shebifont">设备总数：</span>
           <span class="shebeinumber zongshu">8</span>
         </div>
@@ -215,8 +217,7 @@ export default {
           waiguan: "异常",
           zhuangtai: "已入库"
         }
-      ],
-      taskvalue: 0
+      ]
     };
   },
   methods: {
@@ -231,6 +232,10 @@ export default {
           this.$message.success("提交成功");
         })
         .catch(() => {});
+    },
+    // 更改任务进度
+    handletasksechedule() {
+      this.$store.dispatch("handletasksechedule", this.taskid);
     }
   }
 };
@@ -254,49 +259,6 @@ export default {
   margin-top: 4px;
   border-top: 1px solid #dae9f9;
   padding-top: 10px;
-}
-.op-shebei-title {
-  height: 20px;
-  line-height: 20px;
-  margin-bottom: 10px;
-}
-.title-box-op {
-  display: inline-block;
-  margin-right: 66px;
-}
-#lingxing {
-  font-size: 10px;
-  color: #409eff;
-  display: inline-block;
-  margin-left: 105px;
-  margin-right: 10px;
-  vertical-align: middle;
-}
-.shebifont {
-  display: inline-block;
-  vertical-align: middle;
-}
-.shebeinumber {
-  display: inline-block;
-  position: relative;
-  top: -1px;
-  width: 34px;
-  font-size: 12px;
-  height: 16px;
-  line-height: 16px;
-  vertical-align: middle;
-  color: #fff;
-  text-align: center;
-  border-radius: 2px;
-}
-.daichuku {
-  background-color: #e6a23c;
-}
-.yichuku {
-  background-color: #409eff;
-}
-.zongshu {
-  background-color: #0f6ccc;
 }
 .shezhi {
   font-size: 18px;

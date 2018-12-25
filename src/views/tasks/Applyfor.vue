@@ -50,10 +50,12 @@
           </div>
         </div>
         <div class="applyfor-information-box">
-          <div class="information-box">
-            <span>单位地址：</span>
-            <span class="information-box-font">{{appforcompany.address}}</span>
-          </div>
+          <el-tooltip :content="appforcompany.address" placement="top">
+            <div class="information-box">
+              <span>单位地址：</span>
+              <span class="information-box-font">{{appforcompany.address}}</span>
+            </div>
+          </el-tooltip>
           <div class="information-box2">
             <span>联系人：</span>
             <span class="information-box-font">{{appforcompany.linkman}}</span>
@@ -139,10 +141,10 @@ export default {
   methods: {
     //是否通过显示文本框
     radiochange() {
-      if (this.radio === "未通过") {
-        this.Isshow = true;
-      } else {
+      if (this.radio === "通过") {
         this.Isshow = false;
+      } else {
+        this.Isshow = true;
       }
     },
     //提交任务
@@ -156,14 +158,20 @@ export default {
           type: "warning"
         })
           .then(async () => {
+            this.$store.commit("tasksubmitloadingshow");
             const res = await this.$http.put(`applyfor/${this.taskid}`, {
               state: "通过"
             });
             if (res.status === 200) {
+              this.$store.commit("tasksubmitloadinghidden");
               this.$message.success("任务提交成功");
               this.$store.commit("taskhuakuaihidden");
               this.$store.dispatch("loadingMytask", 1);
+              this.$store.dispatch("hometask");
+              this.radio = "";
+              this.$refs.formInline.resetFields();
             } else {
+              this.$store.commit("tasksubmitloadinghidden");
               this.$message.error(res.meg);
             }
           })
@@ -179,15 +187,19 @@ export default {
             type: "warning"
           })
             .then(async () => {
+              this.$store.commit("tasksubmitloadingshow");
               const res = await this.$http.put(`applyfor/${this.taskid}`, {
                 state: "不通过",
                 remarks: this.formInline.why
               });
               if (res.status === 200) {
+                this.$store.commit("tasksubmitloadinghidden");
                 this.$message.success("任务提交成功");
                 this.$store.commit("taskhuakuaihidden");
                 this.$store.dispatch("loadingMytask", 1);
+                this.$store.dispatch("hometask");
               } else {
+                this.$store.commit("tasksubmitloadinghidden");
                 this.$message.error(res.meg);
               }
             })

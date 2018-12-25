@@ -32,9 +32,9 @@
       <div class="taskSliderBox">
         <span>任务进度:</span>
         <div class="Slider">
-          <el-slider v-model="taskvalue"></el-slider>
+          <el-slider v-model="$store.state.tasksechedule" :disabled="disable" @change="handletasksechedule"></el-slider>
         </div>
-        <span>{{taskvalue}}%</span>
+        <span>{{$store.state.tasksechedule}}%</span>
       </div>
       <div class="ra-shebei-box">
         <div class="ra-information-box">
@@ -146,7 +146,6 @@
 export default {
   data() {
     return {
-      taskvalue: 0, // 任务进度条
       raactive: "first",
       fileList: [
         {
@@ -189,6 +188,10 @@ export default {
     // 文件移除之前弹窗提示
     beforeRemove(file) {
       return this.$confirm(`确定移除 ${file.name}？`);
+    },
+    // 更改任务进度
+    handletasksechedule() {
+      this.$store.dispatch("handletasksechedule", this.taskid);
     }
   }
 };

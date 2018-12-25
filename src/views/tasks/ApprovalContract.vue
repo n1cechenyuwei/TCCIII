@@ -48,10 +48,12 @@
             <span>单位名称：</span>
             <span class="information-box-font">{{appconbb.company}}</span>
           </div>
-          <div class="information-boxa">
-            <span>单位地址：</span>
-            <span class="information-box-font">{{appconbb.address}}</span>
-          </div>
+          <el-tooltip :content="appconbb.address" placement="top">
+            <div class="information-boxa">
+              <span>单位地址：</span>
+              <span class="information-box-font">{{appconbb.address}}</span>
+            </div>
+          </el-tooltip>
         </div>
         <div class="approval-information-box">
           <div class="information-box">
@@ -128,7 +130,7 @@
                   v-if="taskinfo.state !== '已完成'"
                   size="small"
                   placeholder="请输入金额"
-                  v-model="appcompactinfo.com_money">
+                  v-model.trim="appcompactinfo.com_money">
                 </el-input>
                 <span v-if="taskinfo.state === '已完成'" class="information-box-font">{{appcompactinfo.com_money}}</span>
               </div>
@@ -162,10 +164,10 @@
                       <el-upload
                         class="upload-demo"
                         ref="upload"
-                        accept=".docx, .pdf, .xlsx, .txt"
+                        accept=".docx, .pdf, .xlsx, .txt, .rar"
                         action="http://192.168.1.186:8888/api/v1.0/uploadcompact"
                         :before-upload="upload"
-                        :disabled="disable"
+                        :disabled="disable || uploadbtn"
                         :on-progress="progress"
                         :show-file-list="false"
                         name="compactfile"
@@ -173,23 +175,25 @@
                         :data="$store.state.filehetongid"
                         :on-success="uploadsuccess"
                         :on-error="uploaderror">
-                        <el-button size="mini" type="primary" :disabled="disable">点击上传</el-button>
+                        <el-button size="mini" type="primary" :disabled="disable || uploadbtn">上传终稿</el-button>
                       </el-upload>
                     </div>
-                    <ul class="zhonggaolist-box">
-                      <li class="zglist" v-for="(item, index) in $store.state.finalfile" :key="index">
-                        <i class="el-icon-document wendangicon"></i>
-                        <span class="zhonggaoname">{{item.name}}</span>
-                        <i class="el-icon-circle-check upload-success"></i>
-                        <i class="el-icon-close upload-close" @click="handledelete(item)"></i>
-                      </li>
-                      <li class="zglist" v-if="newfile.name !== ''">
-                        <i class="el-icon-document wendangicon"></i>
-                        <span class="zhonggaoname">{{newfile.name}}</span>
-                        <span class="jindutiao">{{newfile.progress}}%</span>
-                        <el-progress v-if="newfile.progress !== 0" :show-text="false" :percentage="newfile.progress" class="zgprogress" :stroke-width="3" color="#409eff"></el-progress>
-                      </li>
-                    </ul>
+                    <div v-loading="$store.state.ctuploading" element-loading-text="文件上传中请稍后">
+                      <ul class="zhonggaolist-box">
+                        <li class="zglist" v-for="(item, index) in $store.state.finalfile" :key="index">
+                          <i class="el-icon-document wendangicon"></i>
+                          <span class="zhonggaoname">{{item.name}}</span>
+                          <i class="el-icon-circle-check upload-success"></i>
+                          <i class="el-icon-close upload-close" @click="handledelete(item)"></i>
+                        </li>
+                        <li class="zglist" v-if="newfile.name !== ''">
+                          <i class="el-icon-document wendangicon"></i>
+                          <span class="zhonggaoname">{{newfile.name}}</span>
+                          <span class="jindutiao">{{newfile.progress}}%</span>
+                          <el-progress v-if="newfile.progress !== 0" :show-text="false" :percentage="newfile.progress" class="zgprogress" :stroke-width="3" color="#409eff"></el-progress>
+                        </li>
+                      </ul>
+                    </div>
                   </el-tab-pane>
                 </el-tabs>
               </div>
@@ -241,23 +245,26 @@ export default {
   methods: {
     //是否通过显示文本框
     radiochange() {
-      if (this.hetongradio === "签订失败") {
-        this.Isshow = true;
-      } else {
+      if (this.hetongradio === "签订成功") {
         this.Isshow = false;
+      } else {
+        this.Isshow = true;
       }
     },
     // 保存合同信息
     handlesave() {
-      this.$store.dispatch(
-        "handlesave",
-        this.$store.state.appcompactinfo.com_no
-      );
+      if (
+        this.$store.state.appcompactinfo.com_money === "" ||
+        this.$store.state.comtime === null
+      ) {
+        this.$message.error("请填写合同金额及期限");
+      } else {
+        this.$store.dispatch(
+          "handlesave",
+          this.$store.state.appcompactinfo.com_no
+        );
+      }
     },
-    // 日历组件时间
-    // datachange() {
-    //   console.log(this.$store.state.comtime);
-    // },
     // 提交任务
     handletasksubmit() {
       if (this.hetongradio === "") {
@@ -282,6 +289,9 @@ export default {
                 this.$message.success("任务提交成功");
                 this.$store.commit("taskhuakuaihidden");
                 this.$store.dispatch("loadingMytask", 1);
+                this.$store.dispatch("hometask");
+                this.hetongradio = "";
+                this.$refs.formhetong.resetFields();
               } else {
                 this.$message.error(res.meg);
               }
@@ -308,8 +318,11 @@ export default {
               );
               if (res.status === 200) {
                 this.$message.success("任务提交成功");
+                this.hetongradio = "";
+                this.$refs.formhetong.resetFields();
                 this.$store.commit("taskhuakuaihidden");
                 this.$store.dispatch("loadingMytask", 1);
+                this.$store.dispatch("hometask");
               } else {
                 this.$message.error(res.meg);
               }
@@ -322,10 +335,14 @@ export default {
     upload(file) {
       this.newfile.name = file.name;
     },
-    // 文件上传钩子
+    // 文件上传时钩子
     progress(event) {
+      this.$store.commit("stopupbtn");
       let percent = parseInt(event.percent);
       this.newfile.progress = percent;
+      if (this.newfile.progress === 100) {
+        this.$store.commit("startctuploading");
+      }
     },
     // 上传文件删除
     handledelete(item) {
@@ -349,21 +366,36 @@ export default {
     // 文件上传成功
     uploadsuccess(response) {
       if (response.status === 200) {
-        this.$store.state.uploadloding = true;
-        this.newfile.name = "";
-        this.newfile.progress = 0;
-        this.$message.success("上传成功");
-        this.$store.dispatch(
-          "handleuploaddata",
-          this.$store.state.appcompactinfo.com_no
-        );
+        setTimeout(() => {
+          this.newfile.name = "";
+          this.newfile.progress = 0;
+          this.$store.dispatch(
+            "handleuploaddata",
+            this.$store.state.appcompactinfo.com_no
+          );
+          this.$message.success("上传成功");
+          this.$store.commit("endctuploading");
+        }, 500);
       } else {
-        this.$message.error(response.msg);
+        setTimeout(() => {
+          this.newfile.name = "";
+          this.newfile.progress = 0;
+          this.$store.dispatch(
+            "handleuploaddata",
+            this.$store.state.appcompactinfo.com_no
+          );
+          this.$message.error(response.msg);
+          this.$store.commit("endctuploading");
+        }, 500);
       }
     },
     // 文件上传失败
     uploaderror() {
       this.$message.error("文件上传失败");
+      this.$store.dispatch(
+        "handleuploaddata",
+        this.$store.state.appcompactinfo.com_no
+      );
     },
     // 任务进度改变
     handletasksechedule() {
@@ -388,14 +420,16 @@ export default {
     appcompactinfo: "appcompactinfo",
     draftfile: "draftfile",
     finalfile: "finalfile",
-    disable: "disable"
+    disable: "disable",
+    uploadbtn: "uploadbtn"
   })
 };
 </script>
 
 <style>
 .approvalbig {
-  height: 100%;
+  height: 890px;
+  overflow-y: auto;
 }
 .appcom-top {
   height: 44px;
@@ -421,7 +455,7 @@ export default {
   color: #1ac7ff;
 }
 .approvalContent {
-  height: 100%;
+  /* height: 100%; */
   margin-top: 6px;
 }
 .jiafang-title {
@@ -478,6 +512,9 @@ export default {
   max-width: 490px;
   border-bottom: 1px dashed #cacaca;
   font-size: 18px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .information-box-font {
   color: #000;
@@ -490,7 +527,7 @@ export default {
 }
 .hetong-centent {
   margin-top: 4px;
-  height: 100%;
+  height: 600px;
   background-color: #fff;
   border-top: 1px solid #dae9f9;
   padding-left: 20px;
@@ -498,7 +535,7 @@ export default {
 }
 .hetong-cententbox {
   height: 100%;
-  overflow: auto;
+  /* overflow: auto; */
 }
 .approvaldata-box {
   position: relative;
@@ -586,12 +623,10 @@ export default {
 .approval-information-boxe {
   margin-top: 9px;
   position: relative;
-  height: 150px;
+  height: 300px;
 }
 .approval-btn-two {
-  position: absolute;
-  bottom: 10px;
-  right: 350px;
+  text-align: center;
 }
 .chugao-btn {
   margin-bottom: 4px;
@@ -632,63 +667,8 @@ export default {
 .zhonggaolist-box {
   padding-left: 0;
   margin: 6px 0 0 0;
-  height: 100px;
+  height: 200px;
   overflow: auto;
-}
-.wendangicon {
-  font-size: 16px;
-  margin-right: 6px;
-}
-.zglist {
-  height: 28px;
-  position: relative;
-  line-height: 26px;
-  margin-top: 4px;
-}
-.zglist:hover {
-  background-color: #f5f7fa;
-}
-.zglist:hover .upload-success {
-  display: none;
-}
-.zglist:hover .upload-close {
-  display: block;
-  font-size: 14px;
-  position: absolute;
-  top: 8px;
-  right: 4px;
-  cursor: pointer;
-}
-.zhonggaoname {
-  font-size: 14px;
-  color: #606266;
-  cursor: pointer;
-}
-.zhonggaoname:hover {
-  color: #409eff;
-}
-.zgprogress {
-  position: absolute;
-  width: 100%;
-  left: 0px;
-  top: 24px;
-  z-index: 2px;
-}
-.upload-success {
-  color: #67c23a;
-  font-size: 14px;
-  position: absolute;
-  top: 8px;
-  right: 4px;
-}
-.upload-close {
-  display: none;
-}
-.jindutiao {
-  font-size: 14px;
-  position: absolute;
-  right: 0;
-  color: #606266;
 }
 .hetong-isbtn {
   display: inline-block;

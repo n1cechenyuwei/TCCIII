@@ -45,7 +45,9 @@
               </div>
               <div class="events-list" v-for="(item, index) in screenlist" :key="index">
                 <div class="events-list-dian"></div>
-                <div class="events-list-name">{{item.title}}</div>
+                <el-tooltip :content="item.title" placement="top">
+                  <div class="events-list-name" @click="taskright(item)">{{item.title}}</div>
+                </el-tooltip>
                 <div class="events-list-time">{{item.date}}</div>
               </div>
             </div>
@@ -140,7 +142,11 @@
     <Chart v-if="false" class="chart-box-home">
     </Chart>
     <!-- 任务右滑模块 -->
-    <div :class="{ 'hiddenhome': $store.state.noShow, 'sardhome': $store.state.isShow }">
+    <div
+      :class="{ 'hiddenhome': $store.state.noShow, 'sardhome': $store.state.isShow }"
+      v-loading="loading"
+      element-loading-text="任务提交中，请稍后"
+      element-loading-spinner="el-icon-loading">
       <div class="taskright-title">
         <i class="iconfont icon-renwu"></i>
         <i class="fontt">任务</i>
@@ -238,8 +244,14 @@
         <el-table-column
           width="160"
           show-overflow-tooltip
-          prop="serialnumber"
-          label="出厂序列号">
+          prop="serialnumber1"
+          label="设备一出厂序列号">
+        </el-table-column>
+        <el-table-column
+          width="160"
+          show-overflow-tooltip
+          prop="serialnumber2"
+          label="设备二出厂序列号">
         </el-table-column>
         <el-table-column
           width="200"
@@ -278,51 +290,55 @@
     <el-dialog
       class="dialogeq-open-box"
       title="设备详情"
+      @closed="eqputclose"
       :visible.sync="$store.state.Dialogshebei"
       width="30%">
       <div class="dialogeq-open">
-        <el-form label-width="100px" :model="$store.state.diaeqopen" label-suffix=":" size="small">
+        <el-form label-width="130px" :model="$store.state.diaeqopen" ref="putfrom" :rules="putfromrules" label-suffix=":" size="small">
           <el-form-item label="设备名称">
-            <span class="wwwwww" :model="$store.state.diaeqopen.eqname">{{$store.state.diaeqopen.eqname}}</span>
+            <span class="wwwwww">{{$store.state.diaeqopen.divicename}}</span>
           </el-form-item>
           <el-form-item label="设备类型">
-            <span class="wwwwww" :model="$store.state.diaeqopen.eqtype">{{$store.state.diaeqopen.eqtype}}</span>
+            <span class="wwwwww">{{$store.state.diaeqopen.devicetype}}</span>
           </el-form-item>
           <el-form-item label="设备型号">
-            <span class="wwwwww" :model="$store.state.diaeqopen.xinghao">{{$store.state.diaeqopen.xinghao}}</span>
+            <span class="wwwwww">{{$store.state.diaeqopen.model}}</span>
           </el-form-item>
           <el-form-item label="设备编号">
-            <el-input class="wwwwww" v-model="$store.state.diaeqopen.bianhao" placeholder="请填写设备编号"></el-input>
+            <span class="wwwwww">{{$store.state.diaeqopen.id}}</span>
           </el-form-item>
-          <el-form-item label="出厂序列号">
-            <el-input class="wwwwww" v-model="$store.state.diaeqopen.iem" placeholder="请填写出厂序列号"></el-input>
+          <el-form-item label="出厂序列号" prop="serialnumber">
+            <el-input class="timeselect" v-model="$store.state.diaeqopen.serialnumber" placeholder="请填写出厂序列号"></el-input>
           </el-form-item>
-          <el-form-item label="送检人">
-            <el-input class="wwwwww" v-model="$store.state.diaeqopen.people" placeholder="请填写送检人"></el-input>
+          <el-form-item label="送检人" prop="deliverer">
+            <el-input class="timeselect" v-model="$store.state.diaeqopen.deliverer" placeholder="请填写送检人"></el-input>
           </el-form-item>
-          <el-form-item label="送检时间">
+          <el-form-item label="送检时间" prop="deliver_time">
             <el-date-picker
-              class="wwwwww"
-              v-model="$store.state.diaeqopen.time"
+              class="timeselect"
+              v-model="$store.state.diaeqopen.deliver_time"
               value-format="yyyy-MM-dd">
               type="date"
               placeholder="选择日期">
             </el-date-picker>
           </el-form-item>
-          <el-form-item label="设备外观">
-            <el-select class="dialog-open-select wwwwww" v-model="$store.state.diaeqopen.waiguan" placeholder="请选择">
+          <el-form-item label="设备外观" prop="appearance">
+            <el-select class="dialog-open-select timeselect" v-model="$store.state.diaeqopen.appearance" placeholder="请选择">
+              <el-option label="完好" value="完好"></el-option>
+              <el-option label="破损" value="破损"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="上电检查" prop="power_on">
+            <el-select class="dialog-open-select timeselect" v-model="$store.state.diaeqopen.power_on" placeholder="请选择">
               <el-option label="正常" value="正常"></el-option>
               <el-option label="异常" value="异常"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="上电检查">
-            <el-select class="dialog-open-select wwwwww" v-model="$store.state.diaeqopen.dian" placeholder="请选择">
-              <el-option label="正常" value="正常"></el-option>
-              <el-option label="异常" value="异常"></el-option>
-            </el-select>
+          <el-form-item label="设备尺寸（cm）" prop="de_size">
+            <el-input class="timeselect" v-model="$store.state.diaeqopen.de_size" placeholder="请填写设备尺寸"></el-input>
           </el-form-item>
-          <el-form-item label="设备状态">
-            <el-select class="dialog-open-select wwwwww" v-model="$store.state.diaeqopen.status" placeholder="请选择">
+          <el-form-item label="入库状态" prop="state">
+            <el-select class="dialog-open-select timeselect" v-model="$store.state.diaeqopen.state" placeholder="请选择">
               <el-option label="已入库" value="已入库"></el-option>
               <el-option label="未入库" value="未入库"></el-option>
             </el-select>
@@ -331,13 +347,14 @@
       </div>
       <div class="dialogeq-open-btn">
         <el-button plain type="success" size="small" @click="$store.commit('putstoragedialogclose')">取消</el-button>
-        <el-button type="primary" size="small" class="dialogbtn-right" @click="$store.dispatch('putstoragedialogsubmit')">确定</el-button>
+        <el-button type="primary" size="small" class="dialogbtn-right" @click="putsubmit">确定</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
+import { mapState } from "vuex";
 import calendar from "../components/calendar.vue";
 import Mytabs from "../components/Mytabs";
 import Chart from "./Chart";
@@ -353,8 +370,6 @@ import DetectionAudit from "./tasks/DetectionAudit";
 export default {
   data() {
     return {
-      demoEvents: [], //日历绑定数据
-      demoEventsone: [],
       activeName: "first",
       NewAnnouncement: {
         title: "",
@@ -373,7 +388,7 @@ export default {
             message: "请输入公告标题",
             trigger: "blur"
           },
-          { max: 66, message: "标题最多 66 个字符", trigger: 'blur' }
+          { max: 66, message: "标题最多 66 个字符", trigger: "blur" }
         ],
         content: [
           {
@@ -381,7 +396,7 @@ export default {
             message: "请输入公告详情",
             trigger: "blur"
           },
-          { max: 1300, message: "内容最多 1300 个字符", trigger: 'blur' }
+          { max: 1300, message: "内容最多 1300 个字符", trigger: "blur" }
         ]
       }, //新增历史验证规则
       dialogannouncementcontent: false, //历史公告详情弹出
@@ -389,41 +404,49 @@ export default {
       number: "", //左上角数量
       news: "", //最新公告内容
       doclist: [], //文档列表
-      calendar: {
-        value: [2018, 9, 6], //默认日期
-        weeks: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"],
-        months: [
-          "一月",
-          "二月",
-          "三月",
-          "四月",
-          "五月",
-          "六月",
-          "七月",
-          "八月",
-          "九月",
-          "十月",
-          "十一月",
-          "十二月"
-        ],
-        events: {},
-        lunar: true //是否显示农历
-      },
-      screenlist: [], // 日历任务列表
-      screenlisttime: [], //任务列表标题时间
       taskid: 0, //任务id
       route: "", //任务组件别名
       eqimgshow: false, //设备生产厂家照片显示
-      eqimgdata: "" //生厂厂家照片
+      eqimgdata: "", //生厂厂家照片
+      putfromrules: {
+        serialnumber: [
+          { required: true, message: "请输入出厂序列号", trigger: "blur" }
+        ],
+        deliverer: [
+          { required: true, message: "请输入送检人", trigger: "blur" }
+        ],
+        deliver_time: [
+          { required: true, message: "请选择送检时间", trigger: "blur" }
+        ],
+        appearance: [
+          {
+            required: true,
+            message: "请选择设备外观",
+            trigger: ["blur", "change"]
+          }
+        ],
+        power_on: [
+          {
+            required: true,
+            message: "请选择上电检查",
+            trigger: ["blur", "change"]
+          }
+        ],
+        de_size: [
+          { required: true, message: "请选择设备尺寸", trigger: "blur" }
+        ],
+        state: [{ required: true, message: "请选择入库状态", trigger: "blur" }]
+      } // 设备入库任务dialog form规则
     };
   },
   created() {
     this.aaa();
     this.newnotice();
     this.noticehostory();
-    this.task();
+    this.$store.dispatch("hometask");
     this.docment();
     this.calendarTwo();
+    this.$store.commit("taskhuakuaihidden");
   },
   methods: {
     // dialog关闭设备营业图片消失
@@ -444,6 +467,8 @@ export default {
           const s4 = this.formatDate(s3);
           obj.date = s4;
           obj.title = element.taskname;
+          obj.taskid = element.taskid;
+          obj.route = element.route;
           if (element.desc) {
             obj.desc = element.desc;
           }
@@ -484,7 +509,7 @@ export default {
         }
       });
     },
-    // 添加公告关闭清空信息 
+    // 添加公告关闭清空信息
     closegonggao() {
       this.$refs.NewAnnouncement.resetFields();
     },
@@ -525,17 +550,6 @@ export default {
         this.$message.error(resdata.msg);
       }
     },
-    //获取任务
-    async task() {
-      const resdata = await this.$http.get("tasklist");
-      if (resdata.status === 200) {
-        this.demoEventsone = resdata.data;
-        this.initialize();
-        this.screenall();
-      } else {
-        this.$message.error(resdata.msg);
-      }
-    },
     //获取文档列表
     async docment() {
       const resdata = await this.$http.get("doclist");
@@ -558,43 +572,17 @@ export default {
     // 日历点击出现任务
     select(value) {
       const datestring = value[0] + "-" + value[1] + "-" + value[2];
-      let screen = this.demoEvents.filter(canshu => {
-        return canshu.date === datestring ? true : false;
-      });
-      const titletime = datestring.split("-");
-      this.screenlisttime = titletime;
-      this.screenlist = screen;
-    },
-    // 所有日历任务转换为calendar的任务,并且默认显示当天的任务
-    screenall() {
-      const eventslist = {};
-      this.demoEvents.forEach(element => {
-        eventslist[element.date] = element.title;
-      });
-      this.calendar.events = eventslist;
-      const todaytime = this.formatDate(new Date());
-      let screentwo = this.demoEvents.filter(value => {
-        return value.date === todaytime ? true : false;
-      });
-      const titletimetwo = todaytime.split("-");
-      this.screenlisttime = titletimetwo;
-      this.screenlist = screentwo;
+      this.$store.commit("handlescreenlist", datestring);
     },
     // 日历点击今天
     today() {
       this.yaerisshow = true;
       this.$refs.calendar.setToday();
       const todaytime = this.formatDate(new Date());
-      let screentwo = this.demoEvents.filter(value => {
-        return value.date === todaytime ? true : false;
-      });
-      const titletimetwo = todaytime.split("-");
-      this.screenlisttime = titletimetwo;
-      this.screenlist = screentwo;
+      this.$store.commit("handlescreenlist", todaytime);
     },
     //点击任务右滑
     taskright(item) {
-      // console.log(item);
       this.$store.commit("taskhuakuaishow");
       this.taskid = item.taskid;
       this.route = item.route;
@@ -611,6 +599,22 @@ export default {
       this.eqimgshow = true;
       const date = new Date().getTime();
       this.eqimgdata = `http://192.168.1.186:8888/api/v1.0/showdevicelicense/${id}?${date}`;
+    },
+    // 提交设备信息
+    putsubmit() {
+      this.$refs.putfrom.validate(async valid => {
+        if (!valid) {
+          return this.$message.error("请完整填写设备信息");
+        }
+        this.$store.dispatch(
+          "putstoragedialogsubmit",
+          this.$store.state.diaeqopen.id
+        );
+      });
+    },
+    // 设备入库dialog关闭
+    eqputclose() {
+      this.$refs.putfrom.resetFields();
     }
   },
   components: {
@@ -626,7 +630,15 @@ export default {
     OutStorage,
     ReportAudit,
     DetectionAudit
-  }
+  },
+  computed: mapState({
+    demoEventsone: "hometaskdata",
+    demoEvents: "demoEvents",
+    screenlist: "screenlist",
+    screenlisttime: "screenlisttime",
+    calendar: "calendar",
+    loading: "loading"
+  })
 };
 </script>
 
@@ -968,6 +980,10 @@ export default {
   background-color: blue;
 }
 .events-list-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
   margin-left: 10px;
   overflow: hidden;
   margin-top: 4px;

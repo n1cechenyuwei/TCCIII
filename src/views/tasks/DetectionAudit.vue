@@ -32,9 +32,9 @@
       <div class="taskSliderBox">
         <span>任务进度:</span>
         <div class="Slider">
-          <el-slider v-model="taskvalue"></el-slider>
+          <el-slider v-model="$store.state.tasksechedule" :disabled="disable" @change="handletasksechedule"></el-slider>
         </div>
-        <span>{{taskvalue}}%</span>
+        <span>{{$store.state.tasksechedule}}%</span>
       </div>
       <div class="detec-mt">
         <div class="eqconfig-information-box">
@@ -82,7 +82,7 @@
               <div v-for="(item, index) in scope.row.rizhilist" :key="index" :class="{'expand-rizhi-listone': index % 2 === 0, 'expand-rizhi-listtwo': index % 2 !== 0, 'hov': isok}">
                 <i class="el-icon-d-arrow-right rizhi-list-icon"></i>
                 <span class="rizhi-list-name">{{item}}</span>
-                <i class="el-icon-download list-icon-download"></i>
+                <i class="el-icon-download list-icon-edit"></i>
                 <i class="el-icon-delete list-icon-delete"></i>
               </div>
             </div>
@@ -166,7 +166,6 @@
 export default {
   data() {
     return {
-      taskvalue: 0, // 任务进度条
       eqinformation: [
         {
           id: "1005",
@@ -235,6 +234,10 @@ export default {
           this.$message.success("提交成功");
         })
         .catch(() => {});
+    },
+    // 更改任务进度
+    handletasksechedule() {
+      this.$store.dispatch("handletasksechedule", this.taskid);
     }
   }
 };
@@ -272,18 +275,6 @@ export default {
   margin-top: 10px;
   padding-left: 20px;
 }
-.expand-rizhi-listone {
-  height: 28px;
-  line-height: 28px;
-  position: relative;
-}
-.expand-rizhi-listtwo {
-  height: 28px;
-  line-height: 28px;
-  background-color: #f5f7fa;
-  position: relative;
-}
-
 .expand-jianyi-listone {
   line-height: 24px;
   position: relative;
@@ -300,20 +291,6 @@ export default {
 }
 .rizhi-list-name {
   margin-left: 10px;
-}
-.list-icon-download {
-  color: #409eff;
-  position: absolute;
-  top: 3px;
-  right: 100px;
-  font-size: 20px;
-}
-.list-icon-delete {
-  color: #e6a23c;
-  position: absolute;
-  top: 3px;
-  right: 70px;
-  font-size: 18px;
 }
 .el-table__expanded-cell {
   padding: 4px 50px 10px 50px !important;

@@ -5,28 +5,25 @@
       <div class="gzt-box">
         <div class="gongzuotaione">
           <div class="gone-title">工作台统计</div>
-          <div id="Gone"></div>
+          <div id="chartGone"></div>
         </div>
         <div class="gongzuotaithree">
           <div class="gone-title">项目统计</div>
-          <div id="Gthree"></div>
+          <div id="chartTwo"></div>
         </div>
         <div class="gongzuotaifour">
-          <div class="gone-title">项目统计</div>
-          <div id="Gfour"></div>
+          <div class="gone-title">任务统计</div>
+          <div id="chartThree"></div>
         </div>
       </div>
       <div class="renyuan-gtwo-box">
         <div class="gtwo-title-box"><span class="gtwo-title">人员统计</span></div>
         <div>
-          <el-tabs v-model="jcryName" class="jceytabs">
-            <el-tab-pane label="PIS人员" name="PIS">
-              <div id="Gtwo"></div>
-            </el-tab-pane>
-            <el-tab-pane label="VMS人员" name="VMS">
-
-            </el-tab-pane>
-          </el-tabs>
+          <el-radio-group @change="pvchange" v-model="PVtabPosition" size="small" class="chart-b">
+            <el-radio-button label="PIS">PIS检测人员</el-radio-button>
+            <el-radio-button label="VMS">VMS检测人员</el-radio-button>
+          </el-radio-group>
+          <div id="chartFour"></div>
         </div>
       </div>
     </div>
@@ -89,7 +86,7 @@ export default {
           gzt: ["16号工作台", "17号工作台", "18号工作台"]
         }
       ],
-      jcryName: "PIS", //tabs默认显示那个
+      PVtabPosition: "VMS",
       jcrylist: [
         {
           taskname: "三号线仿真环境审批申请",
@@ -358,6 +355,7 @@ export default {
           endtime: "2018-12-19"
         }
       ], // pis检测人员
+      jcrydata: [],
       taskstarttime: "", // 人员任务开始时间
       taskendtime: "", // 人员任务结束时间
       taskname: "", // 人员任务名称
@@ -407,7 +405,11 @@ export default {
           taskname: "PIS已超时任务",
           tasknumber: 23
         }
-      ]
+      ],
+      chartGone: "", // 工作台统计
+      chartTwo: "", // 项目统计
+      chartThree: "", // 任务统计
+      chartFour: "" // 人员统计
     };
   },
   methods: {
@@ -428,22 +430,37 @@ export default {
         this.xoffset = e.clientX + 50;
         this.yoffset = e.clientY - 80;
       }
+    },
+    // pis vms选中读取数值
+    pvchange() {
+      if (this.PVtabPosition === "PIS") {
+        this.jcrydata = this.jcrylist.reverse();
+        this.chartFour.changeData(this.jcrydata);
+      } else {
+        this.jcrydata = this.jcrylist.reverse();
+        this.chartFour.changeData(this.jcrydata);
+      }
+    },
+    // 请求检测人员数据
+    jcrydatarese() {
+      this.jcrylist.forEach(function(obj) {
+        // obj.starttime += " 00:00:00"
+        // obj.endtime += " 23:59:59"
+        // console.log(obj.starttime)
+        obj.range = [obj.starttime, obj.endtime];
+      });
+      this.jcrydata = this.jcrylist;
     }
   },
   mounted() {
     // gtwo图表
-    const pisjcry = this.jcrylist.reverse();
-    const chartone = new G2.Chart({
-      container: "Gtwo", // 指定图表容器 ID
+    this.chartFour = new G2.Chart({
+      container: "chartFour", // 指定图表容器 ID
       width: 1450, // 指定图表宽度
       height: 360, // 指定图表高度
       padding: [0, 170, 30, 60]
     });
-    // chartone.legend(fasle);
-    pisjcry.forEach(function(obj) {
-      obj.range = [obj.starttime, obj.endtime];
-    });
-    chartone.source(pisjcry, {
+    this.chartFour.source(this.jcrydata, {
       range: {
         type: "time",
         tickCount: 17
@@ -461,22 +478,22 @@ export default {
         alias: "任务名称"
       }
     });
-    chartone
+    this.chartFour
       .coord()
       .transpose()
       .scale(1, 1);
-    chartone.legend({
+    this.chartFour.legend({
       position: "right-top",
       offsetX: 50,
       offsetY: 20
     });
-    chartone.tooltip({
+    this.chartFour.tooltip({
       useHtml: true,
       htmlContent: function() {
         return '<div style="visible:hidden">';
       }
     });
-    chartone
+    this.chartFour
       .interval()
       .position("taskpeople*range")
       // .label("tasktype")
@@ -512,26 +529,26 @@ export default {
         cancelable: true, // 选中之后是否允许取消选中，默认允许取消选中
         animate: true // 选中是否执行动画，默认执行动画
       });
-    chartone.axis("range", {
+    this.chartFour.axis("range", {
       position: "bottom"
     });
     // 鼠标移入事件，获取到柱状体信息
-    chartone.on("interval:mouseenter", ev => {
+    this.chartFour.on("interval:mouseenter", ev => {
       this.taskname = ev.data._origin.taskname;
       this.tasktype = ev.data._origin.tasktype;
       this.taskstarttime = ev.data._origin.starttime;
       this.taskendtime = ev.data._origin.endtime;
     });
     // 鼠标移动事件，获取到鼠标位置
-    chartone.on("interval:mousemove", () => {
+    this.chartFour.on("interval:mousemove", () => {
       this.getMousePos();
     });
     // 鼠标移出事件，隐藏掉提示信息
-    chartone.on("interval:mouseleave", () => {
+    this.chartFour.on("interval:mouseleave", () => {
       this.xoffset = 0;
       this.yoffset = 0;
     });
-    chartone.render(); //柱状图结束
+    this.chartFour.render(); //柱状图结束
 
     // gone图表
     const gzt = this.gone;
@@ -549,21 +566,21 @@ export default {
     for (let i = 0; i < asd.length; i++) {
       if (max < asd[i]) max = asd[i];
     }
-    const chart = new G2.Chart({
-      container: "Gone",
+    this.chartGone = new G2.Chart({
+      container: "chartGone",
       width: 490,
       padding: [20, 40, 30, 40], // 上，右，下，左
       // forceFit: true,
       height: 370
     });
-    chart.legend(false);
-    chart.axis("number", {
+    this.chartGone.legend(false);
+    this.chartGone.axis("number", {
       title: null,
       line: {
         lineWidth: 2 // 设置线的宽度
       }
     });
-    chart.axis("name", {
+    this.chartGone.axis("name", {
       label: {
         textStyle: {
           textAlign: "center", // 文本对齐方向，可取值为： start middle end
@@ -571,17 +588,17 @@ export default {
         }
       }
     });
-    chart.source(gzt);
-    chart.scale("number", {
+    this.chartGone.source(gzt);
+    this.chartGone.scale("number", {
       tickInterval: 1,
       alias: "数量（台）"
     });
-    chart.tooltip({
+    this.chartGone.tooltip({
       showTitle: true,
       itemTpl:
         '<li style="text-align: left"><span style="background-color:{color};" class="g2-tooltip-marker"></span>{value}</li>'
     });
-    chart
+    this.chartGone
       .interval()
       .position("name*number")
       .tooltip(max)
@@ -593,7 +610,7 @@ export default {
         "#F04864",
         "#409EFF"
       ]);
-    chart.render();
+    this.chartGone.render();
 
     // 项目统计图表
     // const DataSet = new DataSet();
@@ -609,19 +626,19 @@ export default {
       }
     });
     data = dv.rows;
-    var chartthree = new G2.Chart({
-      container: "Gthree",
+    this.chartTwo = new G2.Chart({
+      container: "chartTwo",
       forceFit: true,
       height: 350,
       padding: [20, 120, 0, 95]
     });
-    chartthree.source(data, {
+    this.chartTwo.source(data, {
       percent: {
         nice: false
       }
     });
-    chartthree.axis(false);
-    chartthree.tooltip({
+    this.chartTwo.axis(false);
+    this.chartTwo.tooltip({
       showTitle: false,
       itemTpl:
         '<li data-index={index} style="margin-bottom:4px;">' +
@@ -631,11 +648,11 @@ export default {
         '<span style="padding-left: 16px">占比：{percent}</span><br/>' +
         "</li>"
     });
-    chartthree
+    this.chartTwo
       .coord("rect")
       .transpose()
       .scale(1, -1);
-    chartthree
+    this.chartTwo
       .intervalSymmetric()
       .position("name*percent")
       .shape("funnel")
@@ -660,9 +677,9 @@ export default {
           number: number
         };
       });
+    const that = this.chartTwo;
     data.forEach(function(obj) {
-      // 中间标签文本
-      chartthree.guide().text({
+      that.guide().text({
         top: true,
         position: {
           name: obj.name,
@@ -678,26 +695,26 @@ export default {
         }
       });
     });
-    chartthree.render();
+    this.chartTwo.render();
 
-    // Gfour 图表
+    // 任务统计图表
     const taskdatalist = this.taskdatalist;
-    var chartfour = new G2.Chart({
-      container: "Gfour",
+    this.chartThree = new G2.Chart({
+      container: "chartThree",
       height: 370,
       padding: [0, 140, 0, 0]
     });
-    chartfour.source(taskdatalist);
-    chartfour.coord("polar", {
+    this.chartThree.source(taskdatalist);
+    this.chartThree.coord("polar", {
       innerRadius: 0.2
     });
-    chartfour.legend({
+    this.chartThree.legend({
       position: "right",
       offsetY: -100,
       offsetX: -10
     });
-    chartfour.axis(false);
-    chartfour
+    this.chartThree.axis(false);
+    this.chartThree
       .interval()
       .position("taskname*tasknumber")
       .color("taskname", G2.Global.colors_pie_16)
@@ -705,7 +722,10 @@ export default {
         lineWidth: 1,
         stroke: "#fff"
       });
-    chartfour.render();
+    this.chartThree.render();
+  },
+  created() {
+    this.jcrydatarese();
   }
 };
 </script>
@@ -741,11 +761,6 @@ export default {
 .gzt-box {
   width: 100%;
 }
-.jceytabs {
-  width: 1460px;
-  height: 390px;
-  padding-left: 30px;
-}
 .gongzuotaione {
   vertical-align: top;
   display: inline-block;
@@ -779,7 +794,7 @@ export default {
   box-sizing: border-box;
   text-align: center;
 }
-#Gone {
+#chartGone {
   width: 480px;
   margin-right: 6px;
 }
@@ -791,5 +806,8 @@ export default {
   margin-top: 6px;
   height: 480px;
   box-sizing: border-box;
+}
+.chart-b {
+  margin: 10px 0 10px 40px;
 }
 </style>

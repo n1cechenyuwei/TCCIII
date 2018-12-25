@@ -65,8 +65,9 @@ export default {
         if (res.status === 200) {
           this.$message.success(res.msg);
           const token = res.token;
+          const username = res.username;
           sessionStorage.setItem("token", token);
-          this.$store.dispatch("handleusername", res.username);
+          sessionStorage.setItem("username", username);
           this.$router.push({ name: "navigation" });
         } else {
           this.$message.error(res.msg);
