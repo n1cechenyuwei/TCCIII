@@ -95,7 +95,7 @@
             class="upload-demo"
             ref="ctupload"
             accept=".docx, .pdf, .xlsx, .txt, .rar"
-            action="http://192.168.1.186:8888/api/v1.0/dereport"
+            action="http://192.168.1.150:8888/api/v1.0/dereport"
             :before-upload="upload"
             :disabled="disable || uploadbtn"
             :on-progress="progress"

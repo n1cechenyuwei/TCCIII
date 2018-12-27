@@ -179,22 +179,42 @@
         <el-button type="primary" size="small" class="dialogbtn-right" @click="putsubmit">确定</el-button>
       </div>
     </el-dialog>
-    <!-- 检测任务日志编辑弹窗 -->
+    <!-- 检测任务日志弹窗 -->
     <el-dialog
       title="报文详情"
       @closed="detectionclose"
       :visible.sync="$store.state.caselogshow"
       width="50%">
-      <el-input
+      <!-- <el-input
         type="textarea"
         spellcheck ="false"
         :autosize="{ minRows: 14, maxRows: 15}"
         v-model="$store.state.log.data">
-      </el-input>
-      <div class="dialog-open-dec">
+      </el-input> -->
+      <div class="baowen">{{$store.state.log.data}}</div>
+      <!-- <div class="dialog-open-dec">
         <el-button plain type="success" size="small" @click="$store.state.caselogshow = false">取消</el-button>
-        <el-button type="primary" size="small" class="dialogbtn-right" @click="$store.dispatch('handlelog')">更新报文</el-button>
-      </div>
+        <el-button type="primary" size="small" class="dialogbtn-right">确定</el-button>
+      </div> -->
+    </el-dialog>
+    <!-- 检测任务照片弹窗 -->
+    <el-dialog
+      title="照片详情"
+      @closed="detectionimgclose"
+      :visible.sync="$store.state.caseimgshow"
+      width="50%">
+      <img width="100%" :src="$store.state.caseimage" alt="照片丢失了">
+    </el-dialog>
+    <!-- 检测任务视频弹窗 -->
+    <el-dialog
+      @close="detectionvideoclose"
+      :visible.sync="$store.state.casevideoshow"
+      width="50%">
+      <video-player  class="video-player vjs-custom-skin"
+        ref="videoPlayer"
+        :playsinline="true"
+        :options="$store.state.playerOptions">
+      </video-player>
     </el-dialog>
   </el-container>
 </template>
@@ -249,7 +269,7 @@ export default {
     async eqimg(id) {
       this.eqimgshow = true;
       const date = new Date().getTime();
-      this.eqimgdata = `http://192.168.1.186:8888/api/v1.0/showdevicelicense/${id}?${date}`;
+      this.eqimgdata = `http://192.168.1.150:8888/api/v1.0/showdevicelicense/${id}?${date}`;
     },
     // dialog关闭设备营业图片消失
     yyzzimgclose() {
@@ -274,6 +294,14 @@ export default {
     // 日志弹窗关闭
     detectionclose() {
       this.$store.state.log = "";
+    },
+    // 检测用例照片弹窗关闭
+    detectionimgclose() {
+      this.$store.state.caseimage = "";
+    },
+    // 检测用例视频弹窗关闭
+    detectionvideoclose() {
+      this.$refs.videoPlayer.player.pause();
     }
   }
 };

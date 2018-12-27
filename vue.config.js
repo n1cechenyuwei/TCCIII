@@ -1,5 +1,13 @@
+const webpack = require('webpack');
 module.exports = {
-  // baseUrl: './',
+  baseUrl: './',
+  configureWebpack: {
+    plugins: [
+      new webpack.ProvidePlugin({
+        videojs: 'video.js'
+      })
+    ]
+  },
   chainWebpack:  config => {
     config
     .entry('index')

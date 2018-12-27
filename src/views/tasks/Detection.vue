@@ -92,9 +92,9 @@
               <div v-show="scope.row.accessory_info.casevideo_info.length === 0" class="expand-rizhi-listone">无</div>
               <div v-for="(item, index) in scope.row.accessory_info.casevideo_info" :key="index" :class="{'expand-rizhi-listone': index % 2 === 0, 'expand-rizhi-listtwo': index % 2 !== 0, 'hov': isok}">
                 <i class="el-icon-d-arrow-right rizhi-list-icon"></i>
-                <span class="rizhi-list-name">{{item.name}}</span>
-                <el-button type="primary" size="mini" icon="el-icon-edit" class="list-icon-edit"></el-button>
-                <el-button type="warning" size="mini" icon="el-icon-delete" class="list-icon-delete"></el-button>
+                <span class="rizhi-list-name">{{item.video_name}}</span>
+                <el-button type="primary" size="mini" icon="el-icon-view" class="list-icon-edit" @click="opencasevideo(item.path)"></el-button>
+                <el-button type="warning" size="mini" icon="el-icon-delete" class="list-icon-delete" @click="deletevideo(item.id, scope.row.id)"></el-button>
               </div>
             </div>
             <div class="detec-expand-rizhi">照片附件</div>
@@ -102,9 +102,9 @@
               <div v-show="scope.row.accessory_info.caseimage_info.length === 0" class="expand-rizhi-listone">无</div>
               <div v-for="(item, index) in scope.row.accessory_info.caseimage_info" :key="index" :class="{'expand-rizhi-listone': index % 2 === 0, 'expand-rizhi-listtwo': index % 2 !== 0, 'hov': isok}">
                 <i class="el-icon-d-arrow-right rizhi-list-icon"></i>
-                <span class="rizhi-list-name">{{item.name}}</span>
-                <el-button type="primary" size="mini" icon="el-icon-edit" class="list-icon-edit"></el-button>
-                <el-button type="warning" size="mini" icon="el-icon-delete" class="list-icon-delete"></el-button>
+                <span class="rizhi-list-name">{{item.image_name}}</span>
+                <el-button type="primary" size="mini" icon="el-icon-view" class="list-icon-edit" @click="opencaseimg(item.path)"></el-button>
+                <el-button type="warning" size="mini" icon="el-icon-delete" class="list-icon-delete" @click="deletecaseimg(item.id, scope.row.id)"></el-button>
               </div>
             </div>
             <div class="detec-expand-rizhi">建议</div>
@@ -112,18 +112,24 @@
               <div v-show="scope.row.accessory_info.casecomment_info.length === 0" class="expand-rizhi-listone">无</div>
               <div v-for="(item, index) in scope.row.accessory_info.casecomment_info" :key="index" :class="{'expand-jianyi-listone': index % 2 === 0, 'expand-jianyi-listtwo': index % 2 !== 0, 'hov': isok}">
                 <i class="el-icon-d-arrow-right jianyi-list-icon"></i>
-                <div class="jianyi-list-name">{{item.name}}：</div>
+                <div class="jianyi-list-name">{{item.author}}：</div>
                 <div class="jianyi-list-content">{{item.content}}</div>
+                <div class="jianyi-time">{{item.comment_time}} 发表</div>
               </div>
               <div class="jianyi-box">
-                <el-input
-                  type="textarea"
-                  :autosize="{ minRows: 2, maxRows: 3}"
-                  placeholder="请输入建议"
-                  v-model="textarea3">
-                </el-input>
+                <el-form :model="textForm" status-icon :rules="textFormrules" ref="textForm">
+                  <el-form-item prop="content">
+                    <el-input
+                      type="textarea"
+                      spellcheck ="false"
+                      :autosize="{ minRows: 2, maxRows: 2}"
+                      placeholder="请输入建议"
+                      v-model.trim="textForm.content">
+                    </el-input>
+                  </el-form-item>
+                </el-form>
                 <div class="jianyi-btn-box">
-                  <el-button type="primary" size="mini" class="jianyi-btn">发表建议</el-button>
+                  <el-button type="primary" size="mini" class="jianyi-btn" @click="published(scope.row.id)">发表建议</el-button>
                 </div>
               </div>
             </div>
@@ -149,8 +155,12 @@
         </el-table-column>
         <el-table-column
           label="检测结果"
-          width="100"
-          prop="test_result">
+          width="100">
+          <template slot-scope="scope">
+            <span v-if="scope.row.test_result === '1'" class="tongguo">通过</span>
+            <span v-if="scope.row.test_result === '0'" class="butongguo">不通过</span>
+            <span v-if="scope.row.test_result === null">待检测</span>
+          </template>
         </el-table-column>
         <el-table-column
           label="审核员"
@@ -159,11 +169,26 @@
         </el-table-column>
         <el-table-column
           label="审核结果"
-          width="100"
-          prop="audit_result">
+          width="100">
+          <template slot-scope="scope">
+            <span v-if="scope.row.audit_result === '1'" class="tongguo">通过</span>
+            <span v-if="scope.row.audit_result === '0'" class="butongguo">不通过</span>
+            <span v-if="scope.row.audit_result === null">待审核</span>
+          </template>
         </el-table-column>
       </el-table>
-      <div class="eqconfig-bot-btn">
+      <div class="dec-btn">
+        <el-select v-model="$store.state.toolsvalue" placeholder="请选择启动的工具" size="small" @change="toolschange">
+          <el-option
+            v-for="item in starttoolsoptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+        <a :href="$store.state.hrefvalue" class="start">
+          <el-button size="small" type="primary" :disabled="dis">启动工具</el-button>
+        </a>
         <el-button size="small" type="primary" @click="eqconfigsubmit">提交任务</el-button>
       </div>
     </div>
@@ -176,50 +201,24 @@ export default {
   props: ["taskid"],
   data() {
     return {
-      eqinformation: [
+      isok: true,
+      textarea3: "", // 输入框输入内容
+      starttoolsoptions: [
         {
-          id: "1005",
-          name: "最大亮度等级",
-          jiancep: "郝佳贺",
-          jianceres: "通过",
-          shenhep: "赵龙",
-          shenheres: "待审核",
-          rizhilist: ["最大亮度等级级别日志1", "最大亮度等级级别日志2"],
-          qitalist: ["最大亮度等级级别视频", "最大亮度等级级别照片"],
-          jianyilist: [
-            {
-              name: "赵龙",
-              content: "检测不符合规范"
-            },
-            {
-              name: "郝佳贺",
-              content: "重新检测"
-            }
-          ]
+          label: "协议检测工具",
+          value: "vmsprotocol://TaskId="
         },
         {
-          id: "1006",
-          name: "注册-基础数字摘要认证",
-          jiancep: "郝佳贺",
-          jianceres: "通过",
-          shenhep: "赵龙",
-          shenheres: "待审核",
-          rizhilist: ["最大亮度等级级别日志3", "最大亮度等级级别日志4"],
-          qitalist: ["最大亮度等级级别视频", "最大亮度等级级别照片"],
-          jianyilist: [
-            {
-              name: "赵龙",
-              content: "检测不符合规范"
-            },
-            {
-              name: "郝佳贺",
-              content: "重新检测"
-            }
-          ]
+          label: "上传工具",
+          value: "aaaa"
         }
       ],
-      isok: true,
-      textarea3: "" // 输入框输入内容
+      textForm: {
+        content: ""
+      },
+      textFormrules: {
+        content: [{ required: true, message: "请输入建议", trigger: "blur" }]
+      }
     };
   },
   methods: {
@@ -231,7 +230,26 @@ export default {
         type: "warning"
       })
         .then(async () => {
-          this.$message.success("提交成功");
+          this.usecaseinfo.forEach(obj => {
+            if (obj.test_result === null) {
+              this.$store.state.issubmitok = false;
+            }
+          });
+          console.log(this.$store.state.issubmitok)
+          if (this.$store.state.issubmitok === false) {
+            this.$message.warning("请检测完全部用例并重新打开页面后再提交");
+          } else {
+            console.log(2222)
+          }
+          // const res = await this.$http.put(`detection/${this.taskid}`);
+          // if (res.status === 200) {
+          //   this.$message.success("提交成功");
+          //   this.$store.commit("taskhuakuaihidden");
+          //   this.$store.dispatch("loadingMytask", 1);
+          //   this.$store.dispatch("hometask");
+          // } else {
+          //   this.$message.error(res.msg);
+          // }
         })
         .catch(() => {});
     },
@@ -240,7 +258,7 @@ export default {
       this.$store.dispatch("handletasksechedule", this.taskid);
     },
     // 删除日志
-    async handledeletelog(id, rowid) {
+    handledeletelog(id, rowid) {
       this.$confirm("确定提交任务吗", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -256,6 +274,74 @@ export default {
           }
         })
         .catch(() => {});
+    },
+    // 启动工具选择改变
+    toolschange(val) {
+      this.$store.commit("closedis");
+      this.$store.state.hrefvalue = val + this.taskid;
+    },
+    // 发表建议
+    published(id) {
+      this.$refs.textForm.validate(async valid => {
+        if (!valid) {
+          return this.$message.warning("请输入建议");
+        }
+        const res = await this.$http.post(
+          `casecommentlist/${id}`,
+          this.textForm
+        );
+        if (res.status === 200) {
+          this.$message.success("发表成功");
+          this.$refs.textForm.resetFields();
+          this.$store.dispatch("handlecasecomment", id);
+        } else {
+          this.$message.error(res.msg);
+        }
+      });
+    },
+    // 点击用例照片按钮
+    opencaseimg(img) {
+      this.$store.commit("handlecaseimgopen", img);
+    },
+    // 删除用例照片按钮
+    async deletecaseimg(id, rowid) {
+      this.$confirm("确定删除照片吗", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(async () => {
+          const res = await this.$http.delete(`caseimage/${id}`);
+          if (res.status === 200) {
+            this.$message.success("照片删除成功");
+            this.$store.dispatch("caseimglist", rowid);
+          } else {
+            this.$message.error(res.msg);
+          }
+        })
+        .catch(() => {});
+    },
+    // 删除用例视频
+    async deletevideo(id, rowid) {
+      this.$confirm("确定删除视频吗", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(async () => {
+          const res = await this.$http.delete(`video/${id}`);
+          if (res.status === 200) {
+            this.$message.success("照片删除成功");
+            this.$store.dispatch("casevideolist", rowid);
+          } else {
+            this.$message.error(res.msg);
+          }
+        })
+        .catch(() => {});
+    },
+    // 点击用例视频按钮
+    opencasevideo(video) {
+      this.$store.commit("handlecasevideoopen", video);
     }
   },
   computed: mapState({
@@ -264,7 +350,9 @@ export default {
     workbenchid: "workbenchid",
     tasktype: "tasktype",
     usecaseinfo: "usecaseinfo",
-    disable: "disable"
+    disable: "disable",
+    // issubmitok: "issubmitok",
+    dis: "dis"
   })
 };
 </script>
@@ -317,33 +405,18 @@ export default {
 }
 .rizhi-list-name {
   margin-left: 10px;
+  /* display: inline-block; */
+  vertical-align: top;
 }
 .el-table__expanded-cell {
   padding: 4px 50px 10px 50px !important;
 }
-.jianyi-list-content {
-  display: inline-block;
-  max-width: 750px;
-}
-.jianyi-list-name {
-  display: inline-block;
-  margin-left: 10px;
-  vertical-align: top;
-}
-.jianyi-list-icon {
-  color: #409eff;
-  vertical-align: middle;
-}
-.jianyi-box {
+
+.dec-btn {
   margin-top: 10px;
+  margin-left: 20px;
 }
-.jianyi-btn-box {
-  margin-top: 6px;
-  position: relative;
-  height: 24px;
-}
-.jianyi-btn {
-  right: 0;
-  position: absolute;
+.start {
+  margin: 0 180px 0 20px;
 }
 </style>

@@ -82,7 +82,40 @@ export default new Vuex.Store({
     workbenchid: 0, // 工作台编号
     usecaseinfo: [], // 检测用例列表
     log: "", // 单个日志信息
-    caselogshow: false // 日志是否显示
+    caselogshow: false, // 日志是否显示
+    toolsvalue: "", // 选择工具绑定值
+    hrefvalue: "#", // 启动工具绑定值
+    dis: true, // 启动工具按钮是否点击
+    caseimgshow: false, // 检测用例照片是否显示
+    caseimage: "", // 检测用例照片地址
+    casevideoshow: false, // 检测用例视频显示
+    // casevideourl: "", // 检测用例视频url
+    playerOptions: {
+      playbackRates: [0.7, 1.0, 1.5, 2.0], //播放速度
+      autoplay: false, //如果true,浏览器准备好时开始回放。
+      muted: false, // 默认情况下将会消除任何音频。
+      loop: false, // 导致视频一结束就重新开始。
+      preload: "auto", // 建议浏览器在<video>加载元素后是否应该开始下载视频数据。auto浏览器选择最佳行为,立即开始加载视频（如果浏览器支持）
+      language: "zh-CN",
+      aspectRatio: "16:9", // 将播放器置于流畅模式，并在计算播放器的动态大小时使用该值。值应该代表一个比例 - 用冒号分隔的两个数字（例如"16:9"或"4:3"）
+      fluid: true, // 当true时，Video.js player将拥有流体大小。换句话说，它将按比例缩放以适应其容器。
+      sources: [
+        {
+          type: "video/mp4",
+          src: "" //url地址
+        }
+      ],
+      // poster: "https://surmon-china.github.io/vue-quill-editor/static/images/surmon-1.jpg", //你的封面地址
+      // width: document.documentElement.clientWidth,
+      notSupportedMessage: "此视频暂无法播放，请稍后再试", //允许覆盖Video.js无法播放媒体源时显示的默认信息。
+      controlBar: {
+        timeDivider: true,
+        durationDisplay: true,
+        remainingTimeDisplay: false,
+        fullscreenToggle: true //全屏按钮
+      }
+    }, // 视频播放器配置
+    issubmitok: true // 检测任务检测结果
   },
   mutations: {
     // 任务读取
@@ -176,6 +209,28 @@ export default new Vuex.Store({
         state.tasksechedule = data.data.taskinfo.sechedule;
         state.deviceinfo = data.data.deviceinfo;
         state.workbenchid = data.data.workbenchid;
+        state.usecaseinfo = data.data.usecaseinfo;
+        state.issubmitok = true;
+        state.tasktype = data.data.tasktype;
+        state.toolsvalue = "";
+        state.hrefvalue = "#";
+        state.dis = true;
+        if (data.data.taskinfo.state === "已完成") {
+          state.disable = true;
+        } else {
+          state.disable = false;
+        }
+      } else if (data.route === "detectionaudit") {
+        state.taskinfo = data.data.taskinfo;
+        state.tasksechedule = data.data.taskinfo.sechedule;
+        state.deviceinfo = data.data.deviceinfo;
+        state.workbenchid = data.data.workbenchid;
+        data.data.usecaseinfo.forEach(obj => {
+          obj.audit_result = parseInt(obj.audit_result);
+          if (obj.audit_result !== 0 && obj.audit_result !== 1) {
+            obj.audit_result = "";
+          }
+        });
         state.usecaseinfo = data.data.usecaseinfo;
         state.tasktype = data.data.tasktype;
         if (data.data.taskinfo.state === "已完成") {
@@ -315,6 +370,44 @@ export default new Vuex.Store({
     caselogcontent(state, data) {
       state.caselogshow = true;
       state.log = data;
+    },
+    // 按钮工具可以点击
+    closedis(state) {
+      state.dis = false;
+    },
+    // 获取建议数据
+    handlecasecomment(state, data) {
+      state.usecaseinfo.forEach(obj => {
+        if (obj.id === data.id) {
+          obj.accessory_info.casecomment_info = data.data;
+        }
+      });
+    },
+    // 点击检测用例图片按钮，打开dialog，添加img
+    handlecaseimgopen(state, img) {
+      state.caseimage = img;
+      state.caseimgshow = true;
+    },
+    // 用例照片list
+    caseimglist(state, data) {
+      state.usecaseinfo.forEach(obj => {
+        if (obj.id === data.id) {
+          obj.accessory_info.caseimage_info = data.data;
+        }
+      });
+    },
+    // 用例视频list
+    casevideolist(state, data) {
+      state.usecaseinfo.forEach(obj => {
+        if (obj.id === data.id) {
+          obj.accessory_info.casevideo_info = data.data;
+        }
+      });
+    },
+    // 点击视频按钮
+    handlecasevideoopen(state, video) {
+      state.playerOptions.sources[0].src = video;
+      state.casevideoshow = true;
     }
   },
   actions: {
@@ -470,15 +563,48 @@ export default new Vuex.Store({
       }
     },
     // 更新日志
-    async handlelog() {
-      const res = await http.put(`caselogs/${this.state.log.id}`, {
-        data: this.state.log.data
-      });
-      if (res.status === 200) {
-        this.state.caselogshow = false;
-        Message.success(res.msg);
-      } else {
-        Message.error(res.msg);
+    // async handlelog() {
+    //   const res = await http.put(`caselogs/${this.state.log.id}`, {
+    //     data: this.state.log.data
+    //   });
+    //   if (res.status === 200) {
+    //     this.state.caselogshow = false;
+    //     Message.success(res.msg);
+    //   } else {
+    //     Message.error(res.msg);
+    //   }
+    // },
+    // 获取建议数据
+    async handlecasecomment(context, id) {
+      const date = new Date().getTime();
+      const res = await http.get(`casecommentlist/${id}?${date}`);
+      if (res.data.status === 200) {
+        context.commit("handlecasecomment", {
+          id: id,
+          data: res.data.comment_info
+        });
+      }
+    },
+    // 获取用例照片列表
+    async caseimglist(context, id) {
+      const date = new Date().getTime();
+      const res = await http.get(`caseimagelist/${id}?${date}`);
+      if (res.data.status === 200) {
+        context.commit("caseimglist", {
+          id: id,
+          data: res.data.image_info
+        });
+      }
+    },
+    // 获取用例视频列表
+    async casevideolist(context, id) {
+      const date = new Date().getTime();
+      const res = await http.get(`casevideolist/${id}?${date}`);
+      if (res.data.status === 200) {
+        context.commit("casevideolist", {
+          id: id,
+          data: res.data.video_info
+        });
       }
     }
   }

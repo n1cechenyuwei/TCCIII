@@ -6,7 +6,7 @@ import axios from "axios";
 // Vue.prototype.$http = axios;
 // 创建自定义的axios实例
 const instance = axios.create({
-  baseURL: "http://192.168.1.186:8888/api/v1.0/"
+  baseURL: "http://192.168.1.150:8888/api/v1.0/"
 });
 // // Add a request interceptor
 // // 添加请求的拦截器

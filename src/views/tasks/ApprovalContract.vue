@@ -165,7 +165,7 @@
                         class="upload-demo"
                         ref="upload"
                         accept=".docx, .pdf, .xlsx, .txt, .rar"
-                        action="http://192.168.1.186:8888/api/v1.0/uploadcompact"
+                        action="http://192.168.1.150:8888/api/v1.0/uploadcompact"
                         :before-upload="upload"
                         :disabled="disable || uploadbtn"
                         :on-progress="progress"
@@ -632,7 +632,7 @@ export default {
   margin-bottom: 4px;
 }
 .chugao-box {
-  height: 90px;
+  height: 200px;
   overflow: auto;
 }
 .information-boxw .el-tabs__header.is-top {
@@ -674,7 +674,7 @@ export default {
   display: inline-block;
   margin-left: 20px;
 }
-.zhonggao-box .el-upload-list.el-upload-list--text {
+/* .zhonggao-box .el-upload-list.el-upload-list--text {
   overflow: auto !important;
   height: 100px !important;
 }
@@ -690,7 +690,7 @@ export default {
 .zhonggao-box .el-upload-list.el-upload-list--text::-webkit-scrollbar-thumb {
   border-radius: 5px;
   background: rgba(202, 12, 12, 0.2);
-}
+} */
 .textaree {
   margin-top: 10px;
   width: 280px;

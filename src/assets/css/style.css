@@ -390,11 +390,6 @@ ul, ol {
 }
 .upload-close::before {
   display: none;
-  /* font-size: 14px;
-  position: absolute;
-  top: 8px;
-  right: 4px;
-  cursor: pointer; */
 }
 .zhonggaoname {
   font-size: 14px;
@@ -448,4 +443,46 @@ ul, ol {
   top: 4px;
   right: 20px;
 }
-
+.jianyi-list-content {
+  display: inline-block;
+  vertical-align: top;
+  max-width: 700px;
+  min-height: 40px;
+  word-wrap: break-word;
+  word-break: break-all;
+  overflow: hidden;
+}
+.jianyi-list-name {
+  display: inline-block;
+  margin-left: 10px;
+  vertical-align: top;
+}
+.jianyi-time {
+  margin-left: 600px;
+}
+.jianyi-list-icon {
+  color: #409eff;
+  vertical-align: middle;
+}
+.jianyi-box {
+  margin-top: 10px;
+}
+.jianyi-btn-box {
+  margin-top: 6px;
+  position: relative;
+  height: 24px;
+}
+.jianyi-btn {
+  right: 0;
+  position: absolute;
+}
+.baowen {
+  height: 400px;
+  overflow: hidden;
+}
+.tongguo {
+  color: #409eff;
+}
+.butongguo {
+  color: #e6a23c;
+}
