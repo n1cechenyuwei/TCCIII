@@ -19,7 +19,7 @@
             <i class="statusbox-font">到期日：</i>
             <i>{{taskinfo.endtime}}</i>
           </div>
-          <div class="statusbox">
+          <div class="statusbox6">
             <i class="statusbox-font">任务状态：</i>
             <i>{{taskinfo.state}}</i>
           </div>

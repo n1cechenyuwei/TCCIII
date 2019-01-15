@@ -94,8 +94,8 @@
           <el-upload
             class="upload-demo"
             ref="ctupload"
-            accept=".docx, .pdf, .xlsx, .txt, .rar"
-            action="http://192.168.1.150:8888/api/v1.0/dereport"
+            accept=".docx, .pdf, .xlsx, .txt"
+            :action="$store.state.baseurl + 'dereport'"
             :before-upload="upload"
             :disabled="disable || uploadbtn"
             :on-progress="progress"
@@ -113,7 +113,7 @@
                 <i class="el-icon-document wendangicon"></i>
                 <span class="zhonggaoname">{{item.name}}</span>
                 <i class="el-icon-circle-check upload-success"></i>
-                <i class="el-icon-close upload-close" @click="handledelete(item)"></i>
+                <i id="upload-close2" class="el-icon-circle-close" @click="handledelete(item)"></i>
               </li>
               <li class="zglist" v-if="newfile.name !== ''">
                 <i class="el-icon-document wendangicon"></i>
@@ -125,7 +125,7 @@
           </div>
         </div>
       </div>
-        <el-button size="small" type="primary" @click="eqconfigsubmit" class="contractor-btn">提交任务</el-button>
+        <el-button v-if="!disable" size="small" type="primary" @click="eqconfigsubmit" class="contractor-btn">提交任务</el-button>
     </div>
   </div>
 </template>
@@ -171,19 +171,23 @@ export default {
     },
     // 文件删除
     handledelete(item) {
-      this.$confirm(`确定删除 ${item.name} 吗`, "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(async () => {
-          const res = await this.$http.delete(`report/${item.id}`);
-          if (res.status === 200) {
-            this.$store.dispatch("ctuploadlist", this.deviceinfo.device_id);
-            this.$message.success("删除成功");
-          }
+      if (this.disable) {
+        this.$message.warning("任务已提交无法删除文件");
+      } else {
+        this.$confirm(`确定删除 ${item.name} 吗`, "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
         })
-        .catch(() => {});
+          .then(async () => {
+            const res = await this.$http.delete(`report/${item.id}`);
+            if (res.status === 200) {
+              this.$store.dispatch("ctuploadlist", this.deviceinfo.device_id);
+              this.$message.success("删除成功");
+            }
+          })
+          .catch(() => {});
+      }
     },
     // 文件上传成功
     uploadsuccess(response) {
@@ -209,6 +213,7 @@ export default {
     uploaderror() {
       this.$message.error("文件上传失败");
       this.$store.dispatch("ctuploadlist", this.deviceinfo.device_id);
+      this.$store.commit("endctuploading");
     },
     // 提交任务
     eqconfigsubmit() {
@@ -305,5 +310,29 @@ export default {
   height: 200px;
   overflow: auto;
   width: 560px;
+}
+.zglist {
+  height: 28px;
+  position: relative;
+  line-height: 26px;
+  margin-top: 4px;
+}
+.zglist:hover {
+  background-color: #f5f7fa;
+}
+.zglist:hover .upload-success {
+  display: none;
+}
+.zglist:hover #upload-close2 {
+  display: block;
+}
+#upload-close2 {
+  font-size: 14px;
+  color: #f56c6c;
+  position: absolute;
+  top: 8px;
+  right: 4px;
+  cursor: pointer;
+  display: none;
 }
 </style>

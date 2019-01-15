@@ -136,7 +136,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          width="120"
+          width="190"
           show-overflow-tooltip
           label="用例编号"
           prop="case_no">
@@ -157,9 +157,9 @@
           label="检测结果"
           width="100">
           <template slot-scope="scope">
-            <span v-if="scope.row.test_result === '1'" class="tongguo">通过</span>
-            <span v-if="scope.row.test_result === '0'" class="butongguo">不通过</span>
-            <span v-if="scope.row.test_result === null">待审核</span>
+            <span v-if="scope.row.test_result === 1" class="tongguo">通过</span>
+            <span v-if="scope.row.test_result === 2" class="butongguo">不通过</span>
+            <span v-if="scope.row.test_result === 0">待审核</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -171,7 +171,9 @@
           label="审核结果"
           width="130">
           <template slot-scope="scope">
-            <el-select v-model="scope.row.audit_result" placeholder="请选择结果" size="mini" @change="caserecords(scope.row.audit_result, scope.row.id)">
+            <span v-if="disable && scope.row.audit_result === 1">通过</span>
+            <span v-if="disable && scope.row.audit_result === 2">不通过</span>
+            <el-select v-if="!disable" v-model="scope.row.audit_result" placeholder="请选择结果" size="mini" @change="caserecords(scope.row.audit_result, scope.row.id)">
               <el-option
                 v-for="item in resultoptions"
                 :key="item.value"
@@ -182,7 +184,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="deca-btn">
+      <div class="deca-btn" v-if="!disable">
         <el-button size="small" type="primary" @click="eqconfigsubmit">提交任务</el-button>
       </div>
     </div>
@@ -209,7 +211,7 @@ export default {
         },
         {
           label: "不通过",
-          value: 0
+          value: 2
         }
       ]
     };
@@ -223,14 +225,24 @@ export default {
         type: "warning"
       })
         .then(async () => {
-          const res = await this.$http.put(`detectionaudit/${this.taskid}`);
-          if (res.status === 200) {
-            this.$message.success("提交成功");
-            this.$store.commit("taskhuakuaihidden");
-            this.$store.dispatch("loadingMytask", 1);
-            this.$store.dispatch("hometask");
+          this.$store.state.decissubmitok = true;
+          this.usecaseinfo.forEach(obj => {
+            if (obj.audit_result === "") {
+              this.$store.state.decissubmitok = false;
+            }
+          });
+          if (this.$store.state.decissubmitok === false) {
+            this.$message.warning("请审核完完全部用例后再提交任务");
           } else {
-            this.$message.error(res.msg);
+            const res = await this.$http.put(`detectionaudit/${this.taskid}`);
+            if (res.status === 200) {
+              this.$message.success("提交成功");
+              this.$store.commit("taskhuakuaihidden");
+              this.$store.dispatch("loadingMytask", 1);
+              this.$store.dispatch("hometask");
+            } else {
+              this.$message.error(res.msg);
+            }
           }
         })
         .catch(() => {});
@@ -241,12 +253,15 @@ export default {
     },
     // 更新审核结果
     async caserecords(result, rowid) {
-      const res = await this.$http.put(`caserecords/${rowid}`, { result: result });
+      const res = await this.$http.put(`caserecords/${rowid}`, {
+        result: result
+      });
       if (res.status === 200) {
-        this.$store.dispatch("routerright", { taskid: this.taskid, route: "detectionaudit" });
-        this.$message.success("审批成功")
+        this.$store.dispatch("daresult", rowid);
+        this.$message.success("审批成功");
       } else {
-        this.$message.error(res.msg)
+        this.$message.error(res.msg);
+        this.$store.dispatch("daresult", rowid);
       }
     },
     // 删除日志
@@ -395,10 +410,5 @@ export default {
 }
 .el-table__expanded-cell {
   padding: 4px 50px 10px 50px !important;
-}
-
-.deca-btn {
-  text-align: center;
-  margin-top: 10px;
 }
 </style>

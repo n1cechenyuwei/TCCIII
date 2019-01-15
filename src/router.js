@@ -5,12 +5,18 @@ const Login = () => import("@/views/Login.vue");
 const Navigation = () => import("@/views/Navigation.vue");
 const Task = () => import("@/views/tasks/Task.vue");
 const Home = () => import("@/views/Home.vue");
-const Project = () => import("@/views/Project.vue");
+const Project = () => import("@/views/project/Project.vue");
 const MyTask = () => import("@/views/tasks/MyTask.vue");
 const Tasked = () => import("@/views/tasks/Tasked.vue");
 const Alltask = () => import("@/views/tasks/Alltask.vue");
 const TaskStatistical = () => import("@/views/tasks/TaskStatistical.vue");
 const TaskAllot = () => import("@/views/tasks/TaskAllot.vue");
+const Equipment = () => import("@/views/equipment/equipment.vue");
+const Goingproject = () => import("@/views/project/Goingproject.vue");
+const Projected = () => import("@/views/project/Projected.vue");
+const Projectdetails = () => import("@/views/project/Projectdetails.vue");
+const ProjectStatistical = () =>
+  import("@/views/project/ProjectStatistical.vue");
 
 Vue.use(Router);
 
@@ -68,7 +74,34 @@ const router = new Router({
         {
           name: "project",
           path: "/project",
-          component: Project
+          component: Project,
+          children: [
+            {
+              name: "goingproject",
+              path: "/goingproject",
+              component: Goingproject
+            },
+            {
+              name: "projectdetails",
+              path: "/projectdetails",
+              component: Projectdetails
+            },
+            {
+              name: "projected",
+              path: "/projected",
+              component: Projected
+            },
+            {
+              name: "projectStatistical",
+              path: "/projectStatistical",
+              component: ProjectStatistical
+            }
+          ]
+        },
+        {
+          name: "equipment",
+          path: "/equipment",
+          component: Equipment
         }
       ]
     }

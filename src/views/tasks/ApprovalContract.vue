@@ -19,7 +19,7 @@
             <i class="statusbox-font">到期日：</i>
             <i>{{taskinfo.endtime}}</i>
           </div>
-          <div class="statusbox">
+          <div class="statusbox6">
             <i class="statusbox-font">任务状态：</i>
             <i>{{taskinfo.state}}</i>
           </div>
@@ -137,7 +137,7 @@
             </div>
             <div class="information-boxa">
               <span>合同状态：</span>
-              <span class="information-box-fontt">待签订</span>
+              <span class="information-box-fontt">{{appcompactinfo.com_state}}</span>
             </div>
           </div>
           <div class="approval-information-boxe">
@@ -164,8 +164,8 @@
                       <el-upload
                         class="upload-demo"
                         ref="upload"
-                        accept=".docx, .pdf, .xlsx, .txt, .rar"
-                        action="http://192.168.1.150:8888/api/v1.0/uploadcompact"
+                        accept=".docx, .pdf, .xlsx, .txt"
+                        :action="$store.state.baseurl + 'uploadcompact'"
                         :before-upload="upload"
                         :disabled="disable || uploadbtn"
                         :on-progress="progress"
@@ -184,7 +184,7 @@
                           <i class="el-icon-document wendangicon"></i>
                           <span class="zhonggaoname">{{item.name}}</span>
                           <i class="el-icon-circle-check upload-success"></i>
-                          <i class="el-icon-close upload-close" @click="handledelete(item)"></i>
+                          <i id="upload-close" class="el-icon-circle-close" @click="handledelete(item)"></i>
                         </li>
                         <li class="zglist" v-if="newfile.name !== ''">
                           <i class="el-icon-document wendangicon"></i>
@@ -198,11 +198,14 @@
                 </el-tabs>
               </div>
             </div>
+            <div class="loserr" v-if="appcompactinfo.com_state === '签订失败'">
+              <span class="butong">审核不通过原因：</span>{{appcompactinfo.remarks}}
+            </div>
             <div class="hetong-isbtn" v-if="taskinfo.state !== '已完成'">
               <el-radio v-model="hetongradio" label="签订成功" border size="small" @change="radiochange">签订成功</el-radio>
               <el-radio v-model="hetongradio" label="签订失败" border size="small" @change="radiochange">签订失败</el-radio>
               <el-form :model="formhetong" ref="formhetong" v-if="Isshow">
-                <el-form-item prop="why" :rules="[{ required: true, message: '原因不能为空'}]">
+                <el-form-item prop="why" :rules="[{ required: true, message: '原因不能为空'}, { max: 120, message: '不能超过 120 个字符', trigger: 'blur' }]">
                   <el-input
                     class="textaree"
                     type="textarea"
@@ -301,7 +304,7 @@ export default {
       } else {
         this.$refs.formhetong.validate(valid => {
           if (!valid) {
-            return this.$message.error("请输入签订失败原因");
+            return this.$message.error("请正确输入签订失败原因");
           }
           this.$confirm("确定提交任务吗", "提示", {
             confirmButtonText: "确定",
@@ -346,22 +349,26 @@ export default {
     },
     // 上传文件删除
     handledelete(item) {
-      this.$confirm(`确定删除 ${item.name} 吗`, "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(async () => {
-          const res = await this.$http.delete(`dropfinalcompact/${item.id}`);
-          if (res.status === 200) {
-            this.$store.dispatch(
-              "handleuploaddata",
-              this.$store.state.appcompactinfo.com_no
-            );
-            this.$message.success("删除成功");
-          }
+      if (this.disable) {
+        this.$message.warning("任务已提交无法删除文件");
+      } else {
+        this.$confirm(`确定删除 ${item.name} 吗`, "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
         })
-        .catch(() => {});
+          .then(async () => {
+            const res = await this.$http.delete(`dropfinalcompact/${item.id}`);
+            if (res.status === 200) {
+              this.$store.dispatch(
+                "handleuploaddata",
+                this.$store.state.appcompactinfo.com_no
+              );
+              this.$message.success("删除成功");
+            }
+          })
+          .catch(() => {});
+      }
     },
     // 文件上传成功
     uploadsuccess(response) {
@@ -392,6 +399,7 @@ export default {
     // 文件上传失败
     uploaderror() {
       this.$message.error("文件上传失败");
+      this.$store.commit("endctuploading");
       this.$store.dispatch(
         "handleuploaddata",
         this.$store.state.appcompactinfo.com_no
@@ -674,28 +682,44 @@ export default {
   display: inline-block;
   margin-left: 20px;
 }
-/* .zhonggao-box .el-upload-list.el-upload-list--text {
-  overflow: auto !important;
-  height: 100px !important;
-}
-.zhonggao-box .el-upload-list.el-upload-list--text::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-.zhonggao-box .el-upload-list.el-upload-list--text::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.2);
-  box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.2);
-  border-radius: 5px;
-}
-.zhonggao-box .el-upload-list.el-upload-list--text::-webkit-scrollbar-thumb {
-  border-radius: 5px;
-  background: rgba(202, 12, 12, 0.2);
-} */
 .textaree {
   margin-top: 10px;
   width: 280px;
 }
 .flip-list {
   top: -25px;
+}
+.zglist {
+  height: 28px;
+  position: relative;
+  line-height: 26px;
+  margin-top: 4px;
+}
+.zglist:hover {
+  background-color: #f5f7fa;
+}
+.zglist:hover .upload-success {
+  display: none;
+}
+.zglist:hover #upload-close {
+  display: block;
+}
+#upload-close {
+  font-size: 14px;
+  color: #f56c6c;
+  position: absolute;
+  top: 8px;
+  right: 4px;
+  cursor: pointer;
+  display: none;
+}
+.loserr {
+  display: inline-block;
+  vertical-align: top;
+  margin-left: 10px;
+  width: 290px;
+}
+.butong {
+  color: #7e8b8e;
 }
 </style>

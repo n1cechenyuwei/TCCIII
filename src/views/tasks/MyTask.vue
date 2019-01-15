@@ -95,7 +95,11 @@
           layout="total, prev, pager, next, jumper"
           :total="$store.state.mytasktotal">
         </el-pagination>
-        <div :class="{ 'hidden': $store.state.noShow, 'sard': $store.state.isShow }">
+        <div
+          :class="{ 'hidden': $store.state.noShow, 'sard': $store.state.isShow }"
+          v-loading="loading"
+          element-loading-text="任务提交中，请稍后"
+          element-loading-spinner="el-icon-loading">
           <div class="taskright-title">
             <i class="iconfont icon-renwu"></i>
             <i class="fontt">任务</i>
@@ -165,6 +169,7 @@ export default {
       }
     },
     handlePageChange(val) {
+      this.currentPage = val;
       this.$store.dispatch("loadingMytask", val);
     },
     //表格名称点击
@@ -175,13 +180,8 @@ export default {
       this.$store.dispatch("routerright", { taskid: row.id, route: row.route });
     },
     close() {
+      this.$store.dispatch("loadingMytask", this.currentPage);
       this.$store.commit("taskhuakuaihidden");
-    },
-    // 点击设备图标，查看图片
-    async eqimg(id) {
-      this.eqimgshow = true;
-      const date = new Date().getTime();
-      this.eqimgdata = `http://192.168.1.186:8888/api/v1.0/showdevicelicense/${id}?${date}`;
     }
   },
   components: {

@@ -98,6 +98,15 @@ ul, ol {
   font-size: 18px;
   margin-right: 30px;
 }
+.statusbox6 {
+  display: inline-block;
+  height: 34px;
+  line-height: 34px;
+  width: 180px;
+  border-bottom: 1px dashed #cacaca;
+  font-size: 18px;
+  margin-right: 30px;
+}
 .statusbox-font {
   color: #7e8b8e;
 }
@@ -209,7 +218,7 @@ ul, ol {
   background-color: #409eff;
 }
 .bgsh {
-  background-color: #f04864;
+  background-color: #0b0ee7;
 }
 .wwjc {
   background-color: #2fc25b;
@@ -246,6 +255,10 @@ ul, ol {
   line-height: 28px;
 }
 .tool-span {
+  /* width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis; */
+  white-space: nowrap;
   display: inline-block;
   color: #575757;
 }
@@ -361,35 +374,11 @@ ul, ol {
   background-color: #0f6ccc;
 }
 .dialogeq-open .timeselect {
-  margin-left: 10px;
   width: 220px;
 }
 .wendangicon {
   font-size: 16px;
   margin-right: 6px;
-}
-.zglist {
-  height: 28px;
-  position: relative;
-  line-height: 26px;
-  margin-top: 4px;
-}
-.zglist:hover {
-  background-color: #f5f7fa;
-}
-.zglist:hover .upload-success {
-  display: none;
-}
-.zglist:hover .upload-close::before  {
-  display: block;
-  font-size: 14px;
-  position: absolute;
-  top: 8px;
-  right: 4px;
-  cursor: pointer;
-}
-.upload-close::before {
-  display: none;
 }
 .zhonggaoname {
   font-size: 14px;
@@ -476,13 +465,77 @@ ul, ol {
   right: 0;
   position: absolute;
 }
-.baowen {
-  height: 400px;
-  overflow: hidden;
-}
 .tongguo {
   color: #409eff;
 }
 .butongguo {
   color: #e6a23c;
 }
+.deca-btn {
+  text-align: center;
+  margin-top: 10px;
+}
+/* 侧边栏 */
+.task-box {
+  height: 100%;
+  box-sizing: border-box;
+  /* min-width: 1920px; */
+}
+.taskmenu-box {
+  width: 220px;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 6px 0;
+  background-color: #fff;
+  border-bottom-right-radius: 6px;
+  border: 1px solid #d4d7d7;
+  border-left: 0;
+  border-right: 1px solid #d4d7d7;
+}
+.taskmenu-box .taskmenu {
+  height: 100%;
+}
+.taskmenu-box .el-menu-vertical-demo.taskmenu.el-menu {
+  border-right: 0;
+}
+.taskmenu-box .el-menu-item.zuobian {
+  min-width: 188px !important;
+}
+.taskmenu-box .el-menu-item.zuobian.is-active {
+  border-left: 2px solid #409eff;
+  background-color: #f1f9fe;
+  min-width: 180px !important;
+  width: 189px;
+  padding-left: 38px !important;
+}
+.task-content-box {
+  border: 1px solid #d4d7d7;
+  height: 100%;
+  background-color: #fff;
+  /* border-radius: 6px; */
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+  box-sizing: border-box;
+}
+.taskmenu-tittle {
+  font-size: 18px;
+}
+.dialogeq-open-box .el-dialog__body {
+  padding: 15px 25px 30px 25px;
+}
+.dialogeq-open {
+  padding-left: 80px;
+  width: 320px;
+}
+.dialogeq-open-btn {
+  margin-top: 100px;
+  text-align: center;
+}
+.dialog-open-dec {
+  margin-top: 50px;
+  text-align: center;
+}
+.dialogbtn-right {
+  margin-left: 30px !important;
+}
+/* 侧边栏 */

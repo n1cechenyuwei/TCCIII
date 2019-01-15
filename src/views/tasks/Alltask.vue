@@ -29,8 +29,7 @@
       <div class="mytask-content-middle">
         <div class="mytask-content-table">
           <el-table
-            v-loading="loading"
-            :data="$store.state.task"
+            :data="$store.state.alltask"
             class="mytask-content-table-one"
             stripe
             style="width: 100%">
@@ -67,7 +66,6 @@
               width="180">
             </el-table-column>
             <el-table-column
-              prop="sechedule"
               width="100"
               label="进度">
               <template slot-scope="scope">
@@ -90,7 +88,7 @@
           @current-change="handlePageChange"
           :page-size="taskpagesize"
           layout="total, prev, pager, next, jumper"
-          :total="$store.state.mytasktotal">
+          :total="$store.state.alltasktotal">
         </el-pagination>
         <div :class="{ 'hidden': $store.state.noShow, 'sard': $store.state.isShow }">
           <div class="taskright-title">
@@ -101,21 +99,21 @@
           <div class="height-auto">
             <Applyfor v-if="route === 'applyfor'" :taskid="taskid">
             </Applyfor>
-            <ApprovalContract v-if="route === 'approvalcontract'">
+            <ApprovalContract v-if="route === 'approvalcontract'" :taskid="taskid">
             </ApprovalContract>
-            <Contractor v-if="route === 'contractor'">
+            <Contractor v-if="route === 'contractor'" :taskid="taskid">
             </Contractor>
-            <Detection v-if="route === 'detection'">
+            <Detection v-if="route === 'detection'" :taskid="taskid">
             </Detection>
-            <DetectionAudit v-if="route === 'detectionaudit'">
+            <DetectionAudit v-if="route === 'detectionaudit'" :taskid="taskid">
             </DetectionAudit>
-            <Eqconfig v-if="route === 'eqconfig'">
+            <Eqconfig v-if="route === 'eqconfig'" :taskid="taskid">
             </Eqconfig>
-            <PutStorage v-if="route === 'putstorage'">
+            <PutStorage v-if="route === 'putstorage'" :taskid="taskid">
             </PutStorage>
-            <OutStorage v-if="route === 'outstorage'">
+            <OutStorage v-if="route === 'outstorage'" :taskid="taskid">
             </OutStorage>
-            <ReportAudit v-if="route === 'reportaudit'">
+            <ReportAudit v-if="route === 'reportaudit'" :taskid="taskid">
             </ReportAudit>
           </div>
         </div>
@@ -140,13 +138,12 @@ export default {
       mytasksearch: "", //搜索框内容
       currentPage: 1, //默认第几页
       taskpagesize: 14, //每页显示几条
-      loading: false, //加载图标
       taskid: 0, //任务id
       route: "" //任务组件别名
     };
   },
   created() {
-    this.$store.dispatch("loadingMytask", this.currentPage);
+    this.$store.dispatch("loadingAlltask", this.currentPage);
     this.$store.commit("taskhuakuaihidden"); // 关闭右滑任务详情
   },
   methods: {
@@ -159,7 +156,7 @@ export default {
       }
     },
     handlePageChange(val) {
-      this.$store.dispatch("loadingMytask", val);
+      this.$store.dispatch("loadingAlltask", val);
     },
     //表格名称点击
     rownameclick(row) {

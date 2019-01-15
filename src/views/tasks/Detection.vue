@@ -83,8 +83,8 @@
               <div v-for="(item, index) in scope.row.accessory_info.caselog_info" :key="index" :class="{'expand-rizhi-listone': index % 2 === 0, 'expand-rizhi-listtwo': index % 2 !== 0, 'hov': isok}">
                 <i class="el-icon-d-arrow-right rizhi-list-icon"></i>
                 <span class="rizhi-list-name">{{item.name}}</span>
-                <el-button type="primary" size="mini" icon="el-icon-edit" class="list-icon-edit" @click="$store.dispatch('caselogcontent', item.id)"></el-button>
-                <el-button type="warning" size="mini" icon="el-icon-delete" class="list-icon-delete" @click="handledeletelog(item.id, scope.row.id)"></el-button>
+                <el-button type="primary" size="mini" icon="el-icon-view" class="list-icon-edit" @click="$store.dispatch('caselogcontent', item.id)"></el-button>
+                <el-button v-if="!disable" type="warning" size="mini" icon="el-icon-delete" class="list-icon-delete" @click="handledeletelog(item.id, scope.row.id)"></el-button>
               </div>
             </div>
             <div class="detec-expand-rizhi">视频附件</div>
@@ -94,7 +94,7 @@
                 <i class="el-icon-d-arrow-right rizhi-list-icon"></i>
                 <span class="rizhi-list-name">{{item.video_name}}</span>
                 <el-button type="primary" size="mini" icon="el-icon-view" class="list-icon-edit" @click="opencasevideo(item.path)"></el-button>
-                <el-button type="warning" size="mini" icon="el-icon-delete" class="list-icon-delete" @click="deletevideo(item.id, scope.row.id)"></el-button>
+                <el-button v-if="!disable" type="warning" size="mini" icon="el-icon-delete" class="list-icon-delete" @click="deletevideo(item.id, scope.row.id)"></el-button>
               </div>
             </div>
             <div class="detec-expand-rizhi">照片附件</div>
@@ -104,7 +104,7 @@
                 <i class="el-icon-d-arrow-right rizhi-list-icon"></i>
                 <span class="rizhi-list-name">{{item.image_name}}</span>
                 <el-button type="primary" size="mini" icon="el-icon-view" class="list-icon-edit" @click="opencaseimg(item.path)"></el-button>
-                <el-button type="warning" size="mini" icon="el-icon-delete" class="list-icon-delete" @click="deletecaseimg(item.id, scope.row.id)"></el-button>
+                <el-button v-if="!disable" type="warning" size="mini" icon="el-icon-delete" class="list-icon-delete" @click="deletecaseimg(item.id, scope.row.id)"></el-button>
               </div>
             </div>
             <div class="detec-expand-rizhi">建议</div>
@@ -128,7 +128,7 @@
                     </el-input>
                   </el-form-item>
                 </el-form>
-                <div class="jianyi-btn-box">
+                <div class="jianyi-btn-box" v-if="!disable">
                   <el-button type="primary" size="mini" class="jianyi-btn" @click="published(scope.row.id)">发表建议</el-button>
                 </div>
               </div>
@@ -136,7 +136,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          width="120"
+          width="190"
           show-overflow-tooltip
           label="用例编号"
           prop="case_no">
@@ -157,9 +157,9 @@
           label="检测结果"
           width="100">
           <template slot-scope="scope">
-            <span v-if="scope.row.test_result === '1'" class="tongguo">通过</span>
-            <span v-if="scope.row.test_result === '0'" class="butongguo">不通过</span>
-            <span v-if="scope.row.test_result === null">待检测</span>
+            <span v-if="scope.row.test_result === 1" class="tongguo">通过</span>
+            <span v-if="scope.row.test_result === 2" class="butongguo">不通过</span>
+            <span v-if="scope.row.test_result === 0">待检测</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -171,14 +171,14 @@
           label="审核结果"
           width="100">
           <template slot-scope="scope">
-            <span v-if="scope.row.audit_result === '1'" class="tongguo">通过</span>
-            <span v-if="scope.row.audit_result === '0'" class="butongguo">不通过</span>
-            <span v-if="scope.row.audit_result === null">待审核</span>
+            <span v-if="scope.row.audit_result === 1" class="tongguo">通过</span>
+            <span v-if="scope.row.audit_result === 2" class="butongguo">不通过</span>
+            <span v-if="scope.row.audit_result === 0">待审核</span>
           </template>
         </el-table-column>
       </el-table>
       <div class="dec-btn">
-        <el-select v-model="$store.state.toolsvalue" placeholder="请选择启动的工具" size="small" @change="toolschange">
+        <el-select v-if="!disable" v-model="$store.state.toolsvalue" placeholder="请选择启动的工具" size="small" @change="toolschange">
           <el-option
             v-for="item in starttoolsoptions"
             :key="item.value"
@@ -187,9 +187,9 @@
           </el-option>
         </el-select>
         <a :href="$store.state.hrefvalue" class="start">
-          <el-button size="small" type="primary" :disabled="dis">启动工具</el-button>
+          <el-button size="small" type="primary" :disabled="dis" v-if="!disable">启动工具</el-button>
         </a>
-        <el-button size="small" type="primary" @click="eqconfigsubmit">提交任务</el-button>
+        <el-button v-if="!disable" size="small" type="primary" @click="eqconfigsubmit">提交任务</el-button>
       </div>
     </div>
   </div>
@@ -231,25 +231,23 @@ export default {
       })
         .then(async () => {
           this.usecaseinfo.forEach(obj => {
-            if (obj.test_result === null) {
+            if (obj.test_result === 0) {
               this.$store.state.issubmitok = false;
             }
           });
-          console.log(this.$store.state.issubmitok)
           if (this.$store.state.issubmitok === false) {
             this.$message.warning("请检测完全部用例并重新打开页面后再提交");
           } else {
-            console.log(2222)
+            const res = await this.$http.put(`detection/${this.taskid}`);
+            if (res.status === 200) {
+              this.$message.success("提交成功");
+              this.$store.commit("taskhuakuaihidden");
+              this.$store.dispatch("loadingMytask", 1);
+              this.$store.dispatch("hometask");
+            } else {
+              this.$message.error(res.msg);
+            }
           }
-          // const res = await this.$http.put(`detection/${this.taskid}`);
-          // if (res.status === 200) {
-          //   this.$message.success("提交成功");
-          //   this.$store.commit("taskhuakuaihidden");
-          //   this.$store.dispatch("loadingMytask", 1);
-          //   this.$store.dispatch("hometask");
-          // } else {
-          //   this.$message.error(res.msg);
-          // }
         })
         .catch(() => {});
     },

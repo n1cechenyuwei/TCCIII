@@ -2,29 +2,37 @@
   <div class="chart-box">
     <!-- 图表模块 -->
     <div class="tubiao-box" >
-      <div class="gzt-box">
-        <div class="gongzuotaione">
+      <!-- <div class="gzt-box"> -->
+        <!-- <div class="gongzuotaione">
           <div class="gone-title">工作台统计</div>
           <div id="chartGone"></div>
         </div>
         <div class="gongzuotaithree">
           <div class="gone-title">项目统计</div>
           <div id="chartTwo"></div>
-        </div>
-        <div class="gongzuotaifour">
+        </div> -->
+        <!-- <div class="gongzuotaifour">
           <div class="gone-title">任务统计</div>
           <div id="chartThree"></div>
-        </div>
-      </div>
-      <div class="renyuan-gtwo-box">
-        <div class="gtwo-title-box"><span class="g-title">人员统计</span></div>
+        </div> -->
+      <!-- </div> -->
+      <div class="renyuan-two-box">
         <div>
           <el-radio-group @change="pvchange" v-model="PVtabPosition" size="small" class="chart-b">
             <el-radio-button label="PIS">PIS检测人员</el-radio-button>
             <el-radio-button label="VMS">VMS检测人员</el-radio-button>
           </el-radio-group>
-          <div id="chartFour"></div>
         </div>
+        <div class="onetwo-title-box">
+          <span class="gtwo-title">人员统计</span>
+          <span class="gthree-title">任务统计</span>
+        </div>
+        <div id="chartFour" class="rty"></div>
+        <div id="chartThree" class="rty"></div>
+        <!-- <div class="gongzuotaifour"> -->
+          <!-- <div class="gone-title">任务统计</div> -->
+          <!-- <div id="chartThree"></div> -->
+        <!-- </div> -->
       </div>
     </div>
     <!-- 图表鼠标移上去显示模块 -->
@@ -51,41 +59,9 @@
 
 <script>
 import G2 from "@antv/g2";
-import { DataSet } from "@antv/data-set";
-// import DataSet from "../components/data-set.min.js";
 export default {
   data() {
     return {
-      gone: [
-        {
-          name: "PIS运行中工作台",
-          number: 5,
-          gzt: ["1号工作台", "2号工作台", "3号工作台", "4号工作台", "5号工作台"]
-        },
-        {
-          name: "PIS闲置中工作台",
-          number: 2,
-          gzt: ["7号工作台", "8号工作台"]
-        },
-        {
-          name: "VMS运行中工作台",
-          number: 7,
-          gzt: [
-            "9号工作台",
-            "10号工作台",
-            "11号工作台",
-            "12号工作台",
-            "13号工作台",
-            "14号工作台",
-            "15号工作台"
-          ]
-        },
-        {
-          name: "VMS闲置中工作台",
-          number: 3,
-          gzt: ["16号工作台", "17号工作台", "18号工作台"]
-        }
-      ],
       PVtabPosition: "VMS",
       jcrylist: [
         {
@@ -234,8 +210,7 @@ export default {
       chartGone: "", // 工作台统计
       chartTwo: "", // 项目统计
       chartThree: "", // 任务统计
-      chartFour: "", // 人员统计
-      divwidth: 0 // div宽度
+      chartFour: "" // 人员统计
     };
   },
   methods: {
@@ -264,286 +239,151 @@ export default {
     // 请求检测人员数据
     jcrydatarese() {
       this.jcrylist.forEach(function(obj) {
-        // obj.starttime += " 00:00:00"
-        // obj.endtime += " 23:59:59"
-        // console.log(obj.starttime)
         obj.range = [obj.starttime, obj.endtime];
       });
       this.jcrydata = this.jcrylist;
+    },
+    // 人员统计图表
+    gtwo() {
+      // gtwo图表
+      this.chartFour = new G2.Chart({
+        container: "chartFour", // 指定图表容器 ID
+        width: 1100, // 指定图表宽度
+        height: 760, // 指定图表高度
+        padding: [0, 50, 200, 60]
+      });
+      this.chartFour.source(this.jcrydata, {
+        range: {
+          type: "time",
+          tickCount: 13
+        },
+        starttime: {
+          alias: "开始时间"
+        },
+        tasktype: {
+          alias: "任务类型"
+        },
+        endtime: {
+          alias: "结束时间"
+        },
+        taskname: {
+          alias: "任务名称"
+        }
+      });
+      this.chartFour
+        .coord()
+        .transpose()
+        .scale(1, 1);
+      this.chartFour.legend({
+        position: "bottom",
+        offsetX: 50,
+        offsetY: 20
+      });
+      this.chartFour.tooltip({
+        useHtml: true,
+        htmlContent: function() {
+          return '<div style="visible:hidden">';
+        }
+      });
+      this.chartFour
+        .interval()
+        .position("taskpeople*range")
+        // .label("tasktype")
+        .shape("rect")
+        .color("tasktype", tasktype => {
+          if (tasktype === "申请审批") {
+            return "#F61C11";
+          } else if (tasktype === "合同签订") {
+            return "#0488A9";
+          } else if (tasktype === "设备入库") {
+            return "#B258F8";
+          } else if (tasktype === "环境配置") {
+            return "#909399";
+          } else if (tasktype === "实验室检测") {
+            return "#F56C6C";
+          } else if (tasktype === "检测审核") {
+            return "#E6A23C";
+          } else if (tasktype === "外委检测") {
+            return "#2FC25B";
+          } else if (tasktype === "报告审核") {
+            return "#0B0EE7";
+          } else if (tasktype === "设备出库") {
+            return "#409EFF";
+          }
+        })
+        .style({ cursor: "pointer" })
+        .tooltip("taskname*tasktype*starttime*endtime")
+        .select(true, {
+          mode: "single",
+          style: {
+            fill: "#1890ff" // 选中的样式
+          },
+          cancelable: true, // 选中之后是否允许取消选中，默认允许取消选中
+          animate: true // 选中是否执行动画，默认执行动画
+        });
+      this.chartFour.axis("range", {
+        position: "bottom",
+        grid: {
+          type: "line",
+          lineStyle: {
+            stroke: "#d9d9d9",
+            lineWidth: 1,
+            lineDash: [2, 4]
+          }
+        }
+      });
+      // 鼠标移入事件，获取到柱状体信息
+      this.chartFour.on("interval:mouseenter", ev => {
+        this.taskname = ev.data._origin.taskname;
+        this.tasktype = ev.data._origin.tasktype;
+        this.taskstarttime = ev.data._origin.starttime;
+        this.taskendtime = ev.data._origin.endtime;
+        this.divwidth = 96 + ev.data._origin.taskname.length * 14;
+      });
+      // 鼠标移动事件，获取到鼠标位置
+      this.chartFour.on("interval:mousemove", () => {
+        this.getMousePos();
+      });
+      // 鼠标移出事件，隐藏掉提示信息
+      this.chartFour.on("interval:mouseleave", () => {
+        this.xoffset = 0;
+        this.yoffset = 0;
+      });
+      this.chartFour.render(); //柱状图结束
+    },
+    // 任务统计图表
+    gthree() {
+      const taskdatalist = this.taskdatalist;
+      this.chartThree = new G2.Chart({
+        container: "chartThree",
+        height: 760,
+        width: 400,
+        padding: [0, 0, 200, 0]
+      });
+      this.chartThree.source(taskdatalist);
+      this.chartThree.coord("polar", {
+        innerRadius: 0.2
+      });
+      this.chartThree.legend({
+        position: "bottom",
+        offsetY: -10,
+        offsetX: -10
+      });
+      this.chartThree.axis(false);
+      this.chartThree
+        .interval()
+        .position("taskname*tasknumber")
+        .color("taskname", G2.Global.colors_pie_16)
+        .style({
+          lineWidth: 1,
+          stroke: "#fff"
+        });
+      this.chartThree.render();
     }
   },
   mounted() {
-    // gtwo图表
-    this.chartFour = new G2.Chart({
-      container: "chartFour", // 指定图表容器 ID
-      width: 1450, // 指定图表宽度
-      height: 360, // 指定图表高度
-      padding: [0, 170, 30, 60]
-    });
-    this.chartFour.source(this.jcrydata, {
-      range: {
-        type: "time",
-        tickCount: 17
-      },
-      starttime: {
-        alias: "开始时间"
-      },
-      tasktype: {
-        alias: "任务类型"
-      },
-      endtime: {
-        alias: "结束时间"
-      },
-      taskname: {
-        alias: "任务名称"
-      }
-    });
-    this.chartFour
-      .coord()
-      .transpose()
-      .scale(1, 1);
-    this.chartFour.legend({
-      position: "right-top",
-      offsetX: 50,
-      offsetY: 20
-    });
-    this.chartFour.tooltip({
-      useHtml: true,
-      htmlContent: function() {
-        return '<div style="visible:hidden">';
-      }
-    });
-    this.chartFour
-      .interval()
-      .position("taskpeople*range")
-      // .label("tasktype")
-      .shape("rect")
-      .color("tasktype", tasktype => {
-        if (tasktype === "设备出库") {
-          return "#409EFF";
-        } else if (tasktype === "报告审核") {
-          return "#F04864";
-        } else if (tasktype === "外委检测") {
-          return "#2FC25B";
-        } else if (tasktype === "检测审核") {
-          return "#E6A23C";
-        } else if (tasktype === "实验室检测") {
-          return "#F56C6C";
-        } else if (tasktype === "环境配置") {
-          return "#909399";
-        } else if (tasktype === "设备入库") {
-          return "#B258F8";
-        } else if (tasktype === "合同签订") {
-          return "#0488A9";
-        } else if (tasktype === "申请审批") {
-          return "#F61C11";
-        }
-      })
-      .style({ cursor: "pointer" })
-      .tooltip("taskname*tasktype*starttime*endtime")
-      .select(true, {
-        mode: "single",
-        style: {
-          fill: "#1890ff" // 选中的样式
-        },
-        cancelable: true, // 选中之后是否允许取消选中，默认允许取消选中
-        animate: true // 选中是否执行动画，默认执行动画
-      });
-    this.chartFour.axis("range", {
-      position: "bottom"
-    });
-    // 鼠标移入事件，获取到柱状体信息
-    this.chartFour.on("interval:mouseenter", ev => {
-      this.taskname = ev.data._origin.taskname;
-      this.tasktype = ev.data._origin.tasktype;
-      this.taskstarttime = ev.data._origin.starttime;
-      this.taskendtime = ev.data._origin.endtime;
-      this.divwidth = 96 + ev.data._origin.taskname.length * 14;
-    });
-    // 鼠标移动事件，获取到鼠标位置
-    this.chartFour.on("interval:mousemove", () => {
-      this.getMousePos();
-    });
-    // 鼠标移出事件，隐藏掉提示信息
-    this.chartFour.on("interval:mouseleave", () => {
-      this.xoffset = 0;
-      this.yoffset = 0;
-    });
-    this.chartFour.render(); //柱状图结束
-
-    // gone图表
-    const gzt = this.gone;
-    let asd = [];
-    gzt.forEach(function(obj) {
-      let qwe = "";
-      for (let i = 0; i < obj.gzt.length; i++) {
-        obj["gztid" + i] = obj.gzt[i];
-        qwe += "gztid" + i + "*";
-      }
-      qwe = qwe.substr(0, qwe.length - 1);
-      asd.push(qwe);
-    });
-    let max = asd[0];
-    for (let i = 0; i < asd.length; i++) {
-      if (max < asd[i]) max = asd[i];
-    }
-    this.chartGone = new G2.Chart({
-      container: "chartGone",
-      width: 490,
-      padding: [20, 40, 30, 40], // 上，右，下，左
-      // forceFit: true,
-      height: 370
-    });
-    this.chartGone.legend(false);
-    this.chartGone.axis("number", {
-      title: null,
-      line: {
-        lineWidth: 2 // 设置线的宽度
-      }
-    });
-    this.chartGone.axis("name", {
-      label: {
-        textStyle: {
-          textAlign: "center", // 文本对齐方向，可取值为： start middle end
-          textBaseline: "middle" // 文本基准线，可取 top middle bottom，默认为middle
-        }
-      }
-    });
-    this.chartGone.source(gzt);
-    this.chartGone.scale("number", {
-      tickInterval: 1,
-      alias: "数量（台）"
-    });
-    this.chartGone.tooltip({
-      showTitle: true,
-      itemTpl:
-        '<li style="text-align: left"><span style="background-color:{color};" class="g2-tooltip-marker"></span>{value}</li>'
-    });
-    this.chartGone
-      .interval()
-      .position("name*number")
-      .tooltip(max)
-      .color("name", [
-        "#909399",
-        "#F56C6C",
-        "#E6A23C",
-        "#2FC25B",
-        "#F04864",
-        "#409EFF"
-      ]);
-    this.chartGone.render();
-
-    // 项目统计图表
-    // const DataSet = new DataSet();
-    var _DataSet = DataSet,
-      DataView = _DataSet.DataView;
-    let data = this.projectdata;
-    var dv = new DataView().source(data);
-    dv.transform({
-      type: "map",
-      callback: function callback(row) {
-        row.percent = row.number / 30;
-        return row;
-      }
-    });
-    data = dv.rows;
-    this.chartTwo = new G2.Chart({
-      container: "chartTwo",
-      forceFit: true,
-      height: 350,
-      padding: [20, 120, 0, 95]
-    });
-    this.chartTwo.source(data, {
-      percent: {
-        nice: false
-      }
-    });
-    this.chartTwo.axis(false);
-    this.chartTwo.tooltip({
-      showTitle: false,
-      itemTpl:
-        '<li data-index={index} style="margin-bottom:4px;">' +
-        '<span style="background-color:{color};" class="g2-tooltip-marker"></span>' +
-        "{name}<br/>" +
-        '<span style="padding-left: 16px">项目数量：{number}</span><br/>' +
-        '<span style="padding-left: 16px">占比：{percent}</span><br/>' +
-        "</li>"
-    });
-    this.chartTwo
-      .coord("rect")
-      .transpose()
-      .scale(1, -1);
-    this.chartTwo
-      .intervalSymmetric()
-      .position("name*percent")
-      .shape("funnel")
-      .color("name", ["#0050B3", "#1890FF", "#40A9FF", "#69C0FF", "#BAE7FF"])
-      .label(
-        "name*number",
-        function(name, number) {
-          return name + " " + number;
-        },
-        {
-          offset: 35,
-          labelLine: {
-            lineWidth: 1,
-            stroke: "rgba(0, 0, 0, 0.15)"
-          }
-        }
-      )
-      .tooltip("name*number*percent", function(name, number, percent) {
-        return {
-          name: name,
-          percent: parseInt(percent * 100) + "%",
-          number: number
-        };
-      });
-    const that = this.chartTwo;
-    data.forEach(function(obj) {
-      that.guide().text({
-        top: true,
-        position: {
-          name: obj.name,
-          percent: "median"
-        },
-        content: obj.number, // 显示的文本内容
-        style: {
-          fill: "#fff",
-          fontSize: "12",
-          textAlign: "center",
-          shadowBlur: 2,
-          shadowColor: "rgba(0, 0, 0, .45)"
-        }
-      });
-    });
-    this.chartTwo.render();
-
-    // 任务统计图表
-    const taskdatalist = this.taskdatalist;
-    this.chartThree = new G2.Chart({
-      container: "chartThree",
-      height: 370,
-      padding: [0, 140, 0, 0]
-    });
-    this.chartThree.source(taskdatalist);
-    this.chartThree.coord("polar", {
-      innerRadius: 0.2
-    });
-    this.chartThree.legend({
-      position: "right",
-      offsetY: -100,
-      offsetX: -10
-    });
-    this.chartThree.axis(false);
-    this.chartThree
-      .interval()
-      .position("taskname*tasknumber")
-      .color("taskname", G2.Global.colors_pie_16)
-      .style({
-        lineWidth: 1,
-        stroke: "#fff"
-      });
-    this.chartThree.render();
+    this.gtwo();
+    this.gthree();
   },
   created() {
     this.jcrydatarese();
@@ -569,13 +409,20 @@ export default {
   font-size: 14px;
   color: #e6a23c;
 }
-.gtwo-title-box {
-  text-align: center;
-  height: 24px;
+.onetwo-title-box {
+  /* text-align: center; */
+  height: 40px;
   line-height: 40px;
 }
-.g-title {
+.gtwo-title {
   position: relative;
+  margin-left: 500px;
+  font-size: 16px;
+  color: #e6a23c;
+}
+.gthree-title {
+  position: relative;
+  margin-left: 700px;
   font-size: 16px;
   color: #e6a23c;
 }
@@ -619,16 +466,19 @@ export default {
   width: 480px;
   margin-right: 6px;
 }
-.renyuan-gtwo-box {
+.renyuan-two-box {
   background-color: #fff;
   width: 99.65%;
   border: 1px solid #d4d7d7;
   border-radius: 6px;
-  margin-top: 6px;
-  height: 480px;
+  height: 880px;
   box-sizing: border-box;
 }
 .chart-b {
   margin: 10px 0 10px 40px;
+}
+.rty {
+  display: inline-block;
+  vertical-align: top;
 }
 </style>

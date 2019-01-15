@@ -7,6 +7,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
+    baseurl: "localhost:8888/api/v1.0/", //上传ip
     isShow: false, //显示右侧卡片
     noShow: true, //控制是否滑出卡片
     task: [], //我的任务列表
@@ -115,13 +116,32 @@ export default new Vuex.Store({
         fullscreenToggle: true //全屏按钮
       }
     }, // 视频播放器配置
-    issubmitok: true // 检测任务检测结果
+    issubmitok: true, // 检测任务检测结果
+    final_report: [], // 报告审核终稿
+    draft_report: [], // 报告审核初稿
+    caselist: [], // 检测用例列表
+    caselistshow: false, // 检测用例列表弹窗
+    caseloading: false, // 用例加载动画
+    devid: 0, // 设备id
+    outdialog: false, // 设备出库dialog显示
+    diaoutopen: {}, // 设备出库daialog详情信息
+    decissubmitok: true,
+    tasklistdata1: [], // 任务分配所有数据
+    tasklisttotal: 0, // 任务分配总条数
+    chartone: "", // 任务分配表实例
+    alltask: [], // 全部任务数据
+    alltasktotal: 0 // 全部任务总数据条数
   },
   mutations: {
     // 任务读取
     loadingMytask(state, data) {
       this.state.task = data.data;
       this.state.mytasktotal = data.total;
+    },
+    // 全部任务读取
+    loadingAlltask(state, data) {
+      this.state.alltask = data.data;
+      this.state.alltasktotal = data.total;
     },
     // 已完成任务读取
     loadingTasked(state, data) {
@@ -225,14 +245,40 @@ export default new Vuex.Store({
         state.tasksechedule = data.data.taskinfo.sechedule;
         state.deviceinfo = data.data.deviceinfo;
         state.workbenchid = data.data.workbenchid;
+        state.usecaseinfo = data.data.usecaseinfo;
         data.data.usecaseinfo.forEach(obj => {
-          obj.audit_result = parseInt(obj.audit_result);
-          if (obj.audit_result !== 0 && obj.audit_result !== 1) {
+          if (obj.audit_result === 0) {
             obj.audit_result = "";
           }
         });
         state.usecaseinfo = data.data.usecaseinfo;
         state.tasktype = data.data.tasktype;
+        if (data.data.taskinfo.state === "已完成") {
+          state.disable = true;
+        } else {
+          state.disable = false;
+        }
+      } else if (data.route === "reportaudit") {
+        state.taskinfo = data.data.taskinfo;
+        state.tasksechedule = data.data.taskinfo.sechedule;
+        state.appconbb = data.data.company_info;
+        state.deviceinfo = data.data.device_info;
+        state.final_report = data.data.final_report;
+        state.draft_report = data.data.draft_report;
+        state.uptaskid.did = data.data.device_info.id;
+        if (data.data.taskinfo.state === "已完成") {
+          state.disable = true;
+        } else {
+          state.disable = false;
+        }
+      } else if (data.route === "outstorage") {
+        state.taskinfo = data.data.taskinfo;
+        state.tasksechedule = data.data.taskinfo.sechedule;
+        state.appconbb = data.data.companyinfo;
+        state.equipment = data.data.devicelist;
+        state.sbnumber[0] = data.data.outing_storage;
+        state.sbnumber[1] = data.data.outstock;
+        state.sbnumber[2] = data.data.device_total;
         if (data.data.taskinfo.state === "已完成") {
           state.disable = true;
         } else {
@@ -250,9 +296,18 @@ export default new Vuex.Store({
       state.Dialogshebei = true;
       state.diaeqopen = data;
     },
+    // 设备出库任务设备详情dialog显示
+    outstoragedialog(state, data) {
+      state.outdialog = true;
+      state.diaoutopen = data;
+    },
     //设备入库任务设备详情dialog关闭
     putstoragedialogclose(state) {
       state.Dialogshebei = false;
+    },
+    //设备出库任务设备详情dialog关闭
+    outstoragedialogclose(state) {
+      state.outdialog = false;
     },
     //设备入库任务设备详情dialog确定按钮提交
     putstoragedialogsubmit(state) {
@@ -408,6 +463,34 @@ export default new Vuex.Store({
     handlecasevideoopen(state, video) {
       state.playerOptions.sources[0].src = video;
       state.casevideoshow = true;
+    },
+    // 报告初稿弹窗开启
+    opencreatedraft(state) {
+      state.caselistshow = true;
+      state.caseloading = true;
+    },
+    // 报告审核初稿按钮
+    handlecreatedraft(state, data) {
+      state.caselist = data.data;
+      state.devid = data.devid;
+      state.caseloading = false;
+    },
+    // 报告审核获取初稿列表
+    draft_report(state, data) {
+      state.draft_report = data;
+    },
+    // 报告审核终稿列表
+    rauploadlist(state, data) {
+      state.final_report = data;
+    },
+    // 报告审核成功更新信息
+    daresult(state, data) {
+      state.usecaseinfo.forEach(obj => {
+        if (obj.id === data.id) {
+          obj.auditor = data.auditor;
+          obj.audit_result = data.audit_result;
+        }
+      });
     }
   },
   actions: {
@@ -428,6 +511,16 @@ export default new Vuex.Store({
         this.$message.error(res.msg);
       }
     },
+    // 设备出库任务设备详情dialog显示
+    async outstoragedialog(context, id) {
+      const date = new Date().getTime();
+      const res = await http.get(`outdevicies/${id}?${date}`);
+      if (res.data.status === 200) {
+        context.commit("outstoragedialog", res.data.deviceinfo);
+      } else {
+        this.$message.error(res.msg);
+      }
+    },
     //设备入库任务设备详情dialog确定按钮提交
     async putstoragedialogsubmit(context, id) {
       const res = await http.put(`devicies/${id}`, this.state.diaeqopen);
@@ -442,12 +535,36 @@ export default new Vuex.Store({
         Message.error(res.msg);
       }
     },
+    // 设备出库任务设备详情dialog确定按钮提交
+    async outstoragedialogsubmit(context, id) {
+      const res = await http.put(`outdevicies/${id}`, this.state.diaoutopen);
+      if (res.status === 200) {
+        context.commit("outstoragedialogclose");
+        this.dispatch("routerright", {
+          taskid: this.state.taskid,
+          route: "outstorage"
+        });
+        Message.success("设备信息保存成功");
+      } else {
+        Message.error(res.msg);
+      }
+    },
     // 任务读取
     async loadingMytask(context, page) {
       const date = new Date().getTime();
       const res = await http.get(`tasks/${page}?${date}`);
       if (res.status === 200) {
         context.commit("loadingMytask", { data: res.data, total: res.total });
+      }
+    },
+    // 全部任务读取
+    async loadingAlltask(context, page) {
+      const date = new Date().getTime();
+      const res = await http.get(`alltasklist/${page}?${date}`);
+      if (res.status === 200) {
+        context.commit("loadingAlltask", { data: res.data, total: res.total });
+      } else {
+        Message.error(res.msg);
       }
     },
     // 已完成任务
@@ -464,8 +581,8 @@ export default new Vuex.Store({
       const resdataappfor = await http.get(
         `${reqdata.route}/${reqdata.taskid}?${date}`
       );
-      console.log(resdataappfor);
-      console.log(reqdata.route);
+      // console.log(resdataappfor);
+      // console.log(reqdata.route);
       if (resdataappfor.data.status === 200) {
         context.commit("routerright", {
           data: resdataappfor.data,
@@ -605,6 +722,49 @@ export default new Vuex.Store({
           id: id,
           data: res.data.video_info
         });
+      }
+    },
+    // 报告审核生成初稿按钮获取用例列表
+    async handlecreatedraft(context, devid) {
+      const date = new Date().getTime();
+      const res = await http.get(`getcase/${devid}?${date}`);
+      if (res.data.status === 200) {
+        context.commit("handlecreatedraft", {
+          devid: devid,
+          data: res.data.case_info
+        });
+      } else {
+        Message.error(res.msg);
+      }
+    },
+    // 报告审核获取初稿列表
+    async draft_report(context, id) {
+      const date = new Date().getTime();
+      const res = await http.get(`drafttestreport/${id}?${date}`);
+      if (res.data.status === 200) {
+        context.commit("draft_report", res.data.reportlist);
+      } else {
+        Message.error(res.data.msg);
+      }
+    },
+    // 获取报告审核终稿
+    async rauploadlist(context, id) {
+      const date = new Date().getTime();
+      const res = await http.get(`finaltestreport/${id}?${date}`);
+      if (res.data.status === 200) {
+        context.commit("rauploadlist", res.data.reportlist);
+      } else {
+        Message.error(res.data.msg);
+      }
+    },
+    // 检测审核获取审核员信息与审核结果
+    async daresult(context, rowid) {
+      const date = new Date().getTime();
+      const res = await http.get(`caserecords/${rowid}?${date}`);
+      if (res.data.status === 200) {
+        context.commit("daresult", res.data.info);
+      } else {
+        Message.error(res.data.msg);
       }
     }
   }

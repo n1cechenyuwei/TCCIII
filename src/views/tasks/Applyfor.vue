@@ -101,15 +101,24 @@
             <span class="information-box-font">{{appforcompany.approve_state}}</span>
           </div>
         </div>
+        <div class="lose" v-if="appforcompany.approve_state === '不通过'">
+          <div class="disin titl">
+            审批不通过原因：
+          </div>
+          <div class="disin">
+            {{appforcompany.remarks}}
+          </div>
+        </div>
         <div class="applyfor-information-box4" v-if="appfordata.state !== '已完成'">
           <el-radio v-model="radio" label="通过" border size="small" @change="radiochange">通过</el-radio>
           <el-radio v-model="radio" label="未通过" border size="small" @change="radiochange">不通过</el-radio>
           <el-form :model="formInline" ref="formInline" v-if="Isshow">
-            <el-form-item prop="why" :rules="[{ required: true, message: '原因不能为空'}]">
+            <el-form-item prop="why" :rules="[{ required: true, message: '原因不能为空'}, { max: 160, message: '不能超过 160 个字符', trigger: 'blur' }]">
               <el-input
                 class="textar"
                 type="textarea"
-                :autosize="{ minRows: 3, maxRows: 4}"
+                resize="none"
+                :autosize="{ minRows: 5, maxRows: 6}"
                 placeholder="请输入不通过原因"
                 v-model="formInline.why">
               </el-input>
@@ -172,14 +181,14 @@ export default {
               this.$refs.formInline.resetFields();
             } else {
               this.$store.commit("tasksubmitloadinghidden");
-              this.$message.error(res.meg);
+              this.$message.error(res.msg);
             }
           })
           .catch(() => {});
       } else {
         this.$refs.formInline.validate(valid => {
           if (!valid) {
-            return this.$message.error("请输入审核不通过原因");
+            return this.$message.error("请正确输入审核不通过原因");
           }
           this.$confirm("确定提交任务吗", "提示", {
             confirmButtonText: "确定",
@@ -200,7 +209,7 @@ export default {
                 this.$store.dispatch("hometask");
               } else {
                 this.$store.commit("tasksubmitloadinghidden");
-                this.$message.error(res.meg);
+                this.$message.error(res.msg);
               }
             })
             .catch(() => {});
@@ -314,5 +323,15 @@ export default {
 }
 .applyfor-btn-obj {
   margin-left: 420px;
+}
+.lose {
+  margin-top: 20px;
+}
+.disin {
+  display: inline-block;
+  vertical-align: top;
+}
+.titl {
+  color: #7e8b8e;
 }
 </style>

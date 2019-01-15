@@ -31,7 +31,7 @@
       </div>
     </el-main>
     <!-- 审批任务设备详情弹出框 -->
-    <el-dialog
+    <!-- <el-dialog
       title="设备详情"
       :visible.sync="$store.state.DialogEquipment"
       width="70%"
@@ -107,16 +107,16 @@
         append-to-body>
         <img id="eqimgloading" :src="eqimgdata" alt="图片丢失了" width="100%">
       </el-dialog>
-    </el-dialog>
+    </el-dialog> -->
     <!-- 营业执照弹窗 -->
-    <el-dialog
+    <!-- <el-dialog
       :visible.sync="$store.state.opyyzz"
       @closed="$store.commit('closeyyzz')"
       width="50%">
       <img width="100%" :src="$store.state.license" alt="照片丢失了">
-    </el-dialog>
+    </el-dialog> -->
     <!-- 设备入库任务操作弹出框 -->
-    <el-dialog
+    <!-- <el-dialog
       class="dialogeq-open-box"
       title="设备详情"
       @closed="eqputclose"
@@ -178,35 +178,25 @@
         <el-button plain type="success" size="small" @click="$store.commit('putstoragedialogclose')">取消</el-button>
         <el-button type="primary" size="small" class="dialogbtn-right" @click="putsubmit">确定</el-button>
       </div>
-    </el-dialog>
+    </el-dialog> -->
     <!-- 检测任务日志弹窗 -->
-    <el-dialog
+    <!-- <el-dialog
       title="报文详情"
       @closed="detectionclose"
       :visible.sync="$store.state.caselogshow"
       width="50%">
-      <!-- <el-input
-        type="textarea"
-        spellcheck ="false"
-        :autosize="{ minRows: 14, maxRows: 15}"
-        v-model="$store.state.log.data">
-      </el-input> -->
       <div class="baowen">{{$store.state.log.data}}</div>
-      <!-- <div class="dialog-open-dec">
-        <el-button plain type="success" size="small" @click="$store.state.caselogshow = false">取消</el-button>
-        <el-button type="primary" size="small" class="dialogbtn-right">确定</el-button>
-      </div> -->
-    </el-dialog>
+    </el-dialog> -->
     <!-- 检测任务照片弹窗 -->
-    <el-dialog
+    <!-- <el-dialog
       title="照片详情"
       @closed="detectionimgclose"
       :visible.sync="$store.state.caseimgshow"
       width="50%">
       <img width="100%" :src="$store.state.caseimage" alt="照片丢失了">
-    </el-dialog>
+    </el-dialog> -->
     <!-- 检测任务视频弹窗 -->
-    <el-dialog
+    <!-- <el-dialog
       @close="detectionvideoclose"
       :visible.sync="$store.state.casevideoshow"
       width="50%">
@@ -215,7 +205,27 @@
         :playsinline="true"
         :options="$store.state.playerOptions">
       </video-player>
-    </el-dialog>
+    </el-dialog> -->
+    <!-- 报告审核测试用例弹窗 -->
+    <!-- <el-dialog
+      title="用例详情"
+      :visible.sync="$store.state.caselistshow"
+      width="30%">
+      <el-tree
+        :data="$store.state.caselist"
+        show-checkbox
+        ref="tree"
+        node-key="id"
+        v-loading="$store.state.caseloading"
+        element-loading-text="用例拼命加载中"
+        accordion
+        :props="{ label: 'name', children: 'case_list' }">
+      </el-tree>
+      <div class="dialog-open-dec">
+        <el-button plain type="success" size="small" @click="$store.state.caselistshow = false">取消</el-button>
+        <el-button type="primary" size="small" class="dialogbtn-right" @click="handleCheckChange">生成报告</el-button>
+      </div>
+    </el-dialog> -->
   </el-container>
 </template>
 
@@ -223,38 +233,7 @@
 export default {
   data() {
     return {
-      abc: "",
-      eqimgshow: false, //设备生产厂家照片显示
-      eqimgdata: "", //生厂厂家照片
-      putfromrules: {
-        serialnumber: [
-          { required: true, message: "请输入出厂序列号", trigger: "blur" }
-        ],
-        deliverer: [
-          { required: true, message: "请输入送检人", trigger: "blur" }
-        ],
-        deliver_time: [
-          { required: true, message: "请选择送检时间", trigger: "blur" }
-        ],
-        appearance: [
-          {
-            required: true,
-            message: "请选择设备外观",
-            trigger: ["blur", "change"]
-          }
-        ],
-        power_on: [
-          {
-            required: true,
-            message: "请选择上电检查",
-            trigger: ["blur", "change"]
-          }
-        ],
-        de_size: [
-          { required: true, message: "请选择设备尺寸", trigger: "blur" }
-        ],
-        state: [{ required: true, message: "请选择入库状态", trigger: "blur" }]
-      }
+      abc: ""
     };
   },
   created() {
@@ -264,120 +243,70 @@ export default {
     // 选中菜单关闭右侧滑块
     handleSelect() {
       this.$store.commit("taskhuakuaihidden");
-    },
-    // 点击设备图标，查看图片
-    async eqimg(id) {
-      this.eqimgshow = true;
-      const date = new Date().getTime();
-      this.eqimgdata = `http://192.168.1.150:8888/api/v1.0/showdevicelicense/${id}?${date}`;
-    },
-    // dialog关闭设备营业图片消失
-    yyzzimgclose() {
-      this.eqimgdata = "";
-    },
-    // 提交设备信息
-    putsubmit() {
-      this.$refs.putfrom.validate(async valid => {
-        if (!valid) {
-          return this.$message.error("请完整填写设备信息");
-        }
-        this.$store.dispatch(
-          "putstoragedialogsubmit",
-          this.$store.state.diaeqopen.id
-        );
-      });
-    },
-    // 设备入库dialog关闭
-    eqputclose() {
-      this.$refs.putfrom.resetFields();
-    },
-    // 日志弹窗关闭
-    detectionclose() {
-      this.$store.state.log = "";
-    },
-    // 检测用例照片弹窗关闭
-    detectionimgclose() {
-      this.$store.state.caseimage = "";
-    },
-    // 检测用例视频弹窗关闭
-    detectionvideoclose() {
-      this.$refs.videoPlayer.player.pause();
     }
+    // // 点击设备图标，查看图片
+    // async eqimg(id) {
+    //   this.eqimgshow = true;
+    //   const date = new Date().getTime();
+    //   this.eqimgdata = `http://192.168.1.150:8888/api/v1.0/showdevicelicense/${id}?${date}`;
+    // },
+    // // dialog关闭设备营业图片消失
+    // yyzzimgclose() {
+    //   this.eqimgdata = "";
+    // },
+    // // 设备入库提交设备信息
+    // putsubmit() {
+    //   this.$refs.putfrom.validate(async valid => {
+    //     if (!valid) {
+    //       return this.$message.error("请完整填写设备信息");
+    //     }
+    //     this.$store.dispatch(
+    //       "putstoragedialogsubmit",
+    //       this.$store.state.diaeqopen.id
+    //     );
+    //   });
+    // },
+    // // 设备入库dialog关闭
+    // eqputclose() {
+    //   this.$refs.putfrom.resetFields();
+    // },
+    // // 日志弹窗关闭
+    // detectionclose() {
+    //   this.$store.state.log = "";
+    // },
+    // // 检测用例照片弹窗关闭
+    // detectionimgclose() {
+    //   this.$store.state.caseimage = "";
+    // },
+    // // 检测用例视频弹窗关闭
+    // detectionvideoclose() {
+    //   this.$refs.videoPlayer.player.pause();
+    // },
+    // // 报告审核选择用例
+    // async handleCheckChange() {
+    //   const checkedKeys = this.$refs.tree.getCheckedKeys();
+    //   let newArr = checkedKeys.filter(item => item != undefined);
+    //   const res = await this.$http.post(`generatereport/${this.$store.state.devid}`, { caseid_list: newArr });
+    //   if(res.status === 200) {
+    //     this.$message.success("报告生成成功");
+    //     this.$store.state.caselistshow = false;
+    //     this.$store.dispatch("draft_report", this.$store.state.devid);
+    //   } else {
+    //     this.$message.error(res.msg);
+    //   }
+    // }
   }
 };
 </script>
 
 <style>
-.task-box {
-  height: 100%;
-  box-sizing: border-box;
-  /* min-width: 1920px; */
-}
-.taskmenu-box {
-  width: 220px;
-  height: 100%;
-  box-sizing: border-box;
-  padding: 6px 0;
-  background-color: #fff;
-  /* border-top-right-radius: 6px; */
-  border-bottom-right-radius: 6px;
-  border: 1px solid #d4d7d7;
-  border-left: 0;
-  border-right: 1px solid #d4d7d7;
-}
-.taskmenu-box .taskmenu {
-  height: 100%;
-}
 .zuobian {
   margin-left: 30px;
   font-size: 16px;
-}
-.taskmenu-box .el-menu-vertical-demo.taskmenu.el-menu {
-  border-right: 0;
-}
-.taskmenu-box .el-menu-item.zuobian {
-  min-width: 188px !important;
-}
-.taskmenu-box .el-menu-item.zuobian.is-active {
-  border-left: 2px solid #409eff;
-  background-color: #f1f9fe;
-  min-width: 180px !important;
-  width: 189px;
-  padding-left: 38px !important;
 }
 .task-content {
   padding: 0 0 0 10px;
   height: 100%;
   min-height: 800px;
-}
-.task-content-box {
-  border: 1px solid #d4d7d7;
-  height: 100%;
-  background-color: #fff;
-  /* border-radius: 6px; */
-  border-top-left-radius: 6px;
-  border-bottom-left-radius: 6px;
-  box-sizing: border-box;
-}
-.taskmenu-tittle {
-  font-size: 18px;
-}
-.dialogeq-open-box .el-dialog__body {
-  padding: 15px 25px 30px 25px;
-}
-.dialogeq-open {
-  padding-left: 80px;
-  width: 320px;
-}
-.dialogeq-open-btn {
-  margin-top: 100px;
-  text-align: center;
-}
-.dialog-open-dec {
-  margin-top: 50px;
-  text-align: center;
-}
-.dialogbtn-right {
-  margin-left: 30px !important;
 }
 </style>
