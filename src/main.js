@@ -23,8 +23,10 @@ Vue.component(Breadcrumb.name, Breadcrumb);
 
 Vue.config.productionTip = false;
 
-new Vue({
+let that = new Vue({
   router,
   store,
   render: h => h(App)
 }).$mount("#app");
+
+export default that;

@@ -1,12 +1,8 @@
+import _this from "../main.js";
 import axios from "axios";
 
-// var MyAxios = {};
-// MyAxios.install = function (Vue) {
-// axios.defaults.baseURL = "http://192.168.1.186:8888/api/v1.0/";
-// Vue.prototype.$http = axios;
-// 创建自定义的axios实例
 const instance = axios.create({
-  baseURL: "localhost:8888/api/v1.0/"
+  baseURL: "http://192.168.1.150:8888/api/v1.0/"
 });
 // // Add a request interceptor
 // // 添加请求的拦截器
@@ -23,10 +19,15 @@ instance.interceptors.request.use(
       // 如果请求的地址不是login，设置token
       config.headers.token = token;
     }
+    if(config.method=="get"){
+      config.params = {
+        _t: Date.parse(new Date())/1000,
+        ...config.params
+      }
+    }
     return config;
   },
   function(error) {
-    // Do something with request error
     return Promise.reject(error);
   }
 );
@@ -35,12 +36,15 @@ instance.interceptors.request.use(
 // 添加响应的拦截器
 instance.interceptors.response.use(
   function(response) {
-    // Do something with response data
-    // console.log(response)
-    return response.data;
+    if (response.data.status === 123) {
+      _this.$router.push({ name: "login" });
+      return response.data;
+    } else {
+      return response.data;
+    }
   },
   function(error) {
-    // Do something with response error
+    console.log(error)
     return Promise.reject(error);
   }
 );

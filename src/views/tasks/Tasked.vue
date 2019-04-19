@@ -19,11 +19,11 @@
           size="small"
           class="mytasksearch"
           placeholder="请输入任务名称"
-          v-model="taskedsearch">
+          v-model.trim="taskedsearch">
         </el-input>
         <i class="el-icon-search sreach-icon"></i>      
       </div>
-      <el-button type="primary" size="mini">搜索</el-button>
+      <el-button type="primary" size="mini" @click="mytaskseac">搜索</el-button>
     </div>
     <div class="mytask-content-middle">
       <div class="table-box">
@@ -36,7 +36,7 @@
             prop="id"
             align="center"
             label="任务编号"
-            width="100">
+            width="120">
           </el-table-column>
           <el-table-column
             label="任务名称">
@@ -94,15 +94,15 @@
 </template>
 
 <script>
-import Applyfor from "../tasks/Applyfor";
-import ApprovalContract from "../tasks/ApprovalContract";
-import Contractor from "../tasks/Contractor";
-import Detection from "../tasks/Detection";
-import Eqconfig from "../tasks/Eqconfig";
-import PutStorage from "../tasks/PutStorage";
-import OutStorage from "../tasks/OutStorage";
-import ReportAudit from "../tasks/ReportAudit";
-import DetectionAudit from "../tasks/DetectionAudit";
+// import Applyfor from "../tasks/Applyfor";
+// import ApprovalContract from "../tasks/ApprovalContract";
+// import Contractor from "../tasks/Contractor";
+// import Detection from "../tasks/Detection";
+// import Eqconfig from "../tasks/Eqconfig";
+// import PutStorage from "../tasks/PutStorage";
+// import OutStorage from "../tasks/OutStorage";
+// import ReportAudit from "../tasks/ReportAudit";
+// import DetectionAudit from "../tasks/DetectionAudit";
 export default {
   data() {
     return {
@@ -110,7 +110,8 @@ export default {
       currentPage: 1, //默认第几页
       taskpagesize: 14, //每页几条
       taskid: 0, //任务id
-      route: "" //任务组件别名
+      route: "", //任务组件别名
+      searchtype: "1" // 根据类型不同发送不同请求
     };
   },
   created() {
@@ -128,7 +129,11 @@ export default {
     },
     //分页事件
     handlePageChange(val) {
-      this.$store.dispatch("loadingTasked", val);
+      if (this.searchtype === "1") {
+        this.$store.dispatch("loadingTasked", val);
+      } else if (this.searchtype === "2") {
+        this.searchfnc(val);
+      }
     },
     // 点击右弹出
     taskedright(row) {
@@ -140,18 +145,74 @@ export default {
     // 右侧滑块关闭按钮
     close() {
       this.$store.commit("taskhuakuaihidden");
+    },
+    // 搜索按钮
+    async mytaskseac() {
+      if (this.taskedsearch === "") {
+        this.$message.warning("请输入内容");
+      } else {
+        this.searchtype = "2";
+        this.searchfnc(1);
+      }
+    },
+    // 搜索请求
+    async searchfnc(page) {
+      const res = await this.$http.post(`searchcomtask/${page}`, {
+        search: this.taskedsearch
+      });
+      if (res.data.status === 200) {
+        this.$store.state.taskedtotal = res.data.total_num;
+        this.$store.state.tasked = res.data.tasklist;
+      } else {
+        this.$message.warning(res.data.msg);
+      }
     }
   },
   components: {
-    Applyfor,
-    ApprovalContract,
-    Contractor,
-    Detection,
-    Eqconfig,
-    PutStorage,
-    OutStorage,
-    ReportAudit,
-    DetectionAudit
+    // Applyfor,
+    // ApprovalContract,
+    // Contractor,
+    // Detection,
+    // Eqconfig,
+    // PutStorage,
+    // OutStorage,
+    // ReportAudit,
+    // DetectionAudit
+    Applyfor: resolve => {
+      require(["./Applyfor"], resolve);
+    },
+    ApprovalContract: resolve => {
+      require(["./ApprovalContract"], resolve);
+    },
+    Contractor: resolve => {
+      require(["./Contractor"], resolve);
+    },
+    Detection: resolve => {
+      require(["./Detection"], resolve);
+    },
+    Eqconfig: resolve => {
+      require(["./Eqconfig"], resolve);
+    },
+    PutStorage: resolve => {
+      require(["./PutStorage"], resolve);
+    },
+    OutStorage: resolve => {
+      require(["./OutStorage"], resolve);
+    },
+    ReportAudit: resolve => {
+      require(["./ReportAudit"], resolve);
+    },
+    DetectionAudit: resolve => {
+      require(["./DetectionAudit"], resolve);
+    }
+  },
+  watch: {
+    taskedsearch(val) {
+      if (val === "") {
+        this.searchtype = "1";
+        this.$store.dispatch("loadingTasked", 1);
+      }
+    }
   }
 };
 </script>
@@ -210,5 +271,42 @@ export default {
 .tablespan:hover {
   color: #409eff;
   cursor: Pointer;
+}
+.sard {
+  top: 0;
+  right: 0;
+  position: absolute;
+  background-color: #f0f4f8;
+  box-shadow: 0px 0px 4px 3px #acd2fa;
+  border-radius: 6px;
+  height: 100%;
+  width: 940px;
+  transition: all 0.5s;
+  -moz-transition: all 0.5s;
+  -webkit-transition: all 0.5s;
+  -o-transition: all 0.5s;
+  -os-transition: all 0.5s;
+  -os-transform: translateX(0%);
+  z-index: 2;
+  transform: translateX(0%);
+}
+.hidden {
+  top: 0;
+  right: 0;
+  z-index: 99999;
+  position: absolute;
+  background-color: #f0f4f8;
+  box-shadow: 0px 0px 4px 3px #acd2fa;
+  border-radius: 6px;
+  height: 100%;
+  z-index: 2;
+  width: 940px;
+  transition: all 0.5s;
+  -moz-transition: all 0.5s;
+  -webkit-transition: all 0.5s;
+  -o-transition: all 0.5s;
+  -os-transition: all 0.5s;
+  -os-transform: translateX(110%);
+  transform: translateX(110%);
 }
 </style>

@@ -197,24 +197,21 @@
       <div class="eqconfig-information-box">
         <div class="information-box">
           <span>工作台编号：</span>
-          <span class="information-box-font">{{workbenchinfo.bench_id}}</span>
+          <span class="information-box-font">{{workbench.bench_num}}</span>
         </div>
         <div class="information-box2">
           <span>IP地址：</span>
-          <span class="information-box-font">{{workbenchinfo.de_ip}}</span>
+          <span class="information-box-font">{{workbench.ip_address}}</span>
         </div>
       </div>
       <div class="eqconfig-information-box">
         <div class="information-box">
-          <span>SIP：</span>
-          <span class="information-box-font">{{workbenchinfo.de_sipid}}</span>
-        </div>
-        <div class="information-box2">
-          <span>端口：</span>
-          <span class="information-box-font">{{workbenchinfo.de_port}}</span>
+          <span>系统版本：</span>
+          <span class="information-box-font">{{workbench.system_version}}</span>
         </div>
       </div>
       <div class="eqconfig-btn">
+        <el-button class="rukuclass" plain type="primary" size="small" @click="handlerukudan">打印环境配置单</el-button>
         <el-button v-if="!disable" size="small" type="primary" @click="eqconfigsubmit">提交任务</el-button>
       </div>
     </div>
@@ -224,7 +221,7 @@
 <script>
 import { mapState } from "vuex";
 export default {
-  props: ["taskid"],
+  props: ["taskid", "ht"],
   data() {
     return {
       // taskvalue: 0 // 任务进度
@@ -242,8 +239,12 @@ export default {
           const res = await this.$http.put(`eqconfig/${this.taskid}`);
           if (res.status === 200) {
             this.$message.success("提交成功");
+            if (this.ht === "mytask") {
+              this.$store.dispatch("loadingMytask", 1);
+            } else if (this.ht === "alltask") {
+              this.$store.dispatch("loadingAlltask", 1);
+            }
             this.$store.commit("taskhuakuaihidden");
-            this.$store.dispatch("loadingMytask", 1);
             this.$store.dispatch("hometask");
           } else {
             this.$message.error(res.meg);
@@ -254,6 +255,14 @@ export default {
     // 更改任务进度
     handletasksechedule() {
       this.$store.dispatch("handletasksechedule", this.taskid);
+    },
+    // 环境配置单
+    handlerukudan() {
+      let routeData = this.$router.resolve({
+        name: "configuration",
+        query: { id: this.taskid }
+      });
+      window.open(routeData.href, "_blank");
     }
   },
   computed: mapState({
@@ -261,6 +270,7 @@ export default {
     appconbb: "appconbb",
     deviceinfo: "deviceinfo",
     workbenchinfo: "workbenchinfo",
+    workbench: "workbench",
     disable: "disable"
   })
 };
@@ -309,8 +319,9 @@ export default {
   height: 200px;
 }
 .eqconfig-btn {
-  margin-top: 20px;
-  margin-bottom: 20px;
-  text-align: center;
+  margin: 20px 0 0 320px;
+}
+.rukuclass {
+  margin-right: 40px;
 }
 </style>

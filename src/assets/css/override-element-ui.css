@@ -2,7 +2,7 @@
   border-bottom: 0px;
 }
 .menu .el-submenu__title {
-  font-size: 20px
+  font-size: 20px;
 }
 .menu .el-submenu__icon-arrow {
   color: #fff;
@@ -10,11 +10,20 @@
 .gengduo .el-menu-item {
   background-color: #fff!important;
   color: #7f8d8b !important;
-  height: 26px !important;
-  line-height: 26px !important;
+  height: 30px !important;
+  line-height: 30px !important;
 }
 .more-menu .el-menu.el-menu--popup.el-menu--popup-bottom-start{
   background-color: #fff !important;
-  padding: 4px!important;
+  padding: 4px 4px 10px 10px !important;
   box-shadow: 0px 0px 6px 2px #c3e1ff !important;
+}
+.el-dialog__header {
+  background-color: #409eff !important;
+}
+.el-dialog__header > span {
+  color: #fff !important;
+}
+.el-dialog__headerbtn .el-dialog__close {
+  color: #fff !important;
 }

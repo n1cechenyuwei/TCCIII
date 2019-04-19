@@ -198,19 +198,23 @@
 <script>
 import { mapState } from "vuex";
 export default {
-  props: ["taskid"],
+  props: ["taskid", "ht"],
   data() {
     return {
       isok: true,
       textarea3: "", // 输入框输入内容
       starttoolsoptions: [
         {
-          label: "协议检测工具",
+          label: "vms检测工具",
           value: "vmsprotocol://TaskId="
         },
         {
-          label: "上传工具",
-          value: "aaaa"
+          label: "PIS检测工具",
+          value: "pisprotocol://TaskId="
+        },
+        {
+          label: "检测报告工具",
+          value: "testreporttool://TaskId="
         }
       ],
       textForm: {
@@ -241,8 +245,12 @@ export default {
             const res = await this.$http.put(`detection/${this.taskid}`);
             if (res.status === 200) {
               this.$message.success("提交成功");
+              if (this.ht === "mytask") {
+                this.$store.dispatch("loadingMytask", 1);
+              } else if (this.ht === "alltask") {
+                this.$store.dispatch("loadingAlltask", 1);
+              }
               this.$store.commit("taskhuakuaihidden");
-              this.$store.dispatch("loadingMytask", 1);
               this.$store.dispatch("hometask");
             } else {
               this.$message.error(res.msg);

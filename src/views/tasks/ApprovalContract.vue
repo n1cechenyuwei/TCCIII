@@ -39,7 +39,7 @@
     </div>
     <div class="approvalContent">
       <div class="jiafang-title">
-        <i class="iconfont icon-jiafangyifang"></i>
+        <i id="jiafangicon" class="iconfont icon-jiafangyifang"></i>
         <span class="jiafang-title-title">甲方信息</span>
       </div>
       <div class="jiafang-content">
@@ -231,7 +231,7 @@
 <script>
 import { mapState } from "vuex";
 export default {
-  props: ["taskid"],
+  props: ["taskid", "ht"],
   data() {
     return {
       hetongradio: "",
@@ -323,8 +323,12 @@ export default {
                 this.$message.success("任务提交成功");
                 this.hetongradio = "";
                 this.$refs.formhetong.resetFields();
+                if (this.ht === "mytask") {
+                  this.$store.dispatch("loadingMytask", 1);
+                } else if (this.ht === "alltask") {
+                  this.$store.dispatch("loadingAlltask", 1);
+                }
                 this.$store.commit("taskhuakuaihidden");
-                this.$store.dispatch("loadingMytask", 1);
                 this.$store.dispatch("hometask");
               } else {
                 this.$message.error(res.meg);
@@ -440,8 +444,8 @@ export default {
   overflow-y: auto;
 }
 .appcom-top {
-  height: 44px;
-  line-height: 44px;
+  height: 48px;
+  line-height: 48px;
   border-top: 1px solid #dae9f9;
   border-bottom: 1px solid #dae9f9;
   background-color: #fff;
@@ -457,6 +461,9 @@ export default {
 #appfor-icon {
   font-size: 32px;
   color: #1ac7ff;
+}
+#jiafangicon {
+  font-size: 26px;
 }
 .approvalbig .icon-gongsimingcheng0.appcon {
   font-size: 32px;

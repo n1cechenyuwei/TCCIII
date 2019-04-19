@@ -61,7 +61,34 @@
       <div class="card2">
         <el-tabs v-model="activeName" class="tabs" >
           <el-tab-pane label="当前项目" name="first" class="tabs1">
-            <Mytabs url="currentprojects"></Mytabs>
+            <!-- <Mytabs url="currentprojects"></Mytabs> -->
+            <el-tabs
+              tab-position="top"
+              @tab-click="handleTabClickDate"
+              class="tabs-date"
+              v-model="datedate">
+              <el-tab-pane :label="item" v-for="(item, index) in date" :key="index">
+                <div class="list">
+                  <div class="list1" v-for="item in projectlist" :key="item.id">
+                    <el-tooltip :content="item.pro_name" placement="top">
+                      <i class="listname">{{item.pro_name}}</i>
+                    </el-tooltip>
+                    <div class="progress-line"><el-progress :percentage="item.sechedule" :status="item.status"></el-progress></div>
+                    <div class="objtime">{{item.starttime}}</div>
+                  </div>
+                  <div v-if="projectlist.length === 0">当前没有项目</div>
+                </div>
+                <div class="page">
+                  <el-pagination
+                    :current-page.sync="currentPage"
+                    @current-change="handleCurrentChange"
+                    :page-size="projectpagesize"
+                    layout="total, prev, pager, next, jumper"
+                    :total="projectpagetotal">
+                  </el-pagination>
+                </div>
+              </el-tab-pane>
+            </el-tabs>
           </el-tab-pane>
           <el-tab-pane label="已完成项目" name="second" class="tabs1">
             <Mytabs url="comprojects"></Mytabs>
@@ -208,19 +235,19 @@
 
 <script>
 import { mapState } from "vuex";
-import calendar from "../components/calendar.vue";
-import Mytabs from "../components/Mytabs";
-import Chart from "./Chart";
-import Applyfor from "./tasks/Applyfor";
-import ApprovalContract from "./tasks/ApprovalContract";
-import Contractor from "./tasks/Contractor";
-import Detection from "./tasks/Detection";
-import Eqconfig from "./tasks/Eqconfig";
-import PutStorage from "./tasks/PutStorage";
-import OutStorage from "./tasks/OutStorage";
-import ReportAudit from "./tasks/ReportAudit";
-import DetectionAudit from "./tasks/DetectionAudit";
-import Chart1 from "./chart1";
+// import calendar from "../components/calendar.vue";
+// import Mytabs from "../components/Mytabs";
+// import Chart from "./Chart";
+// import Applyfor from "./tasks/Applyfor";
+// import ApprovalContract from "./tasks/ApprovalContract";
+// import Contractor from "./tasks/Contractor";
+// import Detection from "./tasks/Detection";
+// import Eqconfig from "./tasks/Eqconfig";
+// import PutStorage from "./tasks/PutStorage";
+// import OutStorage from "./tasks/OutStorage";
+// import ReportAudit from "./tasks/ReportAudit";
+// import DetectionAudit from "./tasks/DetectionAudit";
+// import Chart1 from "./chart1";
 export default {
   data() {
     return {
@@ -259,10 +286,20 @@ export default {
       news: "", //最新公告内容
       doclist: [], //文档列表
       taskid: 0, //任务id
-      route: "" //任务组件别名
+      route: "", //任务组件别名
+      projectlist: [], //项目数据
+      datedate: "", //年份tab绑定数据
+      projectpagesize: 5, //顶部项目模块分页每页多少条
+      projectpagetotal: 0, //顶部项目模块总共多少条
+      currentPage: 1, //默认第几页
+      date: [], //年
+      datetwo: "", //请求日期
+      tabsloading: true //加载效果
     };
   },
   created() {
+    this.tabTime();
+    this.tabsget();
     this.aaa();
     this.newnotice();
     this.noticehostory();
@@ -270,6 +307,22 @@ export default {
     this.docment();
     this.calendarTwo();
     this.$store.commit("taskhuakuaihidden");
+    console.log("     \\\\            //\n" + 
+      "      \\\\          //\n" +
+      "       \\\\        //\n" +
+      "##DDDDDDDDDDDDDDDDDDDDDD##\n"+
+      "## DDDDDDDDDDDDDDDDDDDD ##   ________   ___   ___        ___   ________   ___   ___        ___\n"+
+      "## hh                hh ##   |\\   __  \\ |\\  \\ |\\  \\      |\\  \\ |\\   __  \\ |\\  \\ |\\  \\      |\\  \\ \n"+
+      "## hh    //    \\\\    hh ##   \\ \\  \\|\\ /_\\ \\  \\\\ \\  \\     \\ \\  \\\\ \\  \\|\\ /_\\ \\  \\\\ \\  \\     \\ \\  \\ \n"+
+      "## hh   //      \\\\   hh ##    \\ \\  \\|\\ /_\\ \\  \\\\ \\  \\     \\ \\  \\\\ \\  \\|\\ /_\\ \\  \\\\ \\  \\     \\ \\  \\ \n"+
+      "## hh  //        \\\\  hh ##     \\ \\   __  \\\\ \\  \\\\ \\  \\     \\ \\  \\\\ \\   __  \\\\ \\  \\\\ \\  \\     \\ \\  \\ \n"+
+      "## hh                hh ##      \\ \\  \\|\\  \\\\ \\  \\\\ \\  \\____ \\ \\  \\\\ \\  \\|\\  \\\\ \\  \\\\ \\  \\____ \\ \\  \\ \n"+
+      "## hh      wwww      hh ##       \\ \\_______\\\\ \\__\\\\ \\_______\\\\ \\__\\\\ \\_______\\\\ \\__\\\\ \\_______\\\\ \\__\\ \n"+
+      "## hh                hh ##        \\|_______| \\|__| \\|_______| \\|__| \\|_______| \\|__| \\|_______| \\|__| \n"+
+      "## MMMMMMMMMMMMMMMMMMMM ##\n"+
+      "##MMMMMMMMMMMMMMMMMMMMMM##\n"+
+      "     \\/            \\/"
+    )
   },
   methods: {
     // dialog关闭设备营业图片消失
@@ -418,69 +471,109 @@ export default {
     },
     close() {
       this.$store.commit("taskhuakuaihidden");
+    },
+    //日期tab点击发送时间
+    handleTabClickDate(tab) {
+      this.currentPage = 1;
+      this.datetwo = tab.label;
+      this.tabsget();
+    },
+    // 项目是否完成处理函数
+    project(pro) {
+      pro.forEach(obj => {
+        if (obj.sechedule === 100) {
+          obj.status = "success";
+        } else {
+          obj.status = "";
+        }
+      });
+    },
+    //tabs栏时间处理函数
+    tabTime() {
+      const timeone = new Date();
+      let Y = timeone.getFullYear();
+      Y = Y + "";
+      this.date.push(Y);
+      for (let i = 0; i < 2; i++) {
+        Y--;
+        Y = Y + "";
+        this.date.push(Y);
+      }
+      this.datetwo = this.date[0];
+    },
+    //tabs栏发请求
+    async tabsget() {
+      const resdata = await this.$http.get(
+        `currentprojects/${this.datetwo}/${this.currentPage}`
+      );
+      if (resdata.status === 200) {
+        this.projectpagetotal = resdata.data_total;
+        this.projectlist = resdata.pro_list;
+        this.project(this.projectlist);
+        this.tabsloading = false;
+      } else {
+        this.$message.error(resdata.msg);
+      }
+    },
+    //分页
+    handleCurrentChange(val) {
+      this.currentPage = val;
+      this.tabsget();
     }
-    // 点击设备图标，查看图片
-    // async eqimg(id) {
-    //   this.eqimgshow = true;
-    //   const date = new Date().getTime();
-    //   this.eqimgdata = `http://192.168.1.150:8888/api/v1.0/showdevicelicense/${id}?${date}`;
-    // },
-    // 提交设备信息
-    // putsubmit() {
-    //   this.$refs.putfrom.validate(async valid => {
-    //     if (!valid) {
-    //       return this.$message.error("请完整填写设备信息");
-    //     }
-    //     this.$store.dispatch(
-    //       "putstoragedialogsubmit",
-    //       this.$store.state.diaeqopen.id
-    //     );
-    //   });
-    // },
-    // 设备入库dialog关闭
-    // eqputclose() {
-    //   this.$refs.putfrom.resetFields();
-    // },
-    // 日志弹窗关闭
-    // detectionclose() {
-    //   this.$store.state.log = "";
-    // },
-    // 检测用例照片弹窗关闭
-    // detectionimgclose() {
-    //   this.$store.state.caseimage = "";
-    // },
-    // 检测用例视频弹窗关闭
-    // detectionvideoclose() {
-    //   this.$refs.videoPlayer.player.pause();
-    // },
-    // 报告审核选择用例
-    // async handleCheckChange() {
-    //   const checkedKeys = this.$refs.tree.getCheckedKeys();
-    //   let newArr = checkedKeys.filter(item => item != undefined);
-    //   const res = await this.$http.post(`generatereport/${this.$store.state.devid}`, { caseid_list: newArr });
-    //   if(res.status === 200) {
-    //     this.$message.success("报告生成成功");
-    //     this.$store.state.caselistshow = false;
-    //     this.$store.dispatch("draft_report", this.$store.state.devid);
-    //   } else {
-    //     this.$message.error(res.msg);
-    //   }
-    // }
   },
   components: {
-    Mytabs,
-    calendar,
-    Chart,
-    Applyfor,
-    ApprovalContract,
-    Contractor,
-    Detection,
-    Eqconfig,
-    PutStorage,
-    OutStorage,
-    ReportAudit,
-    DetectionAudit,
-    Chart1
+    calendar: resolve => {
+      require(["../components/calendar.vue"], resolve)
+    }, 
+    Mytabs: resolve => {
+      require(["../components/Mytabs"], resolve)
+    },
+    Chart: resolve => {
+      require(["./Chart"], resolve)
+    },
+    Applyfor: resolve => {
+      require(["./tasks/Applyfor"], resolve)
+    },
+    ApprovalContract: resolve => {
+      require(["./tasks/ApprovalContract"], resolve)
+    },
+    Contractor: resolve => {
+      require(["./tasks/Contractor"], resolve)
+    },
+    Detection: resolve => {
+      require(["./tasks/Detection"], resolve)
+    },
+    Eqconfig: resolve => {
+      require(["./tasks/Eqconfig"], resolve)
+    },
+    PutStorage: resolve => {
+      require(["./tasks/PutStorage"], resolve)
+    },
+    OutStorage: resolve => {
+      require(["./tasks/OutStorage"], resolve)
+    },
+    ReportAudit: resolve => {
+      require(["./tasks/ReportAudit"], resolve)
+    },
+    DetectionAudit: resolve => {
+      require(["./tasks/DetectionAudit"], resolve)
+    },
+    Chart1: resolve => {
+      require(["./chart1"], resolve)
+    },
+    // Mytabs,
+    // calendar,
+    // Chart,
+    // Applyfor,
+    // ApprovalContract,
+    // Contractor,
+    // Detection,
+    // Eqconfig,
+    // PutStorage,
+    // OutStorage,
+    // ReportAudit,
+    // DetectionAudit,
+    // Chart1
   },
   computed: mapState({
     demoEventsone: "hometaskdata",
@@ -940,5 +1033,43 @@ export default {
 .aaaaaa {
   width: 30px;
   height: 20px;
+}
+.tabs-date {
+  height: 100%;
+}
+.list {
+  height: 230px;
+}
+.list1 {
+  height: 30px;
+  line-height: 30px;
+  position: relative;
+  margin-bottom: 20px;
+}
+.listname {
+  position: absolute;
+  top: 0;
+  display: inline-block;
+  width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #606266;
+}
+.progress-line {
+  display: inline-block;
+  width: 500px;
+  position: absolute;
+  top: 5px;
+  left: 170px;
+}
+.objtime {
+  position: absolute;
+  right: 0;
+  color: #505b6f;
+}
+.page {
+  margin-top: 20px;
+  text-align: center;
 }
 </style>

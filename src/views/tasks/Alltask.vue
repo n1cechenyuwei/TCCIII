@@ -20,11 +20,11 @@
             size="small"
             class="mytasksearch"
             placeholder="请输入任务名称"
-            v-model="mytasksearch">
+            v-model.trim="mytasksearch">
           </el-input>
           <i class="el-icon-search sreach-icon"></i>      
         </div>     
-        <el-button type="primary" size="mini">搜索</el-button>
+        <el-button type="primary" size="mini" @click="mytaskseac">搜索</el-button>
       </div>
       <div class="mytask-content-middle">
         <div class="mytask-content-table">
@@ -56,12 +56,12 @@
               width="180">
             </el-table-column>
             <el-table-column
-              prop="start_end[0]"
+              prop="starttime"
               label="起始日"
               width="180">
             </el-table-column>
             <el-table-column
-              prop="start_end[1]"
+              prop="endtime"
               label="到期日"
               width="180">
             </el-table-column>
@@ -76,8 +76,9 @@
               width="150"
               label="状态">
               <template slot-scope="scope">
-                <span v-show="scope.row.istimeout === '未超时'" >{{scope.row.state}}</span>
-                <span v-show="scope.row.istimeout === '超时'" v-bind:class="{warning: (scope.row.istimeout === '超时')}">超时</span>
+                <span v-show="scope.row.istimeout === 0">{{scope.row.state}}</span>
+                <span v-show="(scope.row.istimeout === 1 && scope.row.state !== '已完成')" v-bind:class="{warning: (scope.row.istimeout === 1 )}">超时</span>
+                <span v-show="(scope.row.istimeout === 1 && scope.row.state === '已完成')">{{scope.row.state}}</span>
               </template>
             </el-table-column>
           </el-table>
@@ -97,23 +98,23 @@
             <i class="el-icon-close iicon" @click="close"></i>
           </div>
           <div class="height-auto">
-            <Applyfor v-if="route === 'applyfor'" :taskid="taskid">
+            <Applyfor v-if="route === 'applyfor'" :taskid="taskid" ht="alltask">
             </Applyfor>
-            <ApprovalContract v-if="route === 'approvalcontract'" :taskid="taskid">
+            <ApprovalContract v-if="route === 'approvalcontract'" :taskid="taskid" ht="alltask">
             </ApprovalContract>
-            <Contractor v-if="route === 'contractor'" :taskid="taskid">
+            <Contractor v-if="route === 'contractor'" :taskid="taskid" ht="alltask">
             </Contractor>
-            <Detection v-if="route === 'detection'" :taskid="taskid">
+            <Detection v-if="route === 'detection'" :taskid="taskid" ht="alltask">
             </Detection>
-            <DetectionAudit v-if="route === 'detectionaudit'" :taskid="taskid">
+            <DetectionAudit v-if="route === 'detectionaudit'" :taskid="taskid" ht="alltask">
             </DetectionAudit>
-            <Eqconfig v-if="route === 'eqconfig'" :taskid="taskid">
+            <Eqconfig v-if="route === 'eqconfig'" :taskid="taskid" ht="alltask">
             </Eqconfig>
-            <PutStorage v-if="route === 'putstorage'" :taskid="taskid">
+            <PutStorage v-if="route === 'putstorage'" :taskid="taskid" ht="alltask">
             </PutStorage>
-            <OutStorage v-if="route === 'outstorage'" :taskid="taskid">
+            <OutStorage v-if="route === 'outstorage'" :taskid="taskid" ht="alltask">
             </OutStorage>
-            <ReportAudit v-if="route === 'reportaudit'" :taskid="taskid">
+            <ReportAudit v-if="route === 'reportaudit'" :taskid="taskid" ht="alltask">
             </ReportAudit>
           </div>
         </div>
@@ -123,15 +124,15 @@
 </template>
 
 <script>
-import Applyfor from "../tasks/Applyfor";
-import ApprovalContract from "../tasks/ApprovalContract";
-import Contractor from "../tasks/Contractor";
-import Detection from "../tasks/Detection";
-import Eqconfig from "../tasks/Eqconfig";
-import PutStorage from "../tasks/PutStorage";
-import OutStorage from "../tasks/OutStorage";
-import ReportAudit from "../tasks/ReportAudit";
-import DetectionAudit from "../tasks/DetectionAudit";
+// import Applyfor from "../tasks/Applyfor";
+// import ApprovalContract from "../tasks/ApprovalContract";
+// import Contractor from "../tasks/Contractor";
+// import Detection from "../tasks/Detection";
+// import Eqconfig from "../tasks/Eqconfig";
+// import PutStorage from "../tasks/PutStorage";
+// import OutStorage from "../tasks/OutStorage";
+// import ReportAudit from "../tasks/ReportAudit";
+// import DetectionAudit from "../tasks/DetectionAudit";
 export default {
   data() {
     return {
@@ -139,7 +140,8 @@ export default {
       currentPage: 1, //默认第几页
       taskpagesize: 14, //每页显示几条
       taskid: 0, //任务id
-      route: "" //任务组件别名
+      route: "", //任务组件别名
+      searchtype: "1" // 根据类型不同发送不同请求
     };
   },
   created() {
@@ -156,7 +158,11 @@ export default {
       }
     },
     handlePageChange(val) {
-      this.$store.dispatch("loadingAlltask", val);
+      if (this.searchtype === "1") {
+        this.$store.dispatch("loadingAlltask", val);
+      } else if (this.searchtype === "2") {
+        this.searchfnc(val);
+      }
     },
     //表格名称点击
     rownameclick(row) {
@@ -167,18 +173,65 @@ export default {
     },
     close() {
       this.$store.commit("taskhuakuaihidden");
+    },
+    // 搜索按钮
+    async mytaskseac() {
+      if (this.mytasksearch === "") {
+        this.$message.warning("请输入内容");
+      } else {
+        this.searchtype = "2";
+        this.searchfnc(1);
+      }
+    },
+    // 搜索请求
+    async searchfnc(page) {
+      const res = await this.$http.post(`searchalltask/${page}`, {
+        search: this.mytasksearch
+      });
+      if (res.data.status === 200) {
+        this.$store.state.alltask = res.data.tasklist;
+        this.$store.state.alltasktotal = res.data.total_num;
+      } else {
+        this.$message.warning(res.data.msg);
+      }
     }
   },
   components: {
-    Applyfor,
-    ApprovalContract,
-    Contractor,
-    Detection,
-    Eqconfig,
-    PutStorage,
-    OutStorage,
-    ReportAudit,
-    DetectionAudit
+    Applyfor: resolve => {
+      require(["./Applyfor"], resolve);
+    },
+    ApprovalContract: resolve => {
+      require(["./ApprovalContract"], resolve);
+    },
+    Contractor: resolve => {
+      require(["./Contractor"], resolve);
+    },
+    Detection: resolve => {
+      require(["./Detection"], resolve);
+    },
+    Eqconfig: resolve => {
+      require(["./Eqconfig"], resolve);
+    },
+    PutStorage: resolve => {
+      require(["./PutStorage"], resolve);
+    },
+    OutStorage: resolve => {
+      require(["./OutStorage"], resolve);
+    },
+    ReportAudit: resolve => {
+      require(["./ReportAudit"], resolve);
+    },
+    DetectionAudit: resolve => {
+      require(["./DetectionAudit"], resolve);
+    }
+  },
+  watch: {
+    mytasksearch(val) {
+      if (val === "") {
+        this.searchtype = "1";
+        this.$store.dispatch("loadingAlltask", 1);
+      }
+    }
   }
 };
 </script>
@@ -258,5 +311,42 @@ export default {
 }
 .eqimgdata {
   max-width: 850px;
+}
+.sard {
+  top: 0;
+  right: 0;
+  position: absolute;
+  background-color: #f0f4f8;
+  box-shadow: 0px 0px 4px 3px #acd2fa;
+  border-radius: 6px;
+  height: 100%;
+  width: 940px;
+  transition: all 0.5s;
+  -moz-transition: all 0.5s;
+  -webkit-transition: all 0.5s;
+  -o-transition: all 0.5s;
+  -os-transition: all 0.5s;
+  -os-transform: translateX(0%);
+  z-index: 2;
+  transform: translateX(0%);
+}
+.hidden {
+  top: 0;
+  right: 0;
+  z-index: 99999;
+  position: absolute;
+  background-color: #f0f4f8;
+  box-shadow: 0px 0px 4px 3px #acd2fa;
+  border-radius: 6px;
+  height: 100%;
+  z-index: 2;
+  width: 940px;
+  transition: all 0.5s;
+  -moz-transition: all 0.5s;
+  -webkit-transition: all 0.5s;
+  -o-transition: all 0.5s;
+  -os-transition: all 0.5s;
+  -os-transform: translateX(110%);
+  transform: translateX(110%);
 }
 </style>

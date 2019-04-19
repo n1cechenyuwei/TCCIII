@@ -136,7 +136,7 @@
 <script>
 import { mapState } from "vuex";
 export default {
-  props: ["taskid"],
+  props: ["taskid", "ht"],
   data() {
     return {
       tasksechedule: 0, //任务进度绑定值
@@ -175,7 +175,11 @@ export default {
               this.$store.commit("tasksubmitloadinghidden");
               this.$message.success("任务提交成功");
               this.$store.commit("taskhuakuaihidden");
-              this.$store.dispatch("loadingMytask", 1);
+              if (this.ht === "mytask") {
+                this.$store.dispatch("loadingMytask", 1);
+              } else if (this.ht === "alltask") {
+                this.$store.dispatch("loadingAlltask", 1);
+              }
               this.$store.dispatch("hometask");
               this.radio = "";
               this.$refs.formInline.resetFields();
@@ -205,8 +209,14 @@ export default {
                 this.$store.commit("tasksubmitloadinghidden");
                 this.$message.success("任务提交成功");
                 this.$store.commit("taskhuakuaihidden");
+                if (this.ht === "mytask") {
+                  console.log(11);
+                } else {
+                  console.log(222);
+                }
                 this.$store.dispatch("loadingMytask", 1);
                 this.$store.dispatch("hometask");
+                this.$store.dispatch("loadingAlltask", 1);
               } else {
                 this.$store.commit("tasksubmitloadinghidden");
                 this.$message.error(res.msg);
@@ -234,7 +244,7 @@ export default {
   height: 100%;
 }
 #appfor-icon {
-  font-size: 28px;
+  font-size: 32px;
   color: #1ac7ff;
 }
 .applyforContent {

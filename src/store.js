@@ -7,7 +7,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    baseurl: "localhost:8888/api/v1.0/", //上传ip
+    baseurl: "http://192.168.1.150:8888/api/v1.0/", //上传ip
     isShow: false, //显示右侧卡片
     noShow: true, //控制是否滑出卡片
     task: [], //我的任务列表
@@ -71,6 +71,7 @@ export default new Vuex.Store({
     sbnumber: [], // 设备待入库已入库总数
     deviceinfo: "", // 环境配置设备信息
     workbenchinfo: "", // 环境配置工作台信息
+    workbench: "",
     out_entrust_info: "", // 外委单位信息
     contradeviceinfo: "", // 外委设备信息
     uptaskid: {
@@ -206,7 +207,8 @@ export default new Vuex.Store({
         state.tasksechedule = data.data.taskinfo.sechedule;
         state.appconbb = data.data.companyinfo;
         state.deviceinfo = data.data.deviceinfo;
-        state.workbenchinfo = data.data.workbenchinfo;
+        state.workbenchinfo = data.data.configinfo;
+        state.workbench = data.data.workbenchinfo;
         if (data.data.taskinfo.state === "已完成") {
           state.disable = true;
         } else {
@@ -551,38 +553,35 @@ export default new Vuex.Store({
     },
     // 任务读取
     async loadingMytask(context, page) {
-      const date = new Date().getTime();
-      const res = await http.get(`tasks/${page}?${date}`);
+      const res = await http.get(`tasks/${page}`);
       if (res.status === 200) {
         context.commit("loadingMytask", { data: res.data, total: res.total });
       }
     },
     // 全部任务读取
     async loadingAlltask(context, page) {
-      const date = new Date().getTime();
-      const res = await http.get(`alltasklist/${page}?${date}`);
-      if (res.status === 200) {
-        context.commit("loadingAlltask", { data: res.data, total: res.total });
+      const res = await http.get(`alltasklist/${page}`);
+      if (res.data.status === 200) {
+        context.commit("loadingAlltask", {
+          data: res.data.task_list,
+          total: res.data.total_num
+        });
       } else {
         Message.error(res.msg);
       }
     },
     // 已完成任务
     async loadingTasked(context, page) {
-      const date = new Date().getTime();
-      const res = await http.get(`comtasks/${page}?${date}`);
+      const res = await http.get(`comtasks/${page}`);
       if (res.status === 200) {
         context.commit("loadingTasked", { data: res.data, total: res.total });
       }
     },
     // 我的任务点击表格发请求并带入任务id  和刷新右侧页面
     async routerright(context, reqdata) {
-      const date = new Date().getTime();
       const resdataappfor = await http.get(
-        `${reqdata.route}/${reqdata.taskid}?${date}`
+        `${reqdata.route}/${reqdata.taskid}`
       );
-      // console.log(resdataappfor);
-      // console.log(reqdata.route);
       if (resdataappfor.data.status === 200) {
         context.commit("routerright", {
           data: resdataappfor.data,

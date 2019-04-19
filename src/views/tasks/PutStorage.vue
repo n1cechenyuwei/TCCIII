@@ -164,7 +164,8 @@
             </template>
         </el-table-column>
       </el-table>
-      <el-button v-if="!disable" class="putstorage-btn" type="primary" size="medium" @click="handleputstorage">提交任务</el-button>
+      <el-button plain class="rukudan-btn" type="primary" size="small" @click="handlerukudan">打印入库单</el-button>
+      <el-button v-if="!disable" class="putstorage-btn" type="primary" size="small" @click="handleputstorage">提交任务</el-button>
     </div>
   </div>
 </template>
@@ -172,7 +173,7 @@
 <script>
 import { mapState } from "vuex";
 export default {
-  props: ["taskid"],
+  props: ["taskid", "ht"],
   data() {
     return {
       deviceinfo: {}
@@ -199,13 +200,25 @@ export default {
           if (res.status === 200) {
             this.$message.success("任务提交成功");
             this.$store.commit("taskhuakuaihidden");
-            this.$store.dispatch("loadingMytask", 1);
+            if (this.ht === "mytask") {
+              this.$store.dispatch("loadingMytask", 1);
+            } else if (this.ht === "alltask") {
+              this.$store.dispatch("loadingAlltask", 1);
+            }
             this.$store.dispatch("hometask");
           } else {
             this.$message.warning(res.msg);
           }
         })
         .catch(() => {});
+    },
+    // 入库单
+    handlerukudan() {
+      let routeData = this.$router.resolve({
+        name: "GRN",
+        query: { id: this.taskid }
+      });
+      window.open(routeData.href, "_blank");
     }
   },
   computed: mapState({
@@ -236,7 +249,7 @@ export default {
   color: #4d5d71;
 }
 .shoujian-title .icon-jiafangyifang {
-  font-size: 22px;
+  font-size: 26px;
   color: #19c6ff;
   margin-right: 16px;
 }
@@ -305,5 +318,10 @@ export default {
   position: absolute;
   bottom: 10px;
   left: 430px;
+}
+.rukudan-btn {
+  position: absolute;
+  bottom: 10px;
+  left: 280px;
 }
 </style>

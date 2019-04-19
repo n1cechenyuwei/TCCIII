@@ -3,14 +3,14 @@
     <el-aside width="220px">
       <div class="taskmenu-box">
         <el-menu
-          default-active="/goingproject"
+          :default-active="next"
           @select="handleSelect"
           class="el-menu-vertical-demo taskmenu"
           :router="true"
           >
           <el-submenu index="1">
             <template slot="title">
-              <span class="taskmenu-tittle">任务</span>
+              <span class="taskmenu-tittle">项目</span>
             </template>
             <el-menu-item index="/goingproject" class="zuobian">进行中项目</el-menu-item>
             <el-menu-item index="/projected" class="zuobian">已完成项目</el-menu-item>
@@ -33,16 +33,33 @@
 export default {
   data() {
     return {
-      abc: ""
+      abc: "",
+      next: "" // 默认选中
     };
   },
   created() {
-    this.$router.push({ name: "goingproject" });
+    this.router();
   },
   methods: {
     // 选中菜单关闭右侧滑块
-    handleSelect() {
+    handleSelect(index) {
       this.$store.commit("taskhuakuaihidden");
+    },
+    router() {
+      if (this.$route.params.id === undefined) {
+        this.next = "/goingproject";
+        this.$router.push({ name: "goingproject" });
+      } else {
+        this.next = this.$route.params.path;
+        this.$router.push({
+          name: "projectdetails",
+          params: {
+            id: this.$route.params.id,
+            path: this.$route.params.path,
+            name: this.$route.params.name
+          }
+        });
+      }
     }
   }
 };

@@ -8,7 +8,7 @@ module.exports = {
       })
     ]
   },
-  chainWebpack:  config => {
+  chainWebpack: config => {
     config
     .entry('index')
       .add('babel-polyfill')

@@ -194,7 +194,7 @@
 <script>
 import { mapState } from "vuex";
 export default {
-  props: ["taskid"],
+  props: ["taskid", "ht"],
   data() {
     return {
       isok: true,
@@ -237,8 +237,12 @@ export default {
             const res = await this.$http.put(`detectionaudit/${this.taskid}`);
             if (res.status === 200) {
               this.$message.success("提交成功");
+              if (this.ht === "mytask") {
+                this.$store.dispatch("loadingMytask", 1);
+              } else if (this.ht === "alltask") {
+                this.$store.dispatch("loadingAlltask", 1);
+              }
               this.$store.commit("taskhuakuaihidden");
-              this.$store.dispatch("loadingMytask", 1);
               this.$store.dispatch("hometask");
             } else {
               this.$message.error(res.msg);

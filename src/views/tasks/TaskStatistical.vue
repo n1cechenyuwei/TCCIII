@@ -1,8 +1,8 @@
 <template>
   <div class="tsbox">
     <el-radio-group @change="pvchange" v-model="PVtabPosition" size="small" class="tstop">
-      <el-radio-button label="PIS">PIS检测人员</el-radio-button>
-      <el-radio-button label="VMS">VMS检测人员</el-radio-button>
+      <el-radio-button label="pis">PIS检测人员</el-radio-button>
+      <el-radio-button label="vms">VMS检测人员</el-radio-button>
     </el-radio-group>
     <div id="tsGone"></div>
     <div id="slider"></div>
@@ -35,274 +35,274 @@ export default {
   data() {
     return {
       activeName: "first",
-      jcrylist: [
-        {
-          taskname: "三号线仿真环境审批申请",
-          taskpeople: "郝佳贺",
-          tasktype: "申请审批",
-          starttime: "2018-11-10",
-          endtime: "2018-11-14"
-        },
-        {
-          taskname: "四号线仿真环境审批申请",
-          taskpeople: "郝佳贺",
-          tasktype: "申请审批",
-          starttime: "2018-11-15",
-          endtime: "2018-11-19"
-        },
-        {
-          taskname: "五号线仿真环境审批申请",
-          taskpeople: "郝佳贺",
-          tasktype: "申请审批",
-          starttime: "2018-11-20",
-          endtime: "2018-11-28"
-        },
-        {
-          taskname: "六号线仿真环境审批申请",
-          taskpeople: "郝佳贺",
-          tasktype: "申请审批",
-          starttime: "2018-11-29",
-          endtime: "2018-12-12"
-        },
-        {
-          taskname: "三号线仿真环境合同签订",
-          taskpeople: "赵龙",
-          tasktype: "合同签订",
-          starttime: "2018-11-15",
-          endtime: "2018-11-19"
-        },
-        {
-          taskname: "四号线仿真环境合同签订",
-          taskpeople: "赵龙",
-          tasktype: "合同签订",
-          starttime: "2018-11-20",
-          endtime: "2018-11-25"
-        },
-        {
-          taskname: "五号线仿真环境合同签订",
-          taskpeople: "赵龙",
-          tasktype: "合同签订",
-          starttime: "2018-11-26",
-          endtime: "2018-12-05"
-        },
-        {
-          taskname: "六号线仿真环境合同签订",
-          taskpeople: "赵龙",
-          tasktype: "合同签订",
-          starttime: "2018-12-06",
-          endtime: "2018-12-14"
-        },
-        {
-          taskname: "三号线仿真环境合同签订",
-          taskpeople: "赵龙",
-          tasktype: "合同签订",
-          starttime: "2018-12-15",
-          endtime: "2018-12-22"
-        },
-        {
-          taskname: "四号线仿真环境设备入库",
-          taskpeople: "罗霁阳",
-          tasktype: "设备入库",
-          starttime: "2018-11-10",
-          endtime: "2018-11-14"
-        },
-        {
-          taskname: "五号线仿真环境设备入库",
-          taskpeople: "罗霁阳",
-          tasktype: "设备入库",
-          starttime: "2018-11-15",
-          endtime: "2018-11-20"
-        },
-        {
-          taskname: "六号线仿真环境设备入库",
-          taskpeople: "罗霁阳",
-          tasktype: "设备入库",
-          starttime: "2018-11-21",
-          endtime: "2018-11-28"
-        },
-        {
-          taskname: "三号线仿真环境设备入库",
-          taskpeople: "罗霁阳",
-          tasktype: "设备入库",
-          starttime: "2018-11-29",
-          endtime: "2018-12-06"
-        },
-        {
-          taskname: "四号线仿真环境编码器配置",
-          taskpeople: "冯嘻嘻",
-          tasktype: "环境配置",
-          starttime: "2018-11-25",
-          endtime: "2018-11-29"
-        },
-        {
-          taskname: "五号线仿真环境编码器配置",
-          taskpeople: "冯嘻嘻",
-          tasktype: "环境配置",
-          starttime: "2018-11-30",
-          endtime: "2018-12-06"
-        },
-        {
-          taskname: "六号线仿真环境编码器配置",
-          taskpeople: "冯嘻嘻",
-          tasktype: "环境配置",
-          starttime: "2018-12-07",
-          endtime: "2018-12-14"
-        },
-        {
-          taskname: "三号线仿真环境编码器配置",
-          taskpeople: "冯嘻嘻",
-          tasktype: "环境配置",
-          starttime: "2018-12-15",
-          endtime: "2018-12-24"
-        },
-        {
-          taskname: "四号线仿真环境设备检测",
-          taskpeople: "王鹏飞",
-          tasktype: "实验室检测",
-          starttime: "2018-11-06",
-          endtime: "2018-11-16"
-        },
-        {
-          taskname: "五号线仿真环境设备检测",
-          taskpeople: "王鹏飞",
-          tasktype: "实验室检测",
-          starttime: "2018-11-17",
-          endtime: "2018-11-26"
-        },
-        {
-          taskname: "六号线仿真环境设备检测",
-          taskpeople: "王鹏飞",
-          tasktype: "实验室检测",
-          starttime: "2018-11-27",
-          endtime: "2018-12-10"
-        },
-        {
-          taskname: "三号线仿真环境设备检测",
-          taskpeople: "王鹏飞",
-          tasktype: "实验室检测",
-          starttime: "2018-12-11",
-          endtime: "2018-12-20"
-        },
-        {
-          taskname: "四号线仿真环境检测审核",
-          taskpeople: "张国进",
-          tasktype: "检测审核",
-          starttime: "2018-11-10",
-          endtime: "2018-11-12"
-        },
-        {
-          taskname: "五号线仿真环境检测审核",
-          taskpeople: "张国进",
-          tasktype: "检测审核",
-          starttime: "2018-11-13",
-          endtime: "2018-11-16"
-        },
-        {
-          taskname: "六号线仿真环境检测审核",
-          taskpeople: "张国进",
-          tasktype: "检测审核",
-          starttime: "2018-11-18",
-          endtime: "2018-11-22"
-        },
-        {
-          taskname: "三号线仿真环境检测审核",
-          taskpeople: "张国进",
-          tasktype: "检测审核",
-          starttime: "2018-11-23",
-          endtime: "2018-11-29"
-        },
-        {
-          taskname: "四号线仿真环境外委检测",
-          taskpeople: "于忠徐",
-          tasktype: "外委检测",
-          starttime: "2018-11-05",
-          endtime: "2018-11-15"
-        },
-        {
-          taskname: "五号线仿真环境外委检测",
-          taskpeople: "于忠徐",
-          tasktype: "外委检测",
-          starttime: "2018-11-16",
-          endtime: "2018-11-28"
-        },
-        {
-          taskname: "六号线仿真环境外委检测",
-          taskpeople: "于忠徐",
-          tasktype: "外委检测",
-          starttime: "2018-11-29",
-          endtime: "2018-12-12"
-        },
-        {
-          taskname: "三号线仿真环境外委检测",
-          taskpeople: "于忠徐",
-          tasktype: "外委检测",
-          starttime: "2018-12-13",
-          endtime: "2018-12-26"
-        },
-        {
-          taskname: "四号线仿真环境报告审核",
-          taskpeople: "刘利飞",
-          tasktype: "报告审核",
-          starttime: "2018-11-25",
-          endtime: "2018-11-28"
-        },
-        {
-          taskname: "五号线仿真环境报告审核",
-          taskpeople: "刘利飞",
-          tasktype: "报告审核",
-          starttime: "2018-11-29",
-          endtime: "2018-12-02"
-        },
-        {
-          taskname: "六号线仿真环境报告审核",
-          taskpeople: "刘利飞",
-          tasktype: "报告审核",
-          starttime: "2018-12-03",
-          endtime: "2018-12-06"
-        },
-        {
-          taskname: "三号线仿真环境报告审核",
-          taskpeople: "刘利飞",
-          tasktype: "报告审核",
-          starttime: "2018-12-07",
-          endtime: "2018-12-14"
-        },
-        {
-          taskname: "四号线仿真环境设备出库",
-          taskpeople: "王刚",
-          tasktype: "设备出库",
-          starttime: "2018-11-05",
-          endtime: "2018-11-12"
-        },
-        {
-          taskname: "五号线仿真环境设备出库",
-          taskpeople: "王刚",
-          tasktype: "设备出库",
-          starttime: "2018-11-14",
-          endtime: "2018-11-24"
-        },
-        {
-          taskname: "六号线仿真环境设备出库",
-          taskpeople: "王刚",
-          tasktype: "设备出库",
-          starttime: "2018-11-25",
-          endtime: "2018-12-04"
-        },
-        {
-          taskname: "三号线仿真环境设备出库",
-          taskpeople: "王刚",
-          tasktype: "设备出库",
-          starttime: "2018-12-05",
-          endtime: "2018-12-14"
-        },
-        {
-          taskname: "三号线仿真环境外委检测",
-          taskpeople: "王刚",
-          tasktype: "外委检测",
-          starttime: "2018-12-13",
-          endtime: "2018-12-25"
-        }
-      ],
+      // jcrylist: [
+      //   {
+      //     taskname: "三号线仿真环境审批申请",
+      //     taskpeople: "郝佳贺",
+      //     tasktype: "申请审批",
+      //     starttime: "2018-11-10",
+      //     endtime: "2018-11-14"
+      //   },
+      //   {
+      //     taskname: "四号线仿真环境审批申请",
+      //     taskpeople: "郝佳贺",
+      //     tasktype: "申请审批",
+      //     starttime: "2018-11-15",
+      //     endtime: "2018-11-19"
+      //   },
+      //   {
+      //     taskname: "五号线仿真环境审批申请",
+      //     taskpeople: "郝佳贺",
+      //     tasktype: "申请审批",
+      //     starttime: "2018-11-20",
+      //     endtime: "2018-11-28"
+      //   },
+      //   {
+      //     taskname: "六号线仿真环境审批申请",
+      //     taskpeople: "郝佳贺",
+      //     tasktype: "申请审批",
+      //     starttime: "2018-11-29",
+      //     endtime: "2018-12-12"
+      //   },
+      //   {
+      //     taskname: "三号线仿真环境合同签订",
+      //     taskpeople: "赵龙",
+      //     tasktype: "合同签订",
+      //     starttime: "2018-11-15",
+      //     endtime: "2018-11-19"
+      //   },
+      //   {
+      //     taskname: "四号线仿真环境合同签订",
+      //     taskpeople: "赵龙",
+      //     tasktype: "合同签订",
+      //     starttime: "2018-11-20",
+      //     endtime: "2018-11-25"
+      //   },
+      //   {
+      //     taskname: "五号线仿真环境合同签订",
+      //     taskpeople: "赵龙",
+      //     tasktype: "合同签订",
+      //     starttime: "2018-11-26",
+      //     endtime: "2018-12-05"
+      //   },
+      //   {
+      //     taskname: "六号线仿真环境合同签订",
+      //     taskpeople: "赵龙",
+      //     tasktype: "合同签订",
+      //     starttime: "2018-12-06",
+      //     endtime: "2018-12-14"
+      //   },
+      //   {
+      //     taskname: "三号线仿真环境合同签订",
+      //     taskpeople: "赵龙",
+      //     tasktype: "合同签订",
+      //     starttime: "2018-12-15",
+      //     endtime: "2018-12-22"
+      //   },
+      //   {
+      //     taskname: "四号线仿真环境设备入库",
+      //     taskpeople: "罗霁阳",
+      //     tasktype: "设备入库",
+      //     starttime: "2018-11-10",
+      //     endtime: "2018-11-14"
+      //   },
+      //   {
+      //     taskname: "五号线仿真环境设备入库",
+      //     taskpeople: "罗霁阳",
+      //     tasktype: "设备入库",
+      //     starttime: "2018-11-15",
+      //     endtime: "2018-11-20"
+      //   },
+      //   {
+      //     taskname: "六号线仿真环境设备入库",
+      //     taskpeople: "罗霁阳",
+      //     tasktype: "设备入库",
+      //     starttime: "2018-11-21",
+      //     endtime: "2018-11-28"
+      //   },
+      //   {
+      //     taskname: "三号线仿真环境设备入库",
+      //     taskpeople: "罗霁阳",
+      //     tasktype: "设备入库",
+      //     starttime: "2018-11-29",
+      //     endtime: "2018-12-06"
+      //   },
+      //   {
+      //     taskname: "四号线仿真环境编码器配置",
+      //     taskpeople: "冯嘻嘻",
+      //     tasktype: "环境配置",
+      //     starttime: "2018-11-25",
+      //     endtime: "2018-11-29"
+      //   },
+      //   {
+      //     taskname: "五号线仿真环境编码器配置",
+      //     taskpeople: "冯嘻嘻",
+      //     tasktype: "环境配置",
+      //     starttime: "2018-11-30",
+      //     endtime: "2018-12-06"
+      //   },
+      //   {
+      //     taskname: "六号线仿真环境编码器配置",
+      //     taskpeople: "冯嘻嘻",
+      //     tasktype: "环境配置",
+      //     starttime: "2018-12-07",
+      //     endtime: "2018-12-14"
+      //   },
+      //   {
+      //     taskname: "三号线仿真环境编码器配置",
+      //     taskpeople: "冯嘻嘻",
+      //     tasktype: "环境配置",
+      //     starttime: "2018-12-15",
+      //     endtime: "2018-12-24"
+      //   },
+      //   {
+      //     taskname: "四号线仿真环境设备检测",
+      //     taskpeople: "王鹏飞",
+      //     tasktype: "实验室检测",
+      //     starttime: "2018-11-06",
+      //     endtime: "2018-11-16"
+      //   },
+      //   {
+      //     taskname: "五号线仿真环境设备检测",
+      //     taskpeople: "王鹏飞",
+      //     tasktype: "实验室检测",
+      //     starttime: "2018-11-17",
+      //     endtime: "2018-11-26"
+      //   },
+      //   {
+      //     taskname: "六号线仿真环境设备检测",
+      //     taskpeople: "王鹏飞",
+      //     tasktype: "实验室检测",
+      //     starttime: "2018-11-27",
+      //     endtime: "2018-12-10"
+      //   },
+      //   {
+      //     taskname: "三号线仿真环境设备检测",
+      //     taskpeople: "王鹏飞",
+      //     tasktype: "实验室检测",
+      //     starttime: "2018-12-11",
+      //     endtime: "2018-12-20"
+      //   },
+      //   {
+      //     taskname: "四号线仿真环境检测审核",
+      //     taskpeople: "张国进",
+      //     tasktype: "检测审核",
+      //     starttime: "2018-11-10",
+      //     endtime: "2018-11-12"
+      //   },
+      //   {
+      //     taskname: "五号线仿真环境检测审核",
+      //     taskpeople: "张国进",
+      //     tasktype: "检测审核",
+      //     starttime: "2018-11-13",
+      //     endtime: "2018-11-16"
+      //   },
+      //   {
+      //     taskname: "六号线仿真环境检测审核",
+      //     taskpeople: "张国进",
+      //     tasktype: "检测审核",
+      //     starttime: "2018-11-18",
+      //     endtime: "2018-11-22"
+      //   },
+      //   {
+      //     taskname: "三号线仿真环境检测审核",
+      //     taskpeople: "张国进",
+      //     tasktype: "检测审核",
+      //     starttime: "2018-11-23",
+      //     endtime: "2018-11-29"
+      //   },
+      //   {
+      //     taskname: "四号线仿真环境外委检测",
+      //     taskpeople: "于忠徐",
+      //     tasktype: "外委检测",
+      //     starttime: "2018-11-05",
+      //     endtime: "2018-11-15"
+      //   },
+      //   {
+      //     taskname: "五号线仿真环境外委检测",
+      //     taskpeople: "于忠徐",
+      //     tasktype: "外委检测",
+      //     starttime: "2018-11-16",
+      //     endtime: "2018-11-28"
+      //   },
+      //   {
+      //     taskname: "六号线仿真环境外委检测",
+      //     taskpeople: "于忠徐",
+      //     tasktype: "外委检测",
+      //     starttime: "2018-11-29",
+      //     endtime: "2018-12-12"
+      //   },
+      //   {
+      //     taskname: "三号线仿真环境外委检测",
+      //     taskpeople: "于忠徐",
+      //     tasktype: "外委检测",
+      //     starttime: "2018-12-13",
+      //     endtime: "2018-12-26"
+      //   },
+      //   {
+      //     taskname: "四号线仿真环境报告审核",
+      //     taskpeople: "刘利飞",
+      //     tasktype: "报告审核",
+      //     starttime: "2018-11-25",
+      //     endtime: "2018-11-28"
+      //   },
+      //   {
+      //     taskname: "五号线仿真环境报告审核",
+      //     taskpeople: "刘利飞",
+      //     tasktype: "报告审核",
+      //     starttime: "2018-11-29",
+      //     endtime: "2018-12-02"
+      //   },
+      //   {
+      //     taskname: "六号线仿真环境报告审核",
+      //     taskpeople: "刘利飞",
+      //     tasktype: "报告审核",
+      //     starttime: "2018-12-03",
+      //     endtime: "2018-12-06"
+      //   },
+      //   {
+      //     taskname: "三号线仿真环境报告审核",
+      //     taskpeople: "刘利飞",
+      //     tasktype: "报告审核",
+      //     starttime: "2018-12-07",
+      //     endtime: "2018-12-14"
+      //   },
+      //   {
+      //     taskname: "四号线仿真环境设备出库",
+      //     taskpeople: "王刚",
+      //     tasktype: "设备出库",
+      //     starttime: "2018-11-05",
+      //     endtime: "2018-11-12"
+      //   },
+      //   {
+      //     taskname: "五号线仿真环境设备出库",
+      //     taskpeople: "王刚",
+      //     tasktype: "设备出库",
+      //     starttime: "2018-11-14",
+      //     endtime: "2018-11-24"
+      //   },
+      //   {
+      //     taskname: "六号线仿真环境设备出库",
+      //     taskpeople: "王刚",
+      //     tasktype: "设备出库",
+      //     starttime: "2018-11-25",
+      //     endtime: "2018-12-04"
+      //   },
+      //   {
+      //     taskname: "三号线仿真环境设备出库",
+      //     taskpeople: "王刚",
+      //     tasktype: "设备出库",
+      //     starttime: "2018-12-05",
+      //     endtime: "2018-12-14"
+      //   },
+      //   {
+      //     taskname: "三号线仿真环境外委检测",
+      //     taskpeople: "王刚",
+      //     tasktype: "外委检测",
+      //     starttime: "2018-12-13",
+      //     endtime: "2018-12-25"
+      //   }
+      // ],
       chartlist: [],
       taskstarttime: "", // 人员任务开始时间
       taskendtime: "", // 人员任务结束时间
@@ -314,7 +314,7 @@ export default {
       jcrydata: [],
       tsGone: "",
       datenow: "",
-      PVtabPosition: "VMS",
+      PVtabPosition: "vms",
       divwidth: 0
     };
   },
@@ -334,12 +334,10 @@ export default {
     },
     // pis vms选中读取数值
     pvchange() {
-      if (this.PVtabPosition === "PIS") {
-        this.jcrydata = this.jcrylist.reverse();
-        this.tsGone.changeData(this.jcrydata);
+      if (this.PVtabPosition === "pis") {
+        
       } else {
-        this.jcrydata = this.jcrylist.reverse();
-        this.tsGone.changeData(this.jcrydata);
+        
       }
     },
     // 表格
@@ -468,7 +466,7 @@ export default {
     // 请求图表信息
     async alltisklistdatatwo() {
       const date = new Date().getTime();
-      const res = await this.$http.get(`taskcharts/1?${date}`);
+      const res = await this.$http.get(`taskcharts/${this.PVtabPosition}/1?${date}`);
       if (res.status === 200) {
         // const mindate = Math.min.apply(Math, res.taskinfo.map(function(o) {return new Date(o.starttime.replace(/-/g, '/'))}));
         // const maxdate = Math.max.apply(Math, res.taskinfo.map(function(o) {return new Date(o.endtime.replace(/-/g, '/'))}));

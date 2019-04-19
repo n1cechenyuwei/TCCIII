@@ -94,7 +94,7 @@
           <el-upload
             class="upload-demo"
             ref="ctupload"
-            accept=".docx, .pdf, .xlsx, .txt"
+            accept=".docx, .doc, .pdf, .xlsx, .txt"
             :action="$store.state.baseurl + 'dereport'"
             :before-upload="upload"
             :disabled="disable || uploadbtn"
@@ -133,7 +133,7 @@
 <script>
 import { mapState } from "vuex";
 export default {
-  props: ["taskid"],
+  props: ["taskid", "ht"],
   data() {
     return {
       newfile: {
@@ -184,6 +184,8 @@ export default {
             if (res.status === 200) {
               this.$store.dispatch("ctuploadlist", this.deviceinfo.device_id);
               this.$message.success("删除成功");
+            } else {
+              this.$message.success(res.msg);
             }
           })
           .catch(() => {});
@@ -229,8 +231,12 @@ export default {
             const res = await this.$http.put(`contractor/${this.taskid}`);
             if (res.status === 200) {
               this.$message.success("提交成功");
+              if (this.ht === "mytask") {
+                this.$store.dispatch("loadingMytask", 1);
+              } else if (this.ht === "alltask") {
+                this.$store.dispatch("loadingAlltask", 1);
+              }
               this.$store.commit("taskhuakuaihidden");
-              this.$store.dispatch("loadingMytask", 1);
               this.$store.dispatch("hometask");
             } else {
               this.$message.error(res.msg);

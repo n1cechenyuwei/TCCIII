@@ -10,7 +10,7 @@
           <el-menu 
           :router="true"
           mode="horizontal"
-          default-active="/home"
+          :default-active="newroute"
           class="menuitem"
           @select="handleSelect"
           background-color="#004fa1"
@@ -25,25 +25,23 @@
                 <el-row class="gengduo">
                   <el-col :span="6">
                     <p>检测流程</p>
-                    <el-menu-item index="2-1" class="xuanxiang">审批申请</el-menu-item>
-                    <el-menu-item index="2-1" class="xuanxiang">合同</el-menu-item>
-                    <el-menu-item index="2-1" class="xuanxiang">项目</el-menu-item>
-                    <el-menu-item index="2-1" class="xuanxiang">报告管理</el-menu-item>
+                    <el-menu-item index="/contract" class="xuanxiang">合同管理</el-menu-item>
+                    <el-menu-item index="/reports" class="xuanxiang">报告管理</el-menu-item>
                     <el-menu-item index="/equipment" class="xuanxiang">设备管理</el-menu-item>
                   </el-col>
                   <el-col :span="6">
                     <p>支持</p>
                     <el-menu-item index="2-1" class="xuanxiang">知识资源</el-menu-item>
-                    <el-menu-item index="2-1" class="xuanxiang">检测用例</el-menu-item>
+                    <el-menu-item index="/cases" class="xuanxiang">检测用例</el-menu-item>
                   </el-col>
                   <el-col :span="6">
                     <p>辅助</p>
-                    <el-menu-item index="2-1" class="xuanxiang">文档管理</el-menu-item>
-                    <el-menu-item index="2-1" class="xuanxiang">单位管理</el-menu-item>
+                    <el-menu-item index="document" class="xuanxiang">文档管理</el-menu-item>
+                    <el-menu-item index="/company" class="xuanxiang">单位管理</el-menu-item>
                   </el-col>
                   <el-col :span="6">
                     <p>系统</p>
-                    <el-menu-item index="2-1" class="xuanxiang">系统管理</el-menu-item>
+                    <el-menu-item index="/system" class="xuanxiang">系统管理</el-menu-item>
                   </el-col>
                 </el-row>
               </template>
@@ -74,6 +72,7 @@
       title="修改密码"
       @close="closepass"
       :visible.sync="dialogrese"
+      center
       width="576px">
       <el-form :model="passform"
       v-loading="passloading"
@@ -101,6 +100,7 @@
     <el-dialog
       title="设备出库"
       @closed="eqoutclose"
+      center
       :visible.sync="$store.state.outdialog"
       width="576px">
       <div class="dialogeq-open">
@@ -143,8 +143,8 @@
           </el-form-item>
           <el-form-item label="出库状态" prop="state">
             <el-select class="dialog-open-select timeselect" v-model="$store.state.diaoutopen.state" placeholder="请选择">
-              <el-option label="已出库" value="已出库"></el-option>
-              <el-option label="待出库" value="待出库"></el-option>
+              <el-option label="出库" value="出库"></el-option>
+              <!-- <el-option label="入库" value="入库"></el-option> -->
             </el-select>
           </el-form-item>
         </el-form>
@@ -236,6 +236,7 @@
     <el-dialog
       :visible.sync="$store.state.opyyzz"
       @closed="$store.commit('closeyyzz')"
+      center
       width="960px">
       <img width="100%" :src="$store.state.license" alt="照片丢失了">
     </el-dialog>
@@ -292,8 +293,8 @@
           </el-form-item>
           <el-form-item label="入库状态" prop="state">
             <el-select class="dialog-open-select timeselect" v-model="$store.state.diaeqopen.state" placeholder="请选择">
-              <el-option label="已入库" value="已入库"></el-option>
-              <el-option label="未入库" value="未入库"></el-option>
+              <el-option label="待入库" value="待入库"></el-option>
+              <el-option label="入库" value="入库"></el-option>
             </el-select>
           </el-form-item>
         </el-form>
@@ -307,6 +308,7 @@
     <el-dialog
       title="报文详情"
       @closed="detectionclose"
+      center
       :visible.sync="$store.state.caselogshow"
       width="960px">
       <div class="baowen">{{$store.state.log.data}}</div>
@@ -334,6 +336,7 @@
     <el-dialog
       title="用例详情"
       :visible.sync="$store.state.caselistshow"
+      center
       width="576px">
       <el-tree
         :data="$store.state.caselist"
@@ -341,7 +344,7 @@
         ref="tree"
         node-key="id"
         v-loading="$store.state.caseloading"
-        element-loading-text="用例拼命加载中"
+        element-loading-text="测试用例加载中"
         accordion
         :props="{ label: 'name', children: 'case_list' }">
       </el-tree>
@@ -366,6 +369,7 @@ export default {
     return {
       data: "r",
       username: "",
+      newroute: "/home",
       eqimgshow: false, //设备生产厂家照片显示
       eqimgdata: "", //生厂厂家照片
       putfromrules: {
@@ -439,7 +443,7 @@ export default {
   methods: {
     router() {
       this.username = sessionStorage.getItem("username");
-      this.$router.push({ name: "home" });
+      this.newroute = this.$route.matched[1].path;
     },
     handleCommandUser(command) {
       if (command === "logout") {
@@ -589,8 +593,8 @@ export default {
 }
 .gengduo {
   width: 424px;
-  height: 200px;
-  color: #000;
+  height: 150px;
+  color: #666666;
   background-color: #fff;
 }
 .header .gengduo p {
@@ -600,9 +604,12 @@ export default {
   height: 18px;
 }
 .xuanxiang {
-  font-size: 14px !important;
-  margin-left: 28px;
+  font-size: 15px !important;
+  margin-left: 20px;
   border-right: 1px solid #f6f6f6;
+}
+.xuanxiang:hover {
+  color: #409eff !important;
 }
 .content {
   padding: 10px 0px 0px 0;
@@ -632,7 +639,7 @@ export default {
 }
 .deca-btn {
   text-align: center;
-  margin-top: 10px;
+  padding-top: 10px;
 }
 .baowen {
   height: 400px;

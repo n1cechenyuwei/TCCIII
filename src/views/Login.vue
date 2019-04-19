@@ -68,7 +68,7 @@ export default {
           const username = res.username;
           sessionStorage.setItem("token", token);
           sessionStorage.setItem("username", username);
-          this.$router.push({ name: "navigation" });
+          this.$router.push({ name: "home" });
         } else {
           this.$message.error(res.msg);
         }
