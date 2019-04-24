@@ -246,7 +246,7 @@ export default {
       this.$message.success("上传成功");
       this.contract(this.currentPage);
     },
-    uploaderror(err) {
+    uploaderror() {
       this.$message.error("上传失败");
     },
     // 获取合同数据
@@ -271,7 +271,9 @@ export default {
       if (this.htmoney === "") {
         this.$message.warning("请输入合同金额");
       } else {
-        const res = await this.$http.put(`updatecompact/${id}`, { com_money: this.htmoney });
+        const res = await this.$http.put(`updatecompact/${id}`, {
+          com_money: this.htmoney
+        });
         if (res.status === 200) {
           this.$message.success("修改合同金额成功");
           this.contract(this.currentPage);
@@ -295,7 +297,7 @@ export default {
       if (this.htdate === null) {
         this.$message.warning("请选择合同期限");
       } else {
-        const res = await this.$http.put(`updatecompact/${id}`,{
+        const res = await this.$http.put(`updatecompact/${id}`, {
           com_starttime: this.htdate[0],
           com_endtime: this.htdate[1]
         });
@@ -320,9 +322,8 @@ export default {
       })
         .then(async () => {
           const res = await this.$http.delete(`dropfinalcompact/${id}`);
-          console.log(res)
           if (res.status === 200) {
-            this.$message.success("删除合同初稿成功"); 
+            this.$message.success("删除合同初稿成功");
             this.contract(this.currentPage);
           } else {
             this.$message.error(res.msg);

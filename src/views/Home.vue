@@ -155,7 +155,13 @@
         <div class="TheDocumentBox-contentbox">
           <div class="TheDocumentBox-content scrollbar">
             <div class="document-list" v-for="(item, index) in doclist" :key="index">
-              <i class="el-icon-document DocumentBox-content-icon"></i>
+              <i v-show="item.file_ext !== 'xlsx' && item.file_ext !== 'doc' && item.file_ext !== 'docx' && item.file_ext !== 'pptx' && item.file_ext !== 'pdf' && item.file_ext !== 'txt' && item.file_ext !== 'mpg' && item.file_ext !== 'mp4' && item.file_ext !== 'rmvb' && item.file_ext !== 'mpeg'" class="el-icon-document wenjian1"></i>
+              <i v-show="item.file_ext === 'xlsx'" class="iconfont icon-excel docexcel1"></i>
+              <i v-show="item.file_ext === 'doc' || item.file_ext === 'docx'" class="iconfont icon-excel docword1"></i>
+              <i v-show="item.file_ext === 'pptx'" class="iconfont icon-ppt1 docppt1"></i>
+              <i v-show="item.file_ext === 'pdf'" class="iconfont icon-pdf docpdf1"></i>
+              <i v-show="item.file_ext === 'txt'" class="iconfont icon-txt doctxt1"></i>
+              <i v-show="item.file_ext === 'mp4' || item.file_ext === 'rmvb' || item.file_ext === 'mpeg' || item.file_ext === 'mpg'" class="iconfont icon-video docvideo1"></i>
               <span class="DocumentBox-content-name">{{item.filename}}</span>
               <a :href="item.down_path" :download="item.down_path">
                 <el-button class="document-dlbtn" type="primary" size="mini" plain>下载</el-button>
@@ -1071,5 +1077,40 @@ export default {
 .page {
   margin-top: 20px;
   text-align: center;
+}
+.wenjian1 {
+  font-size: 24px;
+  margin: 0 8px 0 6px;
+  color: #409eff;
+}
+.docword1 {
+  font-size: 20px;
+  margin: 0 10px 0 8px;
+  color: #409eff;
+}
+.docexcel1 {
+  font-size: 20px;
+  margin: 0 10px 0 8px;
+  color: #67c23a;
+}
+.docppt1 {
+  font-size: 26px;
+  margin: 0 8px 0 4px;
+  color: #d04626;
+}
+.docpdf1 {
+  font-size: 26px;
+  margin: 0 8px 0 4px;
+  color: #d04626;
+}
+.doctxt1 {
+  font-size: 26px;
+  margin: 0 6px 0 6px;
+  color: #909399;
+}
+.docvideo1 {
+  font-size: 20px;
+  margin: 0 10px 0 8px;
+  color: #088fff;
 }
 </style>

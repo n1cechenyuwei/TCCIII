@@ -32,6 +32,8 @@
             :data="$store.state.task"
             class="mytask-content-table-one"
             stripe
+            height="730"
+            v-loading="$store.state.mytaskloading"
             style="width: 100%">
             <el-table-column
               prop="id"
@@ -148,6 +150,7 @@ export default {
   },
   created() {
     this.$store.dispatch("loadingMytask", this.currentPage);
+    this.$store.state.mytaskloading = true;
     this.$store.commit("taskhuakuaihidden"); // 关闭右滑任务详情
   },
   methods: {
@@ -193,7 +196,7 @@ export default {
         search: this.mytasksearch
       });
       if (res.data.status === 200) {
-        this.$store.state.mytasktotal = total_num;
+        this.$store.state.mytasktotal = res.data.total_num;
         this.$store.state.task = res.data.tasklist;
       } else {
         this.$message.warning(res.data.msg);

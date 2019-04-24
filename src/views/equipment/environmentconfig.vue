@@ -245,7 +245,11 @@ export default {
           { required: true, message: "请输入工作台IP地址", trigger: "blur" }
         ],
         issimulation: [
-          { required: true, message: "请选择工作台是否可做仿真检测", trigger: "blur" }
+          {
+            required: true,
+            message: "请选择工作台是否可做仿真检测",
+            trigger: "blur"
+          }
         ],
         system_version: [
           { required: true, message: "请输入系统版本", trigger: "blur" }

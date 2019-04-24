@@ -210,9 +210,9 @@ export default {
                 this.$message.success("任务提交成功");
                 this.$store.commit("taskhuakuaihidden");
                 if (this.ht === "mytask") {
-                  console.log(11);
+                  this.$store.dispatch("loadingMytask", 1);
                 } else {
-                  console.log(222);
+                  this.$store.dispatch("loadingAlltask", 1);
                 }
                 this.$store.dispatch("loadingMytask", 1);
                 this.$store.dispatch("hometask");

@@ -19,11 +19,11 @@ instance.interceptors.request.use(
       // 如果请求的地址不是login，设置token
       config.headers.token = token;
     }
-    if(config.method=="get"){
+    if (config.method === "get") {
       config.params = {
-        _t: Date.parse(new Date())/1000,
+        _t: Date.parse(new Date()) / 1000,
         ...config.params
-      }
+      };
     }
     return config;
   },
@@ -44,7 +44,6 @@ instance.interceptors.response.use(
     }
   },
   function(error) {
-    console.log(error)
     return Promise.reject(error);
   }
 );

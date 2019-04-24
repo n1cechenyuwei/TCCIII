@@ -55,6 +55,12 @@
             show-overflow-tooltip
             label="单位地址">
           </el-table-column>
+           <el-table-column
+            prop="legalperson"
+            width="120"
+            show-overflow-tooltip
+            label="法人">
+          </el-table-column>
           <el-table-column
             prop="linkman"
             width="120"

@@ -37,7 +37,7 @@ export default {
           name3: "第二页3"
         }
       ]
-    }
+    };
   },
   methods: {
     // fullScreen() {
@@ -61,10 +61,14 @@ export default {
   mounted() {
     // this.fullScreen();
   }
-}
+};
 </script>
 
 <style>
+#quan {
+  width: 100%;
+  height: 100%;
+}
 .el-carousel__item h3 {
   color: #475669;
   font-size: 18px;
@@ -83,5 +87,4 @@ export default {
   font-size: 100px;
   margin: 0 0 50px 0;
 }
-
 </style>

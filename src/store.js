@@ -131,13 +131,15 @@ export default new Vuex.Store({
     tasklisttotal: 0, // 任务分配总条数
     chartone: "", // 任务分配表实例
     alltask: [], // 全部任务数据
-    alltasktotal: 0 // 全部任务总数据条数
+    alltasktotal: 0, // 全部任务总数据条数
+    mytaskloading: false // 任务加载
   },
   mutations: {
     // 任务读取
     loadingMytask(state, data) {
       this.state.task = data.data;
       this.state.mytasktotal = data.total;
+      this.state.mytaskloading = false;
     },
     // 全部任务读取
     loadingAlltask(state, data) {

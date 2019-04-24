@@ -34,12 +34,16 @@ const Simulationconfig = () => import("@/views/equipment/simulationconfig.vue");
 const Pissimulationconfig = () =>
   import("@/views/equipment/pissimulationconfig.vue");
 const Reports = () => import("@/views/reports/reports.vue");
-const PisReportsfirstdraft = () => import("@/views/reports/pisReportsfirstdraft.vue");
-const PisReportsLatestdraft = () => import("@/views/reports/pisReportsLatestdraft.vue");
+const PisReportsfirstdraft = () =>
+  import("@/views/reports/pisReportsfirstdraft.vue");
+const PisReportsLatestdraft = () =>
+  import("@/views/reports/pisReportsLatestdraft.vue");
 const Pisentrust = () => import("@/views/reports/pisentrust.vue");
 const Vmsentrust = () => import("@/views/reports/vmsentrust.vue");
-const VmsReportsfirstdraft = () => import("@/views/reports/vmsReportsfirstdraft.vue");
-const VmsReportsLatestdraft = () => import("@/views/reports/vmsReportsLatestdraft.vue");
+const VmsReportsfirstdraft = () =>
+  import("@/views/reports/vmsReportsfirstdraft.vue");
+const VmsReportsLatestdraft = () =>
+  import("@/views/reports/vmsReportsLatestdraft.vue");
 const Contract = () => import("@/views/contract/contract.vue");
 const PisContract = () => import("@/views/contract/pisContract.vue");
 const VmsContract = () => import("@/views/contract/vmsContract.vue");
@@ -52,10 +56,12 @@ const Pisconfigcase = () => import("@/views/cases/pisconfigcase.vue");
 const Vmscases = () => import("@/views/cases/vmscases.vue");
 const Vmsconfigcase = () => import("@/views/cases/vmsconfigcase.vue");
 const Vmsdetection = () => import("@/views/display/vmsdetection.vue");
-const Document = () => import("./views/document/document.vue");
-const Commondocument = () => import("./views/document/commondocument.vue");
-const Pisdocument = () => import("./views/document/pisdocument.vue");
-const Vmsdocument = () => import("./views/document/vmsdocument.vue");
+const Document = () => import("@/views/document/document.vue");
+const Commondocument = () => import("@/views/document/commondocument.vue");
+const Pisdocument = () => import("@/views/document/pisdocument.vue");
+const Vmsdocument = () => import("@/views/document/vmsdocument.vue");
+const Docleveltwo = () => import("@/views/document/docleveltwo.vue");
+const Doclevelthree = () => import("@/views/document/doclevelthree.vue");
 
 Vue.use(Router);
 
@@ -318,6 +324,16 @@ const router = new Router({
               name: "vmsdocument",
               path: "/vmsdocument",
               component: Vmsdocument
+            },
+            {
+              name: "docleveltwo",
+              path: "/docleveltwo",
+              component: Docleveltwo
+            },
+            {
+              name: "doclevelthree",
+              path: "/doclevelthree",
+              component: Doclevelthree
             }
           ]
         }

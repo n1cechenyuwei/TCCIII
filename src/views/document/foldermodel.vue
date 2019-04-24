@@ -1,55 +1,24 @@
 <template>
   <div>
-    <div class="mytask-content-top">
-      <el-dropdown
-        @command="handleCommand"
-        placement="bottom-start"
-        class="mytask-dropdown">
-        <el-button type="primary" size="small">
-          筛选<i class="el-icon-arrow-down el-icon--right"></i>
-        </el-button>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item command="a">按开始时间(最新)</el-dropdown-item>
-          <el-dropdown-item command="b">按结束时间(最新)</el-dropdown-item>
-          <el-dropdown-item command="c">按任务进度(最新)</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
-      <div class="search-box">
-        <el-input
-          size="small"
-          class="mytasksearch"
-          placeholder="请输入文件夹名称"
-          v-model="myprojectsearch">
-        </el-input>
-        <i class="el-icon-search sreach-icon"></i>      
-      </div>     
-      <el-button type="primary" size="mini">搜索</el-button>
+    <div class="mydoc-top">
+      <div class="breac">{{this.propsdata.breacname}}</div>
     </div>
     <div class="mytask-content-middle">
-      <div class="mytask-content-table">
+      <div class="mytask-content-table4">
         <el-table
+          v-loading="loading"
           :data="projectlist"
-          class="mytask-content-table-one"
+          class="mytask-content-table-one4"
           stripe
+          height="760"
           style="width: 100%">
           <el-table-column
             prop="name"
             label="名称">
             <template slot-scope="scope">
               <i class="iconfont wenjianjia icon-tubiaozhizuomoban"></i>
-              <span>{{scope.row.name}}</span>
+              <span class="docclick" @click="nexttoleveltwo(scope.row)">{{scope.row.name}}</span>
             </template>
-          </el-table-column>
-          <el-table-column
-            prop="size"
-            label="大小"
-            width="180">
-          </el-table-column>
-          <el-table-column
-            show-overflow-tooltip
-            prop="time"
-            width="400"
-            label="生成时间">
           </el-table-column>
         </el-table>
       </div>
@@ -67,63 +36,80 @@
 
 <script>
 export default {
-  props: ["prostatus"],
+  props: ["propsdata"],
   data() {
     return {
       currentPage: 1, //默认第几页
       taskpagesize: 14, //每页显示几条
       projecttotal: 0,
-      projectlist: [
-        {
-          name: "文件夹1",
-          time: "2018-10-01",
-          size: "1.5MB"
-        }
-      ],
-      myprojectsearch: "",
-      propstatus: this.prostatus
+      loading: false,
+      projectlist: [],
+      todata: {
+        breacname: "",
+        breacpath: "",
+        id: "",
+        leveltwoname: ""
+      }
     };
   },
   methods: {
-    
-    //筛选按钮
-    handleCommand(command) {
-      if (command === "a") {
-        console.log("aaa");
-      } else if (command === "b") {
-        console.log("bbb");
-      }
-    },
     handleprojectChange(val) {
-      // this.projecteddata(val);
+      this.getdata(val);
+    },
+    nexttoleveltwo(row) {
+      this.todata.id = row.id;
+      this.todata.leveltwoname = row.name;
+      this.$router.push({
+        name: "docleveltwo",
+        params: {
+          nextdata: this.todata
+        }
+      });
+    },
+    getloadingdata() {
+      this.todata.breacname = this.propsdata.breacname;
+      this.todata.breacpath = this.propsdata.breacpath;
+      this.getdata(this.currentPage);
+    },
+    async getdata(page) {
+      this.loading = true;
+      const res = await this.$http.get(`${this.propsdata.propsstatus}/${page}`);
+      if (res.data.status === 200) {
+        this.projecttotal = res.data.total_num;
+        this.projectlist = res.data.folder;
+        this.loading = false;
+      } else {
+        this.$message.error(res.data.msg);
+      }
     }
   },
   created() {
-    // this.projecteddata(this.currentPage);
+    this.getloadingdata();
   }
 };
 </script>
 
 <style>
-.mytask-content-top {
-  height: 54px;
+.mydoc-top {
+  height: 44px;
   background-color: #fbfbfb;
   border-top-left-radius: 6px;
   border-bottom: 1px solid #e8e8e8;
 }
-.mytasksearch {
-  width: 300px;
-  margin-top: 11px;
-  margin-left: 20px;
-  margin-right: 10px;
-  position: relative;
+.mytask-content-table4 {
+  height: 780px;
 }
-.sreach-icon {
-  position: absolute;
-  top: 0px;
+.mytask-content-table-one4 {
+  font-size: 16px;
 }
-.mytask-dropdown {
-  margin-left: 30px;
+.breac {
+  margin: 0 0 0 40px;
+  line-height: 44px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #303133;
+  /* font-family: Helvetica Neue,Helvetica,PingFang SC,Hiragino Sans GB,Microsoft YaHei,SimSun,sans-serif; */
+  height: 44px;
 }
 .wenjianjia {
   font-size: 28px;
@@ -131,5 +117,11 @@ export default {
   position: relative;
   top: 4px;
   margin: 0 10px 0 0;
+}
+.docclick {
+  cursor: pointer;
+}
+.docclick:hover {
+  color: #409eff;
 }
 </style>

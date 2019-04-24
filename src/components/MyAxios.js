@@ -22,12 +22,12 @@ MyAxios.install = function(Vue) {
         // 如果请求的地址不是login，设置token
         config.headers.token = token;
       }
-      if(config.method === "get"){
-				config.params = {
-          _t: Date.parse(new Date())/1000,
-					...config.params
-				}
-			}
+      if (config.method === "get") {
+        config.params = {
+          _t: Date.parse(new Date()) / 1000,
+          ...config.params
+        };
+      }
       return config;
     },
     function(error) {
