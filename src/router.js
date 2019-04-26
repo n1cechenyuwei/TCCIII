@@ -62,6 +62,12 @@ const Pisdocument = () => import("@/views/document/pisdocument.vue");
 const Vmsdocument = () => import("@/views/document/vmsdocument.vue");
 const Docleveltwo = () => import("@/views/document/docleveltwo.vue");
 const Doclevelthree = () => import("@/views/document/doclevelthree.vue");
+const Knowledge = () => import("@/views/knowledge/knowledge.vue");
+const Defects = () => import("@/views/knowledge/defects.vue");
+const Nodefects = () => import("@/views/knowledge/nodefects.vue");
+const Maintain = () => import("@/views/knowledge/maintain.vue");
+const Systemrun = () => import("@/views/knowledge/systemrun.vue");
+const TestBusiness = () => import("@/views/knowledge/testBusiness.vue");
 
 Vue.use(Router);
 
@@ -334,6 +340,38 @@ const router = new Router({
               name: "doclevelthree",
               path: "/doclevelthree",
               component: Doclevelthree
+            }
+          ]
+        },
+        {
+          name: "knowledge",
+          path: "/knowledge",
+          component: Knowledge,
+          children: [
+            {
+              name: "defects",
+              path: "/defects",
+              component: Defects
+            },
+            {
+              name: "nodefects",
+              path: "/nodefects",
+              component: Nodefects
+            },
+            {
+              name: "maintain",
+              path: "/maintain",
+              component: Maintain
+            },
+            {
+              name: "systemrun",
+              path: "/systemrun",
+              component: Systemrun
+            },
+            {
+              name: "testBusiness",
+              path: "/testBusiness",
+              component: TestBusiness
             }
           ]
         }

@@ -31,7 +31,7 @@
                   </el-col>
                   <el-col :span="6">
                     <p>支持</p>
-                    <el-menu-item index="2-1" class="xuanxiang">知识资源</el-menu-item>
+                    <el-menu-item index="/knowledge" class="xuanxiang">知识资源</el-menu-item>
                     <el-menu-item index="/cases" class="xuanxiang">检测用例</el-menu-item>
                   </el-col>
                   <el-col :span="6">

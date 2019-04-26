@@ -4,7 +4,7 @@
       <div class="taskmenu-box">
         <el-menu
           @select="handleSelect"
-          default-active="/environmentconfig"
+          default-active="/simtools"
           class="el-menu-vertical-demo taskmenu"
           :router="true"
           >
@@ -12,8 +12,8 @@
             <template slot="title">
               <span class="taskmenu-tittle">实验室设备</span>
             </template>
+            <el-menu-item class="zuobian" index="/simtools">软件配置</el-menu-item>
             <el-menu-item class="zuobian" index="/environmentconfig">工作台配置</el-menu-item>
-            <el-menu-item class="zuobian" index="/simtools">工作台软件配置</el-menu-item>
             <el-menu-item class="zuobian" index="/pissimulationconfig">PIS仿真系统配置</el-menu-item>
             <el-menu-item class="zuobian" index="/simulationconfig">VMS仿真系统配置</el-menu-item>
           </el-submenu>
@@ -42,7 +42,7 @@ export default {
     };
   },
   created() {
-    this.$router.push({ name: "environmentconfig" });
+    this.$router.push({ name: "simtools" });
   },
   methods: {
     // 选中菜单关闭右侧滑块

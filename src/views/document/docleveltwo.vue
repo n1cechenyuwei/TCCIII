@@ -23,11 +23,6 @@
               <span class="docclick" @click="tolevelthree(scope.row)">{{scope.row.name}}</span>
             </template>
           </el-table-column>
-          <el-table-column
-            prop="size"
-            label="大小"
-            width="180">
-          </el-table-column>
         </el-table>
       </div>
       <el-pagination

@@ -313,22 +313,22 @@ export default {
     this.docment();
     this.calendarTwo();
     this.$store.commit("taskhuakuaihidden");
-    console.log("     \\\\            //\n" + 
-      "      \\\\          //\n" +
-      "       \\\\        //\n" +
-      "##DDDDDDDDDDDDDDDDDDDDDD##\n"+
-      "## DDDDDDDDDDDDDDDDDDDD ##   ________   ___   ___        ___   ________   ___   ___        ___\n"+
-      "## hh                hh ##   |\\   __  \\ |\\  \\ |\\  \\      |\\  \\ |\\   __  \\ |\\  \\ |\\  \\      |\\  \\ \n"+
-      "## hh    //    \\\\    hh ##   \\ \\  \\|\\ /_\\ \\  \\\\ \\  \\     \\ \\  \\\\ \\  \\|\\ /_\\ \\  \\\\ \\  \\     \\ \\  \\ \n"+
-      "## hh   //      \\\\   hh ##    \\ \\  \\|\\ /_\\ \\  \\\\ \\  \\     \\ \\  \\\\ \\  \\|\\ /_\\ \\  \\\\ \\  \\     \\ \\  \\ \n"+
-      "## hh  //        \\\\  hh ##     \\ \\   __  \\\\ \\  \\\\ \\  \\     \\ \\  \\\\ \\   __  \\\\ \\  \\\\ \\  \\     \\ \\  \\ \n"+
-      "## hh                hh ##      \\ \\  \\|\\  \\\\ \\  \\\\ \\  \\____ \\ \\  \\\\ \\  \\|\\  \\\\ \\  \\\\ \\  \\____ \\ \\  \\ \n"+
-      "## hh      wwww      hh ##       \\ \\_______\\\\ \\__\\\\ \\_______\\\\ \\__\\\\ \\_______\\\\ \\__\\\\ \\_______\\\\ \\__\\ \n"+
-      "## hh                hh ##        \\|_______| \\|__| \\|_______| \\|__| \\|_______| \\|__| \\|_______| \\|__| \n"+
-      "## MMMMMMMMMMMMMMMMMMMM ##\n"+
-      "##MMMMMMMMMMMMMMMMMMMMMM##\n"+
-      "     \\/            \\/"
-    )
+    // console.log("     \\\\            //\n" +
+    //   "      \\\\          //\n" +
+    //   "       \\\\        //\n" +
+    //   "##DDDDDDDDDDDDDDDDDDDDDD##\n"+
+    //   "## DDDDDDDDDDDDDDDDDDDD ##   ________   ___   ___        ___   ________   ___   ___        ___\n"+
+    //   "## hh                hh ##   |\\   __  \\ |\\  \\ |\\  \\      |\\  \\ |\\   __  \\ |\\  \\ |\\  \\      |\\  \\ \n"+
+    //   "## hh    //    \\\\    hh ##   \\ \\  \\|\\ /_\\ \\  \\\\ \\  \\     \\ \\  \\\\ \\  \\|\\ /_\\ \\  \\\\ \\  \\     \\ \\  \\ \n"+
+    //   "## hh   //      \\\\   hh ##    \\ \\  \\|\\ /_\\ \\  \\\\ \\  \\     \\ \\  \\\\ \\  \\|\\ /_\\ \\  \\\\ \\  \\     \\ \\  \\ \n"+
+    //   "## hh  //        \\\\  hh ##     \\ \\   __  \\\\ \\  \\\\ \\  \\     \\ \\  \\\\ \\   __  \\\\ \\  \\\\ \\  \\     \\ \\  \\ \n"+
+    //   "## hh                hh ##      \\ \\  \\|\\  \\\\ \\  \\\\ \\  \\____ \\ \\  \\\\ \\  \\|\\  \\\\ \\  \\\\ \\  \\____ \\ \\  \\ \n"+
+    //   "## hh      wwww      hh ##       \\ \\_______\\\\ \\__\\\\ \\_______\\\\ \\__\\\\ \\_______\\\\ \\__\\\\ \\_______\\\\ \\__\\ \n"+
+    //   "## hh                hh ##        \\|_______| \\|__| \\|_______| \\|__| \\|_______| \\|__| \\|_______| \\|__| \n"+
+    //   "## MMMMMMMMMMMMMMMMMMMM ##\n"+
+    //   "##MMMMMMMMMMMMMMMMMMMMMM##\n"+
+    //   "     \\/            \\/"
+    // );
   },
   methods: {
     // dialog关闭设备营业图片消失
@@ -529,44 +529,44 @@ export default {
   },
   components: {
     calendar: resolve => {
-      require(["../components/calendar.vue"], resolve)
-    }, 
+      require(["../components/calendar.vue"], resolve);
+    },
     Mytabs: resolve => {
-      require(["../components/Mytabs"], resolve)
+      require(["../components/Mytabs"], resolve);
     },
     Chart: resolve => {
-      require(["./Chart"], resolve)
+      require(["./Chart"], resolve);
     },
     Applyfor: resolve => {
-      require(["./tasks/Applyfor"], resolve)
+      require(["./tasks/Applyfor"], resolve);
     },
     ApprovalContract: resolve => {
-      require(["./tasks/ApprovalContract"], resolve)
+      require(["./tasks/ApprovalContract"], resolve);
     },
     Contractor: resolve => {
-      require(["./tasks/Contractor"], resolve)
+      require(["./tasks/Contractor"], resolve);
     },
     Detection: resolve => {
-      require(["./tasks/Detection"], resolve)
+      require(["./tasks/Detection"], resolve);
     },
     Eqconfig: resolve => {
-      require(["./tasks/Eqconfig"], resolve)
+      require(["./tasks/Eqconfig"], resolve);
     },
     PutStorage: resolve => {
-      require(["./tasks/PutStorage"], resolve)
+      require(["./tasks/PutStorage"], resolve);
     },
     OutStorage: resolve => {
-      require(["./tasks/OutStorage"], resolve)
+      require(["./tasks/OutStorage"], resolve);
     },
     ReportAudit: resolve => {
-      require(["./tasks/ReportAudit"], resolve)
+      require(["./tasks/ReportAudit"], resolve);
     },
     DetectionAudit: resolve => {
-      require(["./tasks/DetectionAudit"], resolve)
+      require(["./tasks/DetectionAudit"], resolve);
     },
     Chart1: resolve => {
-      require(["./chart1"], resolve)
-    },
+      require(["./chart1"], resolve);
+    }
     // Mytabs,
     // calendar,
     // Chart,
