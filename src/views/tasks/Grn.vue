@@ -176,10 +176,11 @@ export default {
 .grn-contentbox {
   font-family: "SimSun";
   width: 800px;
-  margin: 0 auto;
+  margin: auto;
 }
 .grn-top {
   text-align: center;
+  padding: 10px 0 0 0;
   color: #808080;
   font-size: 18px;
 }
@@ -415,7 +416,7 @@ export default {
   margin-left: 2px;
 }
 .bbottom {
-  height: 72px;
+  height: 88px;
   box-sizing: border-box;
   border: 1px solid #000;
   border-top: none;
@@ -438,8 +439,8 @@ export default {
 .kuai {
   display: inline-block;
   vertical-align: top;
-  height: 36px;
-  line-height: 36px;
+  height: 44px;
+  line-height: 44px;
   text-align: center;
   box-sizing: border-box;
   border-right: 1px solid #000;
@@ -447,8 +448,8 @@ export default {
 .youkuai {
   display: inline-block;
   vertical-align: top;
-  height: 36px;
-  line-height: 36px;
+  height: 44px;
+  line-height: 44px;
   text-align: center;
   box-sizing: border-box;
 }

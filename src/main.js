@@ -10,8 +10,8 @@ import "video.js/dist/lang/zh-CN";
 import Breadcrumb from "@/components/Breadcrumb";
 
 import "@/assets/css/style.css";
-import "video.js/dist/video-js.css";
-import "vue-video-player/src/custom-theme.css";
+require("video.js/dist/video-js.css");
+require("vue-video-player/src/custom-theme.css");
 import "@/assets/css/icon/iconfont.css";
 import "element-ui/lib/theme-chalk/index.css";
 

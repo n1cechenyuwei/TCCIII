@@ -3,24 +3,19 @@
     <el-aside width="220px">
       <div class="taskmenu-box">
         <el-menu
-          default-active="/mytask"
+          :default-active="newroute"
           @select="handleSelect"
           class="el-menu-vertical-demo taskmenu"
           :router="true"
           >
-          <el-submenu index="1">
+          <el-submenu index="1" v-if="treemore.length !== 0">
             <template slot="title">
-              <span class="taskmenu-tittle">任务</span>
+              <span class="taskmenu-tittle">{{treemore.name}}</span>
             </template>
-            <el-menu-item index="/mytask" class="zuobian">我的任务</el-menu-item>
-            <el-menu-item index="/tasked" class="zuobian">已完成任务</el-menu-item>
-            <el-menu-item index="/alltask" class="zuobian">全部任务</el-menu-item>
+            <el-menu-item v-for="(li, index2) in treemore.children" :key="index2" :index="li.route" class="zuobian">{{li.name}}</el-menu-item>
           </el-submenu>
-          <el-menu-item index="/taskStatistical">
-            <span slot="title" class="taskmenu-tittle">任务统计</span>
-          </el-menu-item>
-          <el-menu-item index="/taskallot">
-            <span slot="title" class="taskmenu-tittle">任务分配</span>
+          <el-menu-item :index="item.route" v-for="(item, index) in treelist" :key="index">
+            <span slot="title" class="taskmenu-tittle">{{item.name}}</span>
           </el-menu-item>
         </el-menu>
       </div>
@@ -37,13 +32,45 @@
 export default {
   data() {
     return {
-      abc: ""
+      newroute: "",
+      treeOne: [],
+      treemore: "",
+      treelist: []
     };
   },
   created() {
-    this.$router.push({ name: "mytask" });
+    this.router();
   },
   methods: {
+    async router() {
+      this.treeOne = [];
+      const res = await this.$http.get("getpermistree");
+      for (const item of res.data.permis_list) {
+        if (item.name !== "更多") {
+          this.treeOne.push(item);
+        }
+      }
+      this.treemore = "";
+      this.treelist = [];
+      this.treeOne.forEach(element => {
+        if (element.name === "任务") {
+          element.children.forEach(item => {
+            if (item.name === "任务") {
+              this.treemore = item;
+            } else {
+              this.treelist.push(item);
+            }
+          });
+        }
+      });
+      if (this.treemore === "") {
+        this.newroute = this.treelist[0].route;
+        this.$router.push({ path: this.newroute });
+      } else if (this.treemore !== "" || this.treelist.length !== 0) {
+        this.newroute = this.treemore.children[0].route;
+        this.$router.push({ path: this.newroute });
+      }
+    },
     // 选中菜单关闭右侧滑块
     handleSelect() {
       this.$store.commit("taskhuakuaihidden");

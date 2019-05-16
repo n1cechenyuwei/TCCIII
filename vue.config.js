@@ -1,4 +1,5 @@
 const webpack = require('webpack');
+// import '@babel/polyfill';
 module.exports = {
   baseUrl: './',
   configureWebpack: {
@@ -13,6 +14,9 @@ module.exports = {
     .entry('index')
       .add('babel-polyfill')
   },
+  // entry: {
+  //   app: ['babel-polyfill', './src/main.js'],
+  // },
   devServer: {
     open: true,
     host: '127.0.0.1',

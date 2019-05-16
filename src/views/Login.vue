@@ -51,7 +51,10 @@ export default {
             trigger: "blur"
           }
         ]
-      } //新增历史验证规则
+      }, //新增历史验证规则
+      treeOne: [],
+      treeTwo: "",
+      newroute: ""
     };
   },
   methods: {
@@ -68,7 +71,23 @@ export default {
           const username = res.username;
           sessionStorage.setItem("token", token);
           sessionStorage.setItem("username", username);
-          this.$router.push({ name: "home" });
+          this.treeOne = [];
+          this.treeTwo = "";
+          const res1 = await this.$http.get("getpermistree");
+          res1.data.permis_list.forEach(element => {
+            if (element.name === "更多") {
+              this.treeTwo = element;
+            } else {
+              this.treeOne.push(element);
+            }
+          });
+          if (this.treeOne.length !== 0) {
+            this.newroute = this.treeOne[0].route;
+            this.$router.push({ path: this.newroute });
+          } else if (this.treeOne.length === 0 || this.treeTwo !== "") {
+            this.newroute = this.treeTwo.children[0].children[0].route;
+            this.$router.push({ path: this.newroute });
+          }
         } else {
           this.$message.error(res.msg);
         }

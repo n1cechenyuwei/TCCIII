@@ -334,11 +334,11 @@ export default {
     },
     // pis vms选中读取数值
     pvchange() {
-      if (this.PVtabPosition === "pis") {
+      // if (this.PVtabPosition === "pis") {
         
-      } else {
+      // } else {
         
-      }
+      // }
     },
     // 表格
     charttwo() {
@@ -465,18 +465,9 @@ export default {
     },
     // 请求图表信息
     async alltisklistdatatwo() {
-      const date = new Date().getTime();
-      const res = await this.$http.get(`taskcharts/${this.PVtabPosition}/1?${date}`);
-      if (res.status === 200) {
-        // const mindate = Math.min.apply(Math, res.taskinfo.map(function(o) {return new Date(o.starttime.replace(/-/g, '/'))}));
-        // const maxdate = Math.max.apply(Math, res.taskinfo.map(function(o) {return new Date(o.endtime.replace(/-/g, '/'))}));
-        // const diffdate = (maxdate - mindate) / 1000 / 60 / 60 / 24;
-        // if (diffdate > 18) {
-        //   this.tickCountNumber = 18;
-        // } else {
-        //   this.tickCountNumber = diffdate;
-        // }
-        res.taskinfo.forEach(obj => {
+      const res = await this.$http.get(`taskcharts/${this.PVtabPosition}/1`);
+      if (res.data.status === 200) {
+        res.data.taskinfo.forEach(obj => {
           if (obj.taskname !== "") {
             obj.range = [obj.starttime, obj.endtime];
             // obj.range = [];
@@ -492,11 +483,11 @@ export default {
             obj.range = [obj.starttime, obj.endtime];
           }
         });
-        this.chartlist = res.taskinfo;
-        this.tasklisttotal = res.data_total;
+        this.chartlist = res.data.taskinfo;
+        this.tasklisttotal = res.data.data_total;
         this.charttwo();
       } else {
-        this.$message.error(res.msg);
+        this.$message.error(res.data.msg);
       }
     }
   },

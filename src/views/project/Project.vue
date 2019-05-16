@@ -3,20 +3,19 @@
     <el-aside width="220px">
       <div class="taskmenu-box">
         <el-menu
-          :default-active="next"
+          :default-active="newroute"
           @select="handleSelect"
           class="el-menu-vertical-demo taskmenu"
           :router="true"
           >
           <el-submenu index="1">
-            <template slot="title">
-              <span class="taskmenu-tittle">项目</span>
+            <template slot="title" v-if="treemore.length !== 0">
+              <span class="taskmenu-tittle">{{treemore.name}}</span>
             </template>
-            <el-menu-item index="/goingproject" class="zuobian">进行中项目</el-menu-item>
-            <el-menu-item index="/projected" class="zuobian">已完成项目</el-menu-item>
+            <el-menu-item v-for="(li, index2) in treemore.children" :key="index2" :index="li.route" class="zuobian">{{li.name}}</el-menu-item>
           </el-submenu>
-          <el-menu-item index="/projectStatistical">
-            <span slot="title" class="taskmenu-tittle">项目统计</span>
+          <el-menu-item :index="item.route" v-for="(item, index) in treelist" :key="index">
+            <span slot="title" class="taskmenu-tittle">{{item.name}}</span>
           </el-menu-item>
         </el-menu>
       </div>
@@ -33,8 +32,11 @@
 export default {
   data() {
     return {
-      abc: "",
-      next: "" // 默认选中
+      newroute: "", // 默认选中
+      treeTwo: "",
+      treeOne: [],
+      treemore: "",
+      treelist: []
     };
   },
   created() {
@@ -42,15 +44,41 @@ export default {
   },
   methods: {
     // 选中菜单关闭右侧滑块
-    handleSelect(index) {
+    handleSelect() {
       this.$store.commit("taskhuakuaihidden");
     },
-    router() {
+    async router() {
+      this.treeOne = [];
+      this.treeTwo = "";
+      const res = await this.$http.get("getpermistree");
+      for (const item of res.data.permis_list) {
+        if (item.name !== "更多") {
+          this.treeOne.push(item);
+        }
+      }
+      this.treemore = "";
+      this.treelist = [];
+      this.treeOne.forEach(element => {
+        if (element.name === "项目") {
+          element.children.forEach(item => {
+            if (item.name === "项目") {
+              this.treemore = item;
+            } else {
+              this.treelist.push(item);
+            }
+          });
+        }
+      });
       if (this.$route.params.id === undefined) {
-        this.next = "/goingproject";
-        this.$router.push({ name: "goingproject" });
+        if (this.treemore === "") {
+          this.newroute = this.treelist[0].route;
+          this.$router.push({ path: this.newroute });
+        } else if (this.treemore !== "" || this.treelist.length !== 0) {
+          this.newroute = this.treemore.children[0].route;
+          this.$router.push({ path: this.newroute });
+        }
       } else {
-        this.next = this.$route.params.path;
+        this.newroute = this.$route.params.path;
         this.$router.push({
           name: "projectdetails",
           params: {

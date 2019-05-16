@@ -171,7 +171,7 @@ export default {
             const res = await this.$http.put(`applyfor/${this.taskid}`, {
               state: "通过"
             });
-            if (res.status === 200) {
+            if (res.data.status === 200) {
               this.$store.commit("tasksubmitloadinghidden");
               this.$message.success("任务提交成功");
               this.$store.commit("taskhuakuaihidden");
@@ -185,7 +185,7 @@ export default {
               this.$refs.formInline.resetFields();
             } else {
               this.$store.commit("tasksubmitloadinghidden");
-              this.$message.error(res.msg);
+              this.$message.error(res.data.msg);
             }
           })
           .catch(() => {});
@@ -205,7 +205,7 @@ export default {
                 state: "不通过",
                 remarks: this.formInline.why
               });
-              if (res.status === 200) {
+              if (res.data.status === 200) {
                 this.$store.commit("tasksubmitloadinghidden");
                 this.$message.success("任务提交成功");
                 this.$store.commit("taskhuakuaihidden");
@@ -219,7 +219,7 @@ export default {
                 this.$store.dispatch("loadingAlltask", 1);
               } else {
                 this.$store.commit("tasksubmitloadinghidden");
-                this.$message.error(res.msg);
+                this.$message.error(res.data.msg);
               }
             })
             .catch(() => {});

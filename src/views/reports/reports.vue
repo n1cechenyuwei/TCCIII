@@ -3,27 +3,17 @@
     <el-aside width="220px">
       <div class="taskmenu-box">
         <el-menu
-          default-active="/pisReportsfirstdraft"
+          :default-active="newroute"
           @select="handleSelect"
           :unique-opened="true"
           class="el-menu-vertical-demo taskmenu"
           :router="true"
           >
-          <el-submenu index="1">
+          <el-submenu :index="index + ''" v-for="(item2, index) in treelist" :key="index">
             <template slot="title">
-              <span class="taskmenu-tittle">PIS报告</span>
+              <span class="taskmenu-tittle">{{item2.name}}</span>
             </template>
-            <el-menu-item index="/pisReportsfirstdraft" class="zuobian">初稿</el-menu-item>
-            <el-menu-item index="/pisReportsLatestdraft" class="zuobian">终稿</el-menu-item>
-            <el-menu-item index="/pisentrust" class="zuobian">外委</el-menu-item>
-          </el-submenu>
-          <el-submenu index="2">
-            <template slot="title">
-              <span class="taskmenu-tittle">VMS报告</span>
-            </template>
-            <el-menu-item index="/vmsReportsfirstdraft" class="zuobian">初稿</el-menu-item>
-            <el-menu-item index="/vmsReportsLatestdraft" class="zuobian">终稿</el-menu-item>
-            <el-menu-item index="/vmsentrust" class="zuobian">外委</el-menu-item>
+            <el-menu-item v-for="(item3, index2) in item2.children" :key="index2" :index="item3.route" class="zuobian">{{item3.name}}</el-menu-item>
           </el-submenu>
         </el-menu>
       </div>
@@ -40,13 +30,40 @@
 export default {
   data() {
     return {
-      abc: ""
+      newroute: "",
+      treeTwo: "",
+      treelist: []
     };
   },
   created() {
-    this.$router.push({ name: "pisReportsfirstdraft" });
+    this.router();
   },
   methods: {
+    async router() {
+      this.treeTwo = "";
+      this.treelist = [];
+      const res = await this.$http.get("getpermistree");
+      for (const item of res.data.permis_list) {
+        if (item.name === "更多") {
+          this.treeTwo = item;
+          for (const item2 of this.treeTwo.children) {
+            if (item2.name === "检测流程") {
+              for (const item3 of item2.children) {
+                if (item3.name === "报告管理") {
+                  this.treelist = item3.children;
+                }
+              }
+              break;
+            }
+          }
+          break;
+        }
+      }
+      if (this.treelist.length !== 0) {
+        this.newroute = this.treelist[0].children[0].route;
+        this.$router.push({ path: this.newroute });
+      }
+    },
     // 选中菜单关闭右侧滑块
     handleSelect() {
       // this.$store.commit("taskhuakuaihidden");

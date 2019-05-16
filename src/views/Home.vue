@@ -216,7 +216,7 @@
         </el-form-item>
         <el-form-item label="公告内容" prop="content">
           <el-input
-            :rows="5"
+            :rows="10"
             type="textarea"
             placeholder="请输入公告详情"
             v-model="NewAnnouncement.content">
@@ -376,7 +376,7 @@ export default {
           return this.$message.error("请完整输入内容");
         }
         const resdata = await this.$http.post("notice", this.NewAnnouncement);
-        if (resdata.status === 201) {
+        if (resdata.data.status === 201) {
           this.$message.success("添加成功");
           //清空表单
           for (let key in this.NewAnnouncement) {
@@ -387,7 +387,7 @@ export default {
           this.noticehostory();
           this.dialogannouncement = false;
         } else {
-          this.$message.error(resdata.msg);
+          this.$message.error(resdata.data.msg);
         }
       });
     },
@@ -399,48 +399,48 @@ export default {
     async showannouncement(id) {
       this.dialogannouncementcontent = true;
       const resdata = await this.$http.get(`notidetail/${id}`);
-      if (resdata.status === 200) {
-        this.announcementTwo = resdata;
+      if (resdata.data.status === 200) {
+        this.announcementTwo = resdata.data;
       } else {
-        this.$message.error(resdata.msg);
+        this.$message.error(resdata.data.msg);
       }
     },
     //单位数量
     async aaa() {
       const resdata = await this.$http.get("count");
-      if (resdata.status === 200) {
-        this.number = resdata;
+      if (resdata.data.status === 200) {
+        this.number = resdata.data;
       } else {
-        this.$message.error(resdata.msg);
+        this.$message.error(resdata.data.msg);
       }
     },
     //获取最新公告
     async newnotice() {
       const date = new Date().getTime();
       const resdata = await this.$http.get(`newnotice?${date}`);
-      if (resdata.status === 200) {
-        this.news = resdata;
+      if (resdata.data.status === 200) {
+        this.news = resdata.data;
       } else {
-        this.$message.error(resdata.msg);
+        this.$message.error(resdata.data.msg);
       }
     },
     //获取历史公告
     async noticehostory() {
       const date = new Date().getTime();
       const resdata = await this.$http.get(`notice?${date}`);
-      if (resdata.status === 200) {
-        this.history = resdata.data;
+      if (resdata.data.status === 200) {
+        this.history = resdata.data.data;
       } else {
-        this.$message.error(resdata.msg);
+        this.$message.error(resdata.data.msg);
       }
     },
     //获取文档列表
     async docment() {
       const resdata = await this.$http.get("doclist");
-      if (resdata.status === 200) {
-        this.doclist = resdata.data;
+      if (resdata.data.status === 200) {
+        this.doclist = resdata.data.data;
       } else {
-        this.$message.error(resdata.msg);
+        this.$message.error(resdata.data.msg);
       }
     },
     // v2.0日历初始化函数
@@ -512,13 +512,11 @@ export default {
       const resdata = await this.$http.get(
         `currentprojects/${this.datetwo}/${this.currentPage}`
       );
-      if (resdata.status === 200) {
-        this.projectpagetotal = resdata.data_total;
-        this.projectlist = resdata.pro_list;
+      if (resdata.data.status === 200) {
+        this.projectpagetotal = resdata.data.data_total;
+        this.projectlist = resdata.data.pro_list;
         this.project(this.projectlist);
         this.tabsloading = false;
-      } else {
-        this.$message.error(resdata.msg);
       }
     },
     //分页

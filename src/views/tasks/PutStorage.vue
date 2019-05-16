@@ -197,7 +197,7 @@ export default {
       })
         .then(async () => {
           const res = await this.$http.put(`putstorage/${this.taskid}`);
-          if (res.status === 200) {
+          if (res.data.status === 200) {
             this.$message.success("任务提交成功");
             this.$store.commit("taskhuakuaihidden");
             if (this.ht === "mytask") {
@@ -207,7 +207,7 @@ export default {
             }
             this.$store.dispatch("hometask");
           } else {
-            this.$message.warning(res.msg);
+            this.$message.warning(res.data.msg);
           }
         })
         .catch(() => {});

@@ -181,7 +181,7 @@ export default {
             this.$message.error("请先上传报告");
           } else {
             const res = await this.$http.put(`reportaudit/${this.taskid}`);
-            if (res.status === 200) {
+            if (res.data.status === 200) {
               this.$message.success("提交成功");
               this.$store.commit("taskhuakuaihidden");
               if (this.ht === "mytask") {
@@ -191,7 +191,7 @@ export default {
               }
               this.$store.dispatch("hometask");
             } else {
-              this.$message.error(res.msg);
+              this.$message.error(res.data.msg);
             }
           }
         })
@@ -227,11 +227,11 @@ export default {
         })
           .then(async () => {
             const res = await this.$http.delete(`report/${item.id}`);
-            if (res.status === 200) {
+            if (res.data.status === 200) {
               this.$store.dispatch("rauploadlist", this.deviceinfo.id);
               this.$message.success("删除成功");
             } else {
-              this.$message.error(res.msg);
+              this.$message.error(res.data.msg);
             }
           })
           .catch(() => {});
@@ -239,7 +239,7 @@ export default {
     },
     // 文件上传成功
     uploadsuccess(response) {
-      if (response.status === 200) {
+      if (response.data.status === 200) {
         setTimeout(() => {
           this.newfile.name = "";
           this.newfile.progress = 0;
@@ -252,7 +252,7 @@ export default {
           this.newfile.name = "";
           this.newfile.progress = 0;
           this.$store.dispatch("rauploadlist", this.deviceinfo.id);
-          this.$message.error(response.msg);
+          this.$message.error(response.data.msg);
           this.$store.commit("endctuploading");
         }, 500);
       }

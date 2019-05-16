@@ -26,7 +26,7 @@
       <el-button type="primary" size="mini" @click="projectsearch">搜索</el-button>
     </div>
     <div class="mytask-content-middle">
-      <div class="mytask-content-table">
+      <div class="mytask-content-tableje">
         <el-table
           :data="projectlist"
           class="mytask-content-table-one"
@@ -186,6 +186,16 @@ export default {
   background-color: #fbfbfb;
   border-top-left-radius: 6px;
   border-bottom: 1px solid #e8e8e8;
+}
+.mytask-boxbox {
+  height: 798px;
+}
+.mytask-content-tableje {
+  height: 760px;
+  min-width: 1670px;
+}
+.mytask-content-table-one {
+  font-size: 16px;
 }
 .mytasksearch {
   width: 300px;

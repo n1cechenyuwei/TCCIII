@@ -408,12 +408,12 @@ export default {
               endtime: this.taskdata.tasktime[1]
             }
           );
-          if (res.status === 200) {
+          if (res.data.status === 200) {
             this.$message.success("任务分配成功");
             this.chartslistdata(this.tacurrentpage);
             this.alltasktable();
           } else {
-            this.$message.error(res.msg);
+            this.$message.error(res.data.msg);
           }
         }
       } else {
@@ -429,12 +429,12 @@ export default {
               entrust_id: this.entrustid
             }
           );
-          if (res.status === 200) {
+          if (res.data.status === 200) {
             this.$message.success("任务分配成功");
             this.chartslistdata(this.tacurrentpage);
             this.alltasktable();
           } else {
-            this.$message.error(res.msg);
+            this.$message.error(res.data.msg);
           }
         }
       }
@@ -464,7 +464,7 @@ export default {
       const res = await this.$http.get(
         `taskcharts/${this.PVtabPosition}/${page}?${date}`
       );
-      if (res.status === 200) {
+      if (res.data.status === 200) {
         // const mindate = Math.min.apply(Math, res.taskinfo.map(function(o) {return new Date(o.starttime.replace(/-/g, '/'))}));
         // const maxdate = Math.max.apply(Math, res.taskinfo.map(function(o) {return new Date(o.endtime.replace(/-/g, '/'))}));
         // const diffdate = (maxdate - mindate) / 1000 / 60 / 60 / 24;
@@ -473,7 +473,7 @@ export default {
         // } else {
         //   this.tickCountNumber = diffdate;
         // }
-        res.taskinfo.forEach(obj => {
+        res.data.taskinfo.forEach(obj => {
           if (obj.taskname !== "") {
             obj.range = [obj.starttime, obj.endtime];
             // obj.range = [];
@@ -483,11 +483,11 @@ export default {
             obj.range = [obj.starttime, obj.endtime];
           }
         });
-        this.chartlist = res.taskinfo;
-        this.tasklisttotal = res.data_total;
+        this.chartlist = res.data.taskinfo;
+        this.tasklisttotal = res.data.data_total;
         this.chartone.changeData(this.chartlist);
       } else {
-        this.$message.error(res.msg);
+        this.$message.error(res.data.msg);
       }
     },
     // 图表信息页数改变
@@ -499,7 +499,7 @@ export default {
     async alltisklistdatatwo(type) {
       const date = new Date().getTime();
       const res = await this.$http.get(`taskcharts/${type}/1?${date}`);
-      if (res.status === 200) {
+      if (res.data.status === 200) {
         // const mindate = Math.min.apply(Math, res.taskinfo.map(function(o) {return new Date(o.starttime.replace(/-/g, '/'))}));
         // const maxdate = Math.max.apply(Math, res.taskinfo.map(function(o) {return new Date(o.endtime.replace(/-/g, '/'))}));
         // const diffdate = (maxdate - mindate) / 1000 / 60 / 60 / 24;
@@ -508,7 +508,7 @@ export default {
         // } else {
         //   this.tickCountNumber = diffdate;
         // }
-        res.taskinfo.forEach(obj => {
+        res.data.taskinfo.forEach(obj => {
           if (obj.taskname !== "") {
             obj.range = [obj.starttime, obj.endtime];
             // obj.range = [];
@@ -524,19 +524,19 @@ export default {
             obj.range = [obj.starttime, obj.endtime];
           }
         });
-        this.chartlist = res.taskinfo;
-        this.tasklisttotal = res.data_total;
+        this.chartlist = res.data.taskinfo;
+        this.tasklisttotal = res.data.data_total;
         this.newchartone();
       } else {
-        this.$message.error(res.msg);
+        this.$message.error(res.data.msg);
       }
     },
     // 请求表格信息
     async alltasktable() {
       const res = await this.$http.get(`alltbdtask/${this.PVtabPosition}`);
-      if (res.status === 200) {
-        this.tabledata = res.data;
-        this.tabletasktotal = res.data.length;
+      if (res.data.status === 200) {
+        this.tabledata = res.data.data;
+        this.tabletasktotal = res.data.data.length;
         const filterlist = [];
         for (var i = 0; i < this.tabledata.length; i++) {
           filterlist[i] = {};
@@ -554,7 +554,7 @@ export default {
         }
         this.filter = hash;
       } else {
-        this.$message.error(res.msg);
+        this.$message.error(res.data.msg);
       }
     },
     // 点击表格名称，读取任务信息到上方

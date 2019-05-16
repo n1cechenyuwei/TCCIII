@@ -65,9 +65,7 @@ const Doclevelthree = () => import("@/views/document/doclevelthree.vue");
 const Knowledge = () => import("@/views/knowledge/knowledge.vue");
 const Defects = () => import("@/views/knowledge/defects.vue");
 const Nodefects = () => import("@/views/knowledge/nodefects.vue");
-const Maintain = () => import("@/views/knowledge/maintain.vue");
-const Systemrun = () => import("@/views/knowledge/systemrun.vue");
-const TestBusiness = () => import("@/views/knowledge/testBusiness.vue");
+const Training = () => import("./views/knowledge/training.vue");
 
 Vue.use(Router);
 
@@ -359,19 +357,9 @@ const router = new Router({
               component: Nodefects
             },
             {
-              name: "maintain",
-              path: "/maintain",
-              component: Maintain
-            },
-            {
-              name: "systemrun",
-              path: "/systemrun",
-              component: Systemrun
-            },
-            {
-              name: "testBusiness",
-              path: "/testBusiness",
-              component: TestBusiness
+              name: "training",
+              path: "/training",
+              component: Training
             }
           ]
         }
@@ -406,12 +394,12 @@ router.beforeEach((to, from, next) => {
     next();
   } else {
     // 判断有没有token
-    const token = sessionStorage.getItem("token");
-    if (!token) {
-      router.push({ name: "login" });
-      Message.warning("请登录");
-      return;
-    }
+    // const token = sessionStorage.getItem("token");
+    // if (!token) {
+    //   router.push({ name: "login" });
+    //   Message.warning("请登录");
+    //   return;
+    // }
     next();
   }
 });

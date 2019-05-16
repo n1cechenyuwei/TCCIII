@@ -30,7 +30,7 @@
       <div class="mytask-content-table">
         <el-table
           :data="projectlist"
-          class="mytask-content-table-one"
+          class="mytask-content-table-one6"
           stripe
           height="760"
           style="width: 100%">
@@ -390,7 +390,7 @@ export default {
   border-top-left-radius: 6px;
   border-bottom: 1px solid #e8e8e8;
 }
-.mytask-content-table-one {
+.mytask-content-table-one6 {
   font-size: 16px;
 }
 .mytasksearch {
@@ -404,7 +404,7 @@ export default {
   position: absolute;
   top: 0px;
 }
-.mytask-content-table6 {
+.mytask-content-table {
   height: 760px;
 }
 .mytask-dropdown {

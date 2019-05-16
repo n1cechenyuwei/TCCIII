@@ -16,34 +16,16 @@
           background-color="#004fa1"
           text-color="#fff"
           active-text-color="#fff">
-            <el-menu-item index="/home" class="aaa">首页</el-menu-item>
-            <el-menu-item index="/task" class="aaa">任务</el-menu-item>
-            <el-menu-item index="/project" class="aaa">项目</el-menu-item>
-            <el-submenu index="2" popper-class="more-menu">
-              <template slot="title" >更多</template>
+            <el-menu-item v-for="(item, index) in treeOne" :key="index" :index="item.route" class="aaa">{{item.name}}</el-menu-item>
+            <el-submenu index="2" popper-class="more-menu" v-if="treeTwo.length !== 0">
+              <template slot="title">{{treeTwo.name}}</template>
               <template>
-                <el-row class="gengduo">
-                  <el-col :span="6">
-                    <p>检测流程</p>
-                    <el-menu-item index="/contract" class="xuanxiang">合同管理</el-menu-item>
-                    <el-menu-item index="/reports" class="xuanxiang">报告管理</el-menu-item>
-                    <el-menu-item index="/equipment" class="xuanxiang">设备管理</el-menu-item>
-                  </el-col>
-                  <el-col :span="6">
-                    <p>支持</p>
-                    <el-menu-item index="/knowledge" class="xuanxiang">知识资源</el-menu-item>
-                    <el-menu-item index="/cases" class="xuanxiang">检测用例</el-menu-item>
-                  </el-col>
-                  <el-col :span="6">
-                    <p>辅助</p>
-                    <el-menu-item index="document" class="xuanxiang">文档管理</el-menu-item>
-                    <el-menu-item index="/company" class="xuanxiang">单位管理</el-menu-item>
-                  </el-col>
-                  <el-col :span="6">
-                    <p>系统</p>
-                    <el-menu-item index="/system" class="xuanxiang">系统管理</el-menu-item>
-                  </el-col>
-                </el-row>
+                <div class="gengduo">
+                  <div class="more-child" v-for="(item, index) in treeTwo.children" :key="index">
+                    <p>{{item.name}}</p>
+                    <el-menu-item v-for="(item2, index2) in item.children" :key="index2" :index="item2.route" class="xuanxiang">{{item2.name}}</el-menu-item>
+                  </div>
+                </div>
               </template>
             </el-submenu>
           </el-menu>
@@ -323,7 +305,9 @@
     </el-dialog>
     <!-- 检测任务视频弹窗 -->
     <el-dialog
+      title="视频播放"
       @close="detectionvideoclose"
+      center
       :visible.sync="$store.state.casevideoshow"
       width="960px">
       <video-player  class="video-player vjs-custom-skin"
@@ -369,7 +353,7 @@ export default {
     return {
       data: "r",
       username: "",
-      newroute: "/home",
+      newroute: "",
       eqimgshow: false, //设备生产厂家照片显示
       eqimgdata: "", //生厂厂家照片
       putfromrules: {
@@ -434,16 +418,28 @@ export default {
           { validator: validoldpassword, trigger: "blur" }
         ]
       },
-      passloading: false
+      passloading: false,
+      treeOne: [],
+      treeTwo: ""
     };
   },
   created() {
     this.router();
   },
   methods: {
-    router() {
-      this.username = sessionStorage.getItem("username");
+    async router() {
+      this.treeOne = [];
+      this.treeTwo = "";
+      const res = await this.$http.get("getpermistree");
+      res.data.permis_list.forEach(element => {
+        if (element.name === "更多") {
+          this.treeTwo = element;
+        } else {
+          this.treeOne.push(element);
+        }
+      });
       this.newroute = this.$route.matched[1].path;
+      this.username = sessionStorage.getItem("username");
     },
     handleCommandUser(command) {
       if (command === "logout") {
@@ -592,8 +588,8 @@ export default {
   margin-right: 40px !important;
 }
 .gengduo {
-  width: 424px;
-  height: 150px;
+  /* width: 424px;
+  height: 150px; */
   color: #666666;
   background-color: #fff;
 }
@@ -647,5 +643,10 @@ export default {
 }
 .passinput {
   width: 300px !important;
+}
+.more-child {
+  display: inline-block;
+  vertical-align: top;
+  margin: 0 10px 0 10px;
 }
 </style>

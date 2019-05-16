@@ -243,7 +243,7 @@ export default {
             this.$message.warning("请检测完全部用例并重新打开页面后再提交");
           } else {
             const res = await this.$http.put(`detection/${this.taskid}`);
-            if (res.status === 200) {
+            if (res.data.status === 200) {
               this.$message.success("提交成功");
               if (this.ht === "mytask") {
                 this.$store.dispatch("loadingMytask", 1);
@@ -253,7 +253,7 @@ export default {
               this.$store.commit("taskhuakuaihidden");
               this.$store.dispatch("hometask");
             } else {
-              this.$message.error(res.msg);
+              this.$message.error(res.data.msg);
             }
           }
         })
@@ -265,18 +265,18 @@ export default {
     },
     // 删除日志
     handledeletelog(id, rowid) {
-      this.$confirm("确定提交任务吗", "提示", {
+      this.$confirm("确定删除该日志吗", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       })
         .then(async () => {
           const res = await this.$http.delete(`caselogs/${id}`);
-          if (res.status === 200) {
+          if (res.data.status === 200) {
             this.$store.dispatch("caseloglist", rowid);
             this.$message.success("日志删除成功");
           } else {
-            this.$message.error(res.msg);
+            this.$message.error(res.data.msg);
           }
         })
         .catch(() => {});
@@ -296,12 +296,12 @@ export default {
           `casecommentlist/${id}`,
           this.textForm
         );
-        if (res.status === 200) {
+        if (res.data.status === 200) {
           this.$message.success("发表成功");
           this.$refs.textForm.resetFields();
           this.$store.dispatch("handlecasecomment", id);
         } else {
-          this.$message.error(res.msg);
+          this.$message.error(res.data.msg);
         }
       });
     },
@@ -318,11 +318,11 @@ export default {
       })
         .then(async () => {
           const res = await this.$http.delete(`caseimage/${id}`);
-          if (res.status === 200) {
+          if (res.data.status === 200) {
             this.$message.success("照片删除成功");
             this.$store.dispatch("caseimglist", rowid);
           } else {
-            this.$message.error(res.msg);
+            this.$message.error(res.data.msg);
           }
         })
         .catch(() => {});
@@ -336,11 +336,11 @@ export default {
       })
         .then(async () => {
           const res = await this.$http.delete(`video/${id}`);
-          if (res.status === 200) {
+          if (res.data.status === 200) {
             this.$message.success("照片删除成功");
             this.$store.dispatch("casevideolist", rowid);
           } else {
-            this.$message.error(res.msg);
+            this.$message.error(res.data.msg);
           }
         })
         .catch(() => {});

@@ -485,4 +485,7 @@ export default {
 .pissimtools {
   height: 48%;
 }
+.workconfiginput {
+  width: 250px;
+}
 </style>

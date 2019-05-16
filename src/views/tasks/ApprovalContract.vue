@@ -288,7 +288,7 @@ export default {
                   state: "签订成功"
                 }
               );
-              if (res.status === 200) {
+              if (res.data.status === 200) {
                 this.$message.success("任务提交成功");
                 this.$store.commit("taskhuakuaihidden");
                 this.$store.dispatch("loadingMytask", 1);
@@ -296,7 +296,7 @@ export default {
                 this.hetongradio = "";
                 this.$refs.formhetong.resetFields();
               } else {
-                this.$message.error(res.meg);
+                this.$message.error(res.data.meg);
               }
             })
             .catch(() => {});
@@ -319,7 +319,7 @@ export default {
                   remarks: this.formhetong.why
                 }
               );
-              if (res.status === 200) {
+              if (res.data.status === 200) {
                 this.$message.success("任务提交成功");
                 this.hetongradio = "";
                 this.$refs.formhetong.resetFields();
@@ -331,7 +331,7 @@ export default {
                 this.$store.commit("taskhuakuaihidden");
                 this.$store.dispatch("hometask");
               } else {
-                this.$message.error(res.meg);
+                this.$message.error(res.data.meg);
               }
             })
             .catch(() => {});
@@ -363,7 +363,7 @@ export default {
         })
           .then(async () => {
             const res = await this.$http.delete(`dropfinalcompact/${item.id}`);
-            if (res.status === 200) {
+            if (res.data.status === 200) {
               this.$store.dispatch(
                 "handleuploaddata",
                 this.$store.state.appcompactinfo.com_no
@@ -376,7 +376,7 @@ export default {
     },
     // 文件上传成功
     uploadsuccess(response) {
-      if (response.status === 200) {
+      if (response.data.status === 200) {
         setTimeout(() => {
           this.newfile.name = "";
           this.newfile.progress = 0;
@@ -395,7 +395,7 @@ export default {
             "handleuploaddata",
             this.$store.state.appcompactinfo.com_no
           );
-          this.$message.error(response.msg);
+          this.$message.error(response.data.msg);
           this.$store.commit("endctuploading");
         }, 500);
       }

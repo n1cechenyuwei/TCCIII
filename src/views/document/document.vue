@@ -7,14 +7,8 @@
           class="el-menu-vertical-demo taskmenu"
           :router="true"
           >
-          <el-menu-item index="/commondocument">
-            <span slot="title" class="taskmenu-tittle">公共文档</span>
-          </el-menu-item>
-          <el-menu-item index="/pisdocument">
-            <span slot="title" class="taskmenu-tittle">PIS项目文档</span>
-          </el-menu-item>
-          <el-menu-item index="/vmsdocument">
-            <span slot="title" class="taskmenu-tittle">VMS项目文档</span>
+          <el-menu-item v-for="(item4, index) in treelist" :key="index" :index="item4.route">
+            <span slot="title" class="taskmenu-tittle">{{item4.name}}</span>
           </el-menu-item>
         </el-menu>
       </div>
@@ -31,14 +25,40 @@
 export default {
   data() {
     return {
-      abc: ""
+      newroute: "",
+      treeTwo: "",
+      treelist: []
     };
   },
   created() {
-    this.$router.push({ name: "commondocument" });
+    this.router();
   },
   methods: {
-    
+    async router() {
+      this.treeTwo = "";
+      this.treelist = [];
+      const res = await this.$http.get("getpermistree");
+      for (const item of res.data.permis_list) {
+        if (item.name === "更多") {
+          this.treeTwo = item;
+          for (const item2 of this.treeTwo.children) {
+            if (item2.name === "辅助") {
+              for (const item3 of item2.children) {
+                if (item3.name === "文档管理") {
+                  this.treelist = item3.children;
+                }
+              }
+              break;
+            }
+          }
+          break;
+        }
+      }
+      if (this.treelist.length !== 0) {
+        this.newroute = this.treelist[0].route;
+        this.$router.push({ path: this.newroute });
+      }
+    }
   }
 };
 </script>

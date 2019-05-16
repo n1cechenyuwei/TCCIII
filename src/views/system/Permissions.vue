@@ -14,12 +14,12 @@
           width="80">
         </el-table-column>
         <el-table-column
-          prop="name"
+          prop="role_name"
           label="角色名称"
           width="180">
         </el-table-column>
         <el-table-column
-          prop="worktype"
+          prop="execute_task"
           width="200"
           label="可执行任务类型">
         </el-table-column>
@@ -31,16 +31,8 @@
           width="200"
           label="操作">
           <template slot-scope="scope">
-            <el-button
-              type="primary"
-              size="mini"
-              icon="el-icon-edit"
-              @click="permissionsEdit"></el-button>
-            <el-button
-              size="mini"
-              type="danger"
-              icon="el-icon-delete"
-              @click="handleDelete"></el-button>
+            <el-button type="primary" size="mini" icon="el-icon-edit" @click="permissionsEdit(scope.row.id)"></el-button>
+            <el-button size="mini" type="danger" icon="el-icon-delete" @click="handleDelete(scope.row.id)"></el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -51,7 +43,7 @@
       @current-change="handlePageChange"
       :page-size="personnelpagesize"
       layout="total, prev, pager, next, jumper"
-      :total="100">
+      :total="total_num">
     </el-pagination>
     <!-- 创建角色 -->
     <el-dialog
@@ -61,43 +53,39 @@
       @close="creatroleclose"
       center>
       <el-form label-position="right" label-width="110px" ref="creatroleform" :model="creatroleform" :rules="creatroleformrules">
-        <el-form-item label="角色名称" prop="name">
-          <el-input size="small" v-model.number.trim="creatroleform.name"></el-input>
+        <el-form-item label="角色名称" prop="role_name">
+          <el-input style="width: 290px" size="small" v-model.number.trim="creatroleform.role_name"></el-input>
         </el-form-item>
         <el-form-item label="执行任务类型" prop="worktype">
-          <el-select v-model="creatroleform.worktype" placeholder="请选择执行任务类型" size="small" class="roleselect">
-            <el-option
-              v-for="item in projectoptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
+          <el-input style="width: 290px" size="small" v-model.number.trim="creatroleform.execute_task"></el-input>
         </el-form-item>
         <el-form-item label="角色描述" prop="roledescribe">
-          <el-input type="textarea" :autosize="{ minRows: 6, maxRows: 6}" resize="none" v-model.trim="creatroleform.roledescribe"></el-input>
+          <el-input style="width: 290px" type="textarea" :autosize="{ minRows: 6, maxRows: 6}" resize="none" v-model.trim="creatroleform.describe"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button size="medium" @click="creatroleVisible = false">取 消</el-button>
-        <el-button size="medium" type="primary" @click="handlecreatrole">确 定</el-button>
+        <el-button size="small" @click="creatroleVisible = false">取 消</el-button>
+        <el-button size="small" type="primary" @click="handlecreatrole">确 定</el-button>
       </span>
     </el-dialog>
     <el-dialog
       title="权限分配"
       :visible.sync="permissionsVisible"
       width="500px"
+      @close="checkrolesclose"
       center>
       <el-tree
         :data="permissionslist"
+        accordion
         show-checkbox
+        ref="rolestree"
         node-key="id"
-        :default-checked-keys="[5]"
+        :default-checked-keys="check_keys"
         :props="defaultProps">
       </el-tree>
       <span slot="footer" class="dialog-footer">
-        <el-button size="medium" @click="permissionsVisible = false">取 消</el-button>
-        <el-button size="medium" type="primary" @click="handlepermissions">确 定</el-button>
+        <el-button size="small" @click="permissionsVisible = false">取 消</el-button>
+        <el-button size="small" type="primary" @click="handlepermissions">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -111,92 +99,27 @@ export default {
       permissionsVisible: false,
       currentPage: 1, // 当前页数
       personnelpagesize: 10, // 每页显示条数
+      total_num: 0,
       creatroleform: {
-        name: "",
-        worktype: "",
-        roledescribe: ""
+        role_name: "",
+        execute_task: "",
+        describe: ""
       },
       creatroleformrules: {
-        name: [{ required: true, message: "请输入角色名称", trigger: "blur" }],
-        worktype: [
+        role_name: [
+          { required: true, message: "请输入角色名称", trigger: "blur" }
+        ],
+        execute_task: [
           { required: true, message: "请选择执行任务类型", trigger: "blur" }
         ],
-        roledescribe: [
+        describe: [
           { required: true, message: "请输入角色描述", trigger: "blur" }
         ]
       },
-      projectoptions: [
-        {
-          value: 1,
-          label: "实验室检测任务"
-        },
-        {
-          value: 2,
-          label: "合同签订任务"
-        }
-      ],
-      rolesData: [
-        {
-          name: "申请审批员",
-          worktype: "申请审批任务",
-          describe: "该角色负责审批送检厂家的申请审批"
-        },
-        {
-          name: "合同管理员",
-          worktype: "合同签订任务",
-          describe: "该角色负责合同的管理"
-        }
-      ],
-      permissionslist: [
-        {
-          id: 1,
-          label: "一级 1",
-          children: [
-            {
-              id: 4,
-              label: "二级 1-1",
-              children: [
-                {
-                  id: 9,
-                  label: "三级 1-1-1"
-                },
-                {
-                  id: 10,
-                  label: "三级 1-1-2"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          id: 2,
-          label: "一级 2",
-          children: [
-            {
-              id: 5,
-              label: "二级 2-1"
-            },
-            {
-              id: 6,
-              label: "二级 2-2"
-            }
-          ]
-        },
-        {
-          id: 3,
-          label: "一级 3",
-          children: [
-            {
-              id: 7,
-              label: "二级 3-1"
-            },
-            {
-              id: 8,
-              label: "二级 3-2"
-            }
-          ]
-        }
-      ],
+      rolesData: [],
+      cosplayid: "",
+      permissionslist: [],
+      check_keys: [],
       defaultProps: {
         children: "children",
         label: "label"
@@ -208,25 +131,96 @@ export default {
       this.creatroleVisible = true;
     },
     handlecreatrole() {
-      this.$refs.creatroleform.validate(valid => {
+      this.$refs.creatroleform.validate(async valid => {
         if (!valid) {
-          this.$message.error("请补全信息");
+          return this.$message.error("请补全信息");
+        }
+        const res = await this.$http.post(`createrole`, this.creatroleform);
+        if (res.data.status === 200) {
+          this.$message.success("创建角色成功");
+          this.creatroleVisible = false;
+          this.getdata(this.currentPage);
         } else {
-          console.log(111);
+          this.$message.error(res.data.msg);
         }
       });
     },
     creatroleclose() {
       this.$refs.creatroleform.resetFields();
     },
-    handlePageChange() {},
-    permissionsEdit() {
-      this.permissionsVisible = true;
+    checkrolesclose() {
+      this.check_keys = [];
+      this.permissionslist = [];
     },
-    handleDelete() {},
-    handlepermissions() {
-      this.permissionsVisible = false;
+    handlePageChange(page) {
+      this.getdata(page);
+    },
+    async permissionsEdit(id) {
+      this.allrolesData();
+      this.cosplayid = id;
+      this.check_keys = [];
+      const res = await this.$http.get(`rolemenus/${id}`);
+      if (res.data.status === 200) {
+        this.check_keys = res.data.permissions;
+        this.permissionsVisible = true;
+      } else {
+        this.$message.error(res.data.msg);
+      }
+    },
+    handleDelete(id) {
+      this.$confirm("确定要删除该角色吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(async () => {
+          const res = await this.$http.delete(`deleterole/${id}`);
+          if (res.data.status === 200) {
+            this.$message.success(res.data.msg);
+            this.getdata(this.currentPage);
+          } else {
+            this.$message.error(res.data.msg);
+          }
+        })
+        .catch(() => {});
+    },
+    async handlepermissions() {
+      const checkedKeys = this.$refs.rolestree.getCheckedKeys();
+      const oneKeys = this.$refs.rolestree.getHalfCheckedKeys();
+      // const allkeys = checkedKeys.concat(oneKeys);
+      const res = await this.$http.post(`rolemenus/${this.cosplayid}`, {
+        half_selected: oneKeys,
+        check_all: checkedKeys
+      });
+      if (res.data.status === 200) {
+        this.$message.success("角色权限关联成功");
+        this.permissionsVisible = false;
+      } else {
+        this.$message.error(res.data.msg);
+      }
+    },
+    async getdata(page) {
+      const res = await this.$http.get(`roles/${page}`);
+      if (res.data.status === 200) {
+        this.rolesData = res.data.roles;
+        this.total_num = res.data.total_num;
+      } else {
+        this.$message.error(res.data.msg);
+      }
+    },
+    // 获取所有权限
+    async allrolesData() {
+      const res = await this.$http.get(`menus`);
+      if (res.data.status === 200) {
+        this.permissionslist = res.data.menu_list;
+      } else {
+        this.$message.error(res.data.msg);
+      }
     }
+  },
+  created() {
+    this.getdata(this.currentPage);
+    this.allrolesData();
   }
 };
 </script>
@@ -245,7 +239,7 @@ export default {
   width: 100%;
 }
 .personnel-table {
-  height: 720px;
+  height: 760px;
   min-width: 1670px;
 }
 .taskpage {

@@ -103,7 +103,7 @@ export default new Vuex.Store({
       fluid: true, // 当true时，Video.js player将拥有流体大小。换句话说，它将按比例缩放以适应其容器。
       sources: [
         {
-          type: "video/mp4",
+          type: "",
           src: "" //url地址
         }
       ],
@@ -501,8 +501,8 @@ export default new Vuex.Store({
     //审批任务设备详情dialog是否显示
     async applyEquipment(context, applyid) {
       const resapplyeqdata = await http.get(`temdevicies/${applyid}`);
-      if (resapplyeqdata.status === 200) {
-        context.commit("applyEquipment", resapplyeqdata.divice_list);
+      if (resapplyeqdata.data.status === 200) {
+        context.commit("applyEquipment", resapplyeqdata.data.divice_list);
       }
     },
     //设备入库任务设备详情dialog显示
@@ -512,7 +512,7 @@ export default new Vuex.Store({
       if (res.data.status === 200) {
         context.commit("putstoragedialog", res.data.deviceinfo);
       } else {
-        this.$message.error(res.msg);
+        Message.error(res.data.msg);
       }
     },
     // 设备出库任务设备详情dialog显示
@@ -522,13 +522,13 @@ export default new Vuex.Store({
       if (res.data.status === 200) {
         context.commit("outstoragedialog", res.data.deviceinfo);
       } else {
-        this.$message.error(res.msg);
+        Message.error(res.data.msg);
       }
     },
     //设备入库任务设备详情dialog确定按钮提交
     async putstoragedialogsubmit(context, id) {
       const res = await http.put(`devicies/${id}`, this.state.diaeqopen);
-      if (res.status === 200) {
+      if (res.data.status === 200) {
         context.commit("putstoragedialogsubmit");
         this.dispatch("routerright", {
           taskid: this.state.taskid,
@@ -536,13 +536,13 @@ export default new Vuex.Store({
         });
         Message.success("设备信息保存成功");
       } else {
-        Message.error(res.msg);
+        Message.error(res.data.msg);
       }
     },
     // 设备出库任务设备详情dialog确定按钮提交
     async outstoragedialogsubmit(context, id) {
       const res = await http.put(`outdevicies/${id}`, this.state.diaoutopen);
-      if (res.status === 200) {
+      if (res.data.status === 200) {
         context.commit("outstoragedialogclose");
         this.dispatch("routerright", {
           taskid: this.state.taskid,
@@ -550,14 +550,17 @@ export default new Vuex.Store({
         });
         Message.success("设备信息保存成功");
       } else {
-        Message.error(res.msg);
+        Message.error(res.data.msg);
       }
     },
     // 任务读取
     async loadingMytask(context, page) {
       const res = await http.get(`tasks/${page}`);
-      if (res.status === 200) {
-        context.commit("loadingMytask", { data: res.data, total: res.total });
+      if (res.data.status === 200) {
+        context.commit("loadingMytask", {
+          data: res.data.data,
+          total: res.data.total
+        });
       }
     },
     // 全部任务读取
@@ -569,14 +572,17 @@ export default new Vuex.Store({
           total: res.data.total_num
         });
       } else {
-        Message.error(res.msg);
+        Message.error(res.data.msg);
       }
     },
     // 已完成任务
     async loadingTasked(context, page) {
       const res = await http.get(`comtasks/${page}`);
-      if (res.status === 200) {
-        context.commit("loadingTasked", { data: res.data, total: res.total });
+      if (res.data.status === 200) {
+        context.commit("loadingTasked", {
+          data: res.data.data,
+          total: res.data.total
+        });
       }
     },
     // 我的任务点击表格发请求并带入任务id  和刷新右侧页面
@@ -599,10 +605,10 @@ export default new Vuex.Store({
       const res = await http.put(`updatesechedule/${taskid}`, {
         sechedule: this.state.tasksechedule
       });
-      if (res.status === 200) {
+      if (res.data.status === 200) {
         Message.success("任务进度更新成功");
       } else {
-        Message.error(res.msg);
+        Message.error(res.data.msg);
       }
     },
     // 合同页面保存信息按钮
@@ -614,28 +620,25 @@ export default new Vuex.Store({
         `updatecompact/${hetongid}`,
         this.state.appcomfrom
       );
-      if (res.status === 200) {
+      if (res.data.status === 200) {
         Message.success("信息保存成功");
       } else {
-        Message.error(res.msg);
+        Message.error(res.data.msg);
       }
     },
     // 生成合同初稿
     async handlecreatdraftfile(context, hetongid) {
-      const date = new Date().getTime();
-      const res = await http.get(`generatecompact/${hetongid}?${date}`);
-      if (res.status === 200) {
+      const res = await http.get(`generatecompact/${hetongid}`);
+      if (res.data.status === 200) {
         Message.success("合同初稿生成成功");
-        const resdata = await http.get(
-          `draftaccessorylist/${hetongid}?${date}`
-        );
+        const resdata = await http.get(`draftaccessorylist/${hetongid}`);
         if (resdata.data.status === 200) {
           context.commit("handlecreatdraftfile", resdata.data.draft_list);
         } else {
           Message.error(resdata.data.msg);
         }
       } else {
-        Message.error(res.msg);
+        Message.error(res.data.msg);
       }
     },
     // 获取终稿信息
@@ -650,10 +653,10 @@ export default new Vuex.Store({
     async hometask(context) {
       const date = new Date().getTime();
       const resdata = await http.get(`tasklist?${date}`);
-      if (resdata.status === 200) {
-        context.commit("hometask", resdata.data);
+      if (resdata.data.status === 200) {
+        context.commit("hometask", resdata.data.data);
       } else {
-        Message.error(resdata.msg);
+        Message.error(resdata.data.msg);
       }
     },
     // 外委获取上传合同列表

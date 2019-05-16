@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div ref="appendchild">
     <div class="mydoc-top">
       <div class="push-box">
         <div class="breacpush" v-for="(item, index) in pushbreac" :key="index">
@@ -11,7 +11,7 @@
       <el-button class="ggdoc-btn1" type="success" size="mini" @click="folderfromvs = true">新建文件夹</el-button>
       <el-upload
         name="file"
-        :action="$store.state.baseurl + 'uploadcommondocs'"
+        :action="$store.state.baseurl + 'uploadtrainingdoc'"
         :show-file-list="false"
         :on-success="uploadsuccess"
         :on-error="uploaderror"
@@ -30,18 +30,18 @@
           max-height="800"
           style="width: 100%">
           <el-table-column
-            prop="name"
+            prop="filename"
             label="名称">
             <template slot-scope="scope">
-              <i v-show="scope.row.type === 'F'" class="iconfont wenjianjia icon-tubiaozhizuomoban"></i>
-              <i v-show="scope.row.type === 'D' && scope.row.file_ext !== 'xlsx' && scope.row.file_ext !== 'doc' && scope.row.file_ext !== 'docx' && scope.row.file_ext !== 'pptx' && scope.row.file_ext !== 'pdf' && scope.row.file_ext !== 'txt' && scope.row.file_ext !== 'mpg' && scope.row.file_ext !== 'mp4' && scope.row.file_ext !== 'rmvb' && scope.row.file_ext !== 'mpeg'" class="el-icon-document wenjian"></i>
+              <i v-show="scope.row.doc_type === 'F'" class="iconfont wenjianjia icon-tubiaozhizuomoban"></i>
+              <i v-show="scope.row.doc_type === 'D' && scope.row.file_ext !== 'xlsx' && scope.row.file_ext !== 'doc' && scope.row.file_ext !== 'docx' && scope.row.file_ext !== 'pptx' && scope.row.file_ext !== 'pdf' && scope.row.file_ext !== 'txt' && scope.row.file_ext !== 'mp4' && scope.row.file_ext !== 'webm' && scope.row.file_ext !== 'ogg'" class="el-icon-document wenjian"></i>
               <i v-show="scope.row.file_ext === 'xlsx'" class="iconfont icon-excel docexcel"></i>
               <i v-show="scope.row.file_ext === 'doc' || scope.row.file_ext === 'docx'" class="iconfont icon-excel docword"></i>
               <i v-show="scope.row.file_ext === 'pptx'" class="iconfont icon-ppt1 docppt"></i>
               <i v-show="scope.row.file_ext === 'pdf'" class="iconfont icon-pdf docpdf"></i>
               <i v-show="scope.row.file_ext === 'txt'" class="iconfont icon-txt doctxt"></i>
-              <i v-show="scope.row.type === 'D' && scope.row.file_ext === 'mp4' || scope.row.file_ext === 'rmvb' || scope.row.file_ext === 'mpeg' || scope.row.file_ext === 'mpg'" class="iconfont icon-video docvideo"></i>
-              <span class="docclick" @click="pushF(scope.row)">{{scope.row.name}}</span>
+              <i v-show="scope.row.doc_type === 'D' && scope.row.file_ext === 'mp4' || scope.row.file_ext === 'ogg' || scope.row.file_ext === 'webm'" class="iconfont icon-video docvideo"></i>
+              <span class="docclick" @click="pushF(scope.row)">{{scope.row.filename}}</span>
             </template>
           </el-table-column>
           <el-table-column
@@ -49,7 +49,8 @@
             label="操作">
             <template slot-scope="scope">
               <div style="text-align: right">
-                <a v-show="scope.row.type === 'D'" :href="scope.row.down_url" :download="scope.row.down_url" class="docbtn">
+                <el-button style="margin-right: 10px" v-show="scope.row.file_ext === 'mp4' || scope.row.file_ext === 'ogg' || scope.row.file_ext === 'webm' || scope.row.file_ext === 'pdf'" size="mini" type="primary" icon="el-icon-view" @click="videoorpdf(scope.row.down_url)"></el-button>
+                <a v-show="scope.row.doc_type === 'D' && scope.row.file_ext !== 'mp4' && scope.row.file_ext !== 'ogg' && scope.row.file_ext !== 'webm' && scope.row.file_ext !== 'pdf'" :href="scope.row.down_url" download class="docbtn">
                   <el-button size="mini" type="primary" icon="el-icon-download"></el-button>
                 </a>
                 <el-button style="margin-right: 10px" size="mini" @click="deletedoc(scope.row.id)" type="danger" icon="el-icon-delete"></el-button>
@@ -80,61 +81,20 @@
         <el-button type="primary" size="small" class="dialogbtn-right" @click="submifolderfrom">确 定</el-button>
       </div>
     </el-dialog>
-    <el-dialog
-      title="视频播放"
-      @close="videoclose"
-      center
-      :visible.sync="videovs"
-      width="960px">
-      <video-player  class="video-player vjs-custom-skin"
-        ref="videoPlayer2"
-        :playsinline="true"
-        :options="playerOptions">
-      </video-player>
-    </el-dialog>
   </div>
 </template>
 
 <script>
 export default {
-  props: ["geturl", "bracname"],
   data() {
     return {
       folderfromvs: false,
-      videovs: false,
       loading: false,
-      playerOptions: {
-        playbackRates: [0.7, 1.0, 1.5, 2.0], //播放速度
-        autoplay: false, //如果true,浏览器准备好时开始回放。
-        muted: false, // 默认情况下将会消除任何音频。
-        loop: false, // 导致视频一结束就重新开始。
-        preload: "auto", // 建议浏览器在<video>加载元素后是否应该开始下载视频数据。auto浏览器选择最佳行为,立即开始加载视频（如果浏览器支持）
-        language: "zh-CN",
-        aspectRatio: "16:9", // 将播放器置于流畅模式，并在计算播放器的动态大小时使用该值。值应该代表一个比例 - 用冒号分隔的两个数字（例如"16:9"或"4:3"）
-        fluid: true, // 当true时，Video.js player将拥有流体大小。换句话说，它将按比例缩放以适应其容器。
-        sources: [
-          {
-            type: "video/mp4",
-            type: "video/ogg",
-            type: "video/webm",
-            src: "" //url地址
-          }
-        ],
-        // poster: "https://surmon-china.github.io/vue-quill-editor/static/images/surmon-1.jpg", //你的封面地址
-        // width: document.documentElement.clientWidth,
-        notSupportedMessage: "此视频暂无法播放，请稍后再试", //允许覆盖Video.js无法播放媒体源时显示的默认信息。
-        controlBar: {
-          timeDivider: true,
-          durationDisplay: true,
-          remainingTimeDisplay: false,
-          fullscreenToggle: true //全屏按钮
-        }
-      }, // 视频播放器配置
       projectlist: [],
       allbreac: [
         {
           id: 0,
-          name: ""
+          name: "模拟培训"
         }
       ], // 全部面包屑
       pushbreac: [], // 可点击面包屑
@@ -154,9 +114,6 @@ export default {
     uploaderror() {
       this.$message.error("上传失败");
     },
-    videoclose() {
-      this.$refs.videoPlayer2.player.pause();
-    },
     // 计算面包屑可点击和不可点击
     breacfunc() {
       this.nopushbreac = this.allbreac[this.allbreac.length - 1];
@@ -171,13 +128,13 @@ export default {
     },
     // 点击文件夹名进行加载下面的文件
     pushF(row) {
-      if (row.type === "D") {
+      if (row.doc_type === "D") {
         return false;
       } else {
         this.docid = row.id;
         const newbreac = {};
         newbreac.id = row.id;
-        newbreac.name = row.name;
+        newbreac.name = row.filename;
         this.allbreac.push(newbreac);
         this.breacfunc();
         this.getdocdata();
@@ -193,7 +150,7 @@ export default {
           return this.$message.error("请正确输入文件夹名称");
         }
         const res = await this.$http.post(
-          `folders/${this.docid}`,
+          `trainfolders/${this.docid}`,
           this.folderfrom
         );
         if (res.data.status === 200) {
@@ -205,18 +162,21 @@ export default {
         }
       });
     },
+    // 播放视频或者打开新页面查看pdf文件
+    videoorpdf(url) {
+      window.open(url, "_blank");
+    },
     // 页面初始化需要做的
     getloading() {
-      this.allbreac[0].name = this.bracname;
       this.breacfunc();
       this.getdocdata();
     },
     // 获取文档数据
     async getdocdata() {
       this.loading = true;
-      const res = await this.$http.get(`folders/${this.docid}`);
+      const res = await this.$http.get(`trainfolders/${this.docid}`);
       if (res.data.status === 200) {
-        this.projectlist = res.data.docs;
+        this.projectlist = res.data.folder;
         this.loading = false;
       }
     },
@@ -228,7 +188,7 @@ export default {
         type: "warning"
       })
         .then(async () => {
-          const res = await this.$http.delete(`commondocs/${id}`);
+          const res = await this.$http.delete(`folder/${id}`);
           if (res.data.status === 200) {
             this.getdocdata();
             this.$message.success(res.data.msg);

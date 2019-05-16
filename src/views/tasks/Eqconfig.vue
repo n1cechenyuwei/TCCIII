@@ -223,9 +223,7 @@ import { mapState } from "vuex";
 export default {
   props: ["taskid", "ht"],
   data() {
-    return {
-      // taskvalue: 0 // 任务进度
-    };
+    return {};
   },
   methods: {
     // 提交任务
@@ -237,7 +235,7 @@ export default {
       })
         .then(async () => {
           const res = await this.$http.put(`eqconfig/${this.taskid}`);
-          if (res.status === 200) {
+          if (res.data.status === 200) {
             this.$message.success("提交成功");
             if (this.ht === "mytask") {
               this.$store.dispatch("loadingMytask", 1);
@@ -247,7 +245,7 @@ export default {
             this.$store.commit("taskhuakuaihidden");
             this.$store.dispatch("hometask");
           } else {
-            this.$message.error(res.meg);
+            this.$message.error(res.data.meg);
           }
         })
         .catch(() => {});

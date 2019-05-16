@@ -181,11 +181,11 @@ export default {
         })
           .then(async () => {
             const res = await this.$http.delete(`report/${item.id}`);
-            if (res.status === 200) {
+            if (res.data.status === 200) {
               this.$store.dispatch("ctuploadlist", this.deviceinfo.device_id);
               this.$message.success("删除成功");
             } else {
-              this.$message.success(res.msg);
+              this.$message.success(res.data.msg);
             }
           })
           .catch(() => {});
@@ -193,7 +193,7 @@ export default {
     },
     // 文件上传成功
     uploadsuccess(response) {
-      if (response.status === 200) {
+      if (response.data.status === 200) {
         setTimeout(() => {
           this.newfile.name = "";
           this.newfile.progress = 0;
@@ -229,7 +229,7 @@ export default {
             this.$message.error("请先上传报告");
           } else {
             const res = await this.$http.put(`contractor/${this.taskid}`);
-            if (res.status === 200) {
+            if (res.data.status === 200) {
               this.$message.success("提交成功");
               if (this.ht === "mytask") {
                 this.$store.dispatch("loadingMytask", 1);
@@ -239,7 +239,7 @@ export default {
               this.$store.commit("taskhuakuaihidden");
               this.$store.dispatch("hometask");
             } else {
-              this.$message.error(res.msg);
+              this.$message.error(res.data.msg);
             }
           }
         })

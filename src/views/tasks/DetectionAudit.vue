@@ -235,7 +235,7 @@ export default {
             this.$message.warning("请审核完完全部用例后再提交任务");
           } else {
             const res = await this.$http.put(`detectionaudit/${this.taskid}`);
-            if (res.status === 200) {
+            if (res.data.status === 200) {
               this.$message.success("提交成功");
               if (this.ht === "mytask") {
                 this.$store.dispatch("loadingMytask", 1);
@@ -245,7 +245,7 @@ export default {
               this.$store.commit("taskhuakuaihidden");
               this.$store.dispatch("hometask");
             } else {
-              this.$message.error(res.msg);
+              this.$message.error(res.data.msg);
             }
           }
         })
@@ -260,11 +260,11 @@ export default {
       const res = await this.$http.put(`caserecords/${rowid}`, {
         result: result
       });
-      if (res.status === 200) {
+      if (res.data.status === 200) {
         this.$store.dispatch("daresult", rowid);
         this.$message.success("审批成功");
       } else {
-        this.$message.error(res.msg);
+        this.$message.error(res.data.msg);
         this.$store.dispatch("daresult", rowid);
       }
     },
@@ -296,12 +296,12 @@ export default {
           `casecommentlist/${id}`,
           this.textForm
         );
-        if (res.status === 200) {
+        if (res.data.status === 200) {
           this.$message.success("发表成功");
           this.$refs.textForm.resetFields();
           this.$store.dispatch("handlecasecomment", id);
         } else {
-          this.$message.error(res.msg);
+          this.$message.error(res.data.msg);
         }
       });
     },
