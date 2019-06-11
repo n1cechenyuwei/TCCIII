@@ -3,15 +3,12 @@
     <el-aside width="220px">
       <div class="taskmenu-box">
         <el-menu
-          default-active="/inspection"
+          :default-active="newroute"
           class="el-menu-vertical-demo taskmenu"
           :router="true"
           >
-          <el-menu-item index="/inspection">
-            <span slot="title" class="taskmenu-tittle">受检单位</span>
-          </el-menu-item>
-          <el-menu-item index="/examine">
-            <span slot="title" class="taskmenu-tittle">外委单位</span>
+          <el-menu-item v-for="(item4, index) in treelist" :key="index" :index="item4.route">
+            <span slot="title" class="taskmenu-tittle">{{item4.name}}</span>
           </el-menu-item>
         </el-menu>
       </div>
@@ -28,16 +25,44 @@
 export default {
   data() {
     return {
-      abc: ""
+      newroute: "",
+      treeTwo: "",
+      treelist: []
     };
   },
   created() {
-    this.$router.push({ name: "inspection" });
+    this.router();
   },
   methods: {
-    // 选中菜单关闭右侧滑块
-    handleSelect() {
-      // this.$store.commit("taskhuakuaihidden");
+    async router() {
+      this.treeTwo = "";
+      this.treelist = [];
+      const res = await this.$http.get("getpermistree");
+      if (res.data.permis_list) {
+        for (const item of res.data.permis_list) {
+          if (item.name === "更多") {
+            this.treeTwo = item;
+            for (const item2 of this.treeTwo.children) {
+              if (item2.name === "辅助") {
+                for (const item3 of item2.children) {
+                  if (item3.name === "单位管理") {
+                    this.treelist = item3.children;
+                  }
+                }
+                break;
+              }
+            }
+            break;
+          }
+        }
+        if (this.treelist.length !== 0) {
+          this.newroute = this.treelist[0].route;
+          this.$router.push({ path: this.newroute });
+        }
+      } else {
+        this.$router.push({ name: "login" });
+        this.$message.error("登陆过期，请重新登录");
+      }
     }
   }
 };

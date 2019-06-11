@@ -83,7 +83,7 @@
             <template slot-scope="scope">
               <el-button type="warning" size="mini" icon="el-icon-edit" @click="handleedit(scope.row.id)"></el-button>
               <el-button type="primary" size="mini" icon="el-icon-setting" @click="handleeqcaozuo(scope.row)"></el-button>
-              <!-- <el-button @click="deletework(scope.row.id)" type="danger" size="mini" icon="el-icon-delete"></el-button> -->
+              <el-button @click="deletework(scope.row.id)" type="danger" size="mini" icon="el-icon-delete"></el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -149,7 +149,8 @@
         <el-form-item
           label="工作台IP"
           :rules="[
-            { required: true, message: '请输入工作台IP地址', trigger: 'blur' }
+            { required: true, message: '请输入工作台IP地址', trigger: 'blur' },
+            { max: 20, message: '工作台IP地址最长为20个字符', trigger: 'blur' }
           ]"
           prop="ip_address">
           <el-input size="small" class="workconfig-input" v-model.trim="workform.ip_address"></el-input>
@@ -172,7 +173,8 @@
         <el-form-item
           label="工作台系统版本"
           :rules="[
-            { required: true, message: '请输入工作台系统版本', trigger: 'blur' }
+            { required: true, message: '请输入工作台系统版本', trigger: 'blur' },
+            { max: 33, message: '系统版本最长为33个字符', trigger: 'blur' }
           ]"
           prop="system_version">
           <el-input size="small" class="workconfig-input" v-model.trim="workform.system_version"></el-input>
@@ -236,13 +238,15 @@ export default {
       }, // 新建工作台表单
       createworkformrules: {
         number: [
-          { required: true, message: "请输入工作台编号", trigger: "blur" }
+          { required: true, message: "请输入工作台编号", trigger: "blur" },
+          { max: 15, message: "工作台编号最长为15个字符", trigger: "blur" }
         ],
         workbench_type: [
           { required: true, message: "请选择工作台类型", trigger: "blur" }
         ],
         ip_address: [
-          { required: true, message: "请输入工作台IP地址", trigger: "blur" }
+          { required: true, message: "请输入工作台IP地址", trigger: "blur" },
+          { max: 20, message: "工作台IP地址最长为20个字节", trigger: "blur" }
         ],
         issimulation: [
           {
@@ -252,7 +256,8 @@ export default {
           }
         ],
         system_version: [
-          { required: true, message: "请输入系统版本", trigger: "blur" }
+          { required: true, message: "请输入系统版本", trigger: "blur" },
+          { max: 33, message: "系统版本最长为33个字符", trigger: "blur" }
         ]
       },
       workform: {} // 修改工作台表单
@@ -325,24 +330,23 @@ export default {
       }
     },
     // 删除工作台
-    // deletework(id) {
-    //   this.$confirm("确定要删除该工作台吗?", "提示", {
-    //     confirmButtonText: "确定",
-    //     cancelButtonText: "取消",
-    //     type: "warning"
-    //   })
-    //     .then(async () => {
-    //       // this.rowid = rowid;
-    //       // const res = await this.$http.delete(`createtasktype/${id}`);
-    //       // if (res.data.status === 200) {
-    //       //   this.$message.success("任务删除成功");
-    //       //   this.dataloading();
-    //       // } else {
-    //       //   this.$message.error(res.data.msg);
-    //       // }
-    //     })
-    //     .catch(() => {});
-    // },
+    deletework(id) {
+      this.$confirm("确定要删除该工作台吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(async () => {
+          const res = await this.$http.delete(`bench/${id}`);
+          if (res.data.status === 200) {
+            this.$message.success("工作台删除成功");
+            this.worklistdata(this.currentPage);
+          } else {
+            this.$message.error(res.data.msg);
+          }
+        })
+        .catch(() => {});
+    },
     async handleedit(id) {
       const res = await this.$http.get(`bench/${id}`);
       if (res.data.status === 200) {

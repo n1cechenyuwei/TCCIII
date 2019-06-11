@@ -1,5 +1,9 @@
 <template>
-  <div ref="appendchild">
+  <div ref="appendchild"
+    v-loading="up_disabled"
+    element-loading-text="文件上传中,请稍等"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(256, 256, 256, 0.8)">
     <div class="mydoc-top">
       <div class="push-box">
         <div class="breacpush" v-for="(item, index) in pushbreac" :key="index">
@@ -13,7 +17,8 @@
         name="file"
         :action="$store.state.baseurl + 'uploadtrainingdoc'"
         :show-file-list="false"
-        :on-success="uploadsuccess"
+        :headers="httpheader"
+        :http-request="uploador"
         :on-error="uploaderror"
         :data="{ pid: docid }"
         :multiple="false">
@@ -71,7 +76,7 @@
           label="文件夹名"
           :rules="[
             { required: true, message: '请输入文件夹名称', trigger: 'blur' },
-            { max: 66, message: '最多 66 个字符', trigger: 'blur' }
+            { max: 20, message: '最多 20 个字符', trigger: 'blur' }
           ]">
           <el-input style="width: 300px" size="small" v-model="folderfrom.name"></el-input>
         </el-form-item>
@@ -102,14 +107,42 @@ export default {
       folderfrom: {
         name: ""
       },
-      docid: 0 // 文档id
+      docid: 0, // 文档id
+      httpheader: {
+        token: ""
+      },
+      up_disabled: false
     };
   },
   methods: {
-    // 上传成功
-    uploadsuccess() {
-      this.$message.success("上传成功");
-      this.getdocdata();
+    async uploador(params) {
+      if (params.file) {
+        const res = await this.$http.get(
+          "verificationpermissions/uploadtrainingdoc"
+        );
+        if (res.data.status === 333) {
+          return this.$message.error(res.data.msg);
+        } else if (res.data.status === 222) {
+          this.up_disabled = true;
+          const _file = params.file;
+          let formData = new FormData();
+          formData.append("file", _file);
+          formData.append("pid", this.docid);
+          const res2 = await this.$http.post("uploadtrainingdoc", formData);
+          if (res2.data.status === 200) {
+            this.up_disabled = false;
+            this.$message.success("上传成功");
+            this.getdocdata();
+          } else {
+            this.up_disabled = false;
+            this.$message.error(res2.data.msg);
+          }
+        }
+      }
+    },
+    token() {
+      const token = sessionStorage.getItem("token");
+      this.httpheader.token = token;
     },
     uploaderror() {
       this.$message.error("上传失败");
@@ -201,6 +234,7 @@ export default {
   },
   created() {
     this.getloading();
+    this.token();
   }
 };
 </script>

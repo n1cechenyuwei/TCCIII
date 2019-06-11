@@ -4,17 +4,12 @@
       <div class="taskmenu-box">
         <el-menu
           :default-active="newroute"
-          @select="handleSelect"
-          :unique-opened="true"
           class="el-menu-vertical-demo taskmenu"
           :router="true"
           >
-          <el-submenu :index="index + ''" v-for="(item2, index) in treelist" :key="index">
-            <template slot="title">
-              <span class="taskmenu-tittle">{{item2.name}}</span>
-            </template>
-            <el-menu-item v-for="(item3, index2) in item2.children" :key="index2" :index="item3.route" class="zuobian">{{item3.name}}</el-menu-item>
-          </el-submenu>
+          <el-menu-item v-for="(item4, index) in treelist" :key="index" :index="item4.route">
+            <span slot="title" class="taskmenu-tittle">{{item4.name}}</span>
+          </el-menu-item>
         </el-menu>
       </div>
     </el-aside>
@@ -48,9 +43,9 @@ export default {
           if (item.name === "更多") {
             this.treeTwo = item;
             for (const item2 of this.treeTwo.children) {
-              if (item2.name === "检测流程") {
+              if (item2.name === "支持") {
                 for (const item3 of item2.children) {
-                  if (item3.name === "报告管理") {
+                  if (item3.route === "/inforelease") {
                     this.treelist = item3.children;
                   }
                 }
@@ -61,17 +56,13 @@ export default {
           }
         }
         if (this.treelist.length !== 0) {
-          this.newroute = this.treelist[0].children[0].route;
+          this.newroute = this.treelist[0].route;
           this.$router.push({ path: this.newroute });
         }
       } else {
         this.$router.push({ name: "login" });
         this.$message.error("登陆过期，请重新登录");
       }
-    },
-    // 选中菜单关闭右侧滑块
-    handleSelect() {
-      // this.$store.commit("taskhuakuaihidden");
     }
   }
 };

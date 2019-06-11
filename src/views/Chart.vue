@@ -554,7 +554,6 @@ export default {
 <style>
 .chart-box {
   display: inline-block;
-  width: 100%;
 }
 .tubiao-box {
   box-sizing: border-box;

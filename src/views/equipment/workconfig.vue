@@ -19,20 +19,25 @@
           <el-form-item
             label="服务器IP"
             :rules="[
-              { required: true, message: '请输入服务器IP地址', trigger: 'blur' }
+              { required: true, message: '请输入服务器IP地址', trigger: 'blur' },
+              { max: 20, message: '服务器IP地址最长为20个字符', trigger: 'blur' }
             ]"
             prop="server_1_ip">
             <el-input size="small" v-model.trim="workconfigform.server_1_ip"></el-input>
           </el-form-item>
           <el-form-item
             label="备用服务器IP"
+            :rules="[
+              { max: 20, message: '备用服务器IP地址最长为20个字符', trigger: 'blur' }
+            ]"
             prop="server_2_ip">
             <el-input size="small" v-model.trim="workconfigform.server_2_ip"></el-input>
           </el-form-item>
           <el-form-item
             label="设备IP"
             :rules="[
-              { required: true, message: '请输入设备IP地址', trigger: 'blur' }
+              { required: true, message: '请输入设备IP地址', trigger: 'blur' },
+              { max: 20, message: '备用服务器IP地址最长为20个字符', trigger: 'blur' }
             ]"
             prop="d_ip_address">
             <el-input size="small" v-model.trim="workconfigform.d_ip_address"></el-input>
@@ -40,20 +45,25 @@
           <el-form-item
             label="服务器端口"
             :rules="[
-              { required: true, message: '请输入服务器端口', trigger: 'blur' }
+              { required: true, message: '请输入服务器端口', trigger: 'blur' },
+              { max: 5, message: '服务器端口最长为5个字符', trigger: 'blur' }
             ]"
             prop="server_1_port">
             <el-input size="small" v-model.trim="workconfigform.server_1_port"></el-input>
           </el-form-item>
           <el-form-item
             label="备用服务器端口"
+            :rules="[
+              { max: 5, message: '备用服务器端口最长为5个字符', trigger: 'blur' }
+            ]"
             prop="server_2_port">
             <el-input size="small" v-model.trim="workconfigform.server_2_port"></el-input>
           </el-form-item>
           <el-form-item
             label="设备端口"
             :rules="[
-              { required: true, message: '请输入设备端口', trigger: 'blur' }
+              { required: true, message: '请输入设备端口', trigger: 'blur' },
+              { max: 5, message: '设备端口最长为5个字符', trigger: 'blur' }
             ]"
             prop="d_port">
             <el-input size="small" v-model.trim="workconfigform.d_port"></el-input>
@@ -61,20 +71,25 @@
           <el-form-item
             label="服务器SIP"
             :rules="[
-              { required: true, message: '请输入服务器SIP', trigger: 'blur' }
+              { required: true, message: '请输入服务器SIP', trigger: 'blur' },
+              { max: 10, message: '服务器SIP最长为10个字符', trigger: 'blur' }
             ]"
             prop="server_1_sip">
             <el-input size="small" v-model.trim="workconfigform.server_1_sip"></el-input>
           </el-form-item>
           <el-form-item
             label="备用服务器SIP"
+            :rules="[
+              { max: 10, message: '备用服务器SIP最长为10个字符', trigger: 'blur' }
+            ]"
             prop="server_2_sip">
             <el-input size="small" v-model.trim="workconfigform.server_2_sip"></el-input>
           </el-form-item>
           <el-form-item
             label="设备SIP"
             :rules="[
-              { required: true, message: '请输入设备SIP', trigger: 'blur' }
+              { required: true, message: '请输入设备SIP', trigger: 'blur' },
+              { max: 10, message: '设备SIP最长为10个字符', trigger: 'blur' }
             ]"
             prop="d_sip_id">
             <el-input size="small" v-model.trim="workconfigform.d_sip_id"></el-input>
@@ -82,38 +97,52 @@
           <el-form-item
             label="服务器域"
             :rules="[
-              { required: true, message: '请输入服务器域', trigger: 'blur' }
+              { required: true, message: '请输入服务器域', trigger: 'blur' },
+              { max: 10, message: '域名最长为10个字符', trigger: 'blur' }
             ]"
             prop="server_1_field">
             <el-input size="small" v-model.trim="workconfigform.server_1_field"></el-input>
           </el-form-item>
           <el-form-item
             label="备用设备域"
+            :rules="[
+              { max: 10, message: '域名最长为10个字符', trigger: 'blur' }
+            ]"
             prop="server_2_field">
             <el-input size="small" v-model.trim="workconfigform.server_2_field"></el-input>
           </el-form-item>
           <el-form-item
             label="设备域"
             :rules="[
-              { required: true, message: '请输入设备域', trigger: 'blur' }
+              { required: true, message: '请输入设备域', trigger: 'blur' },
+              { max: 10, message: '域名最长为10个字符', trigger: 'blur' }
             ]"
             prop="d_field">
             <el-input size="small" v-model.trim="workconfigform.d_field"></el-input>
           </el-form-item>
           <el-form-item
             label="服务器密码"
+            :rules="[
+              { max: 15, message: '密码最长为15个字符', trigger: 'blur' }
+            ]"
             prop="server_1_password">
             <el-input size="small" v-model.trim="workconfigform.server_1_password"></el-input>
           </el-form-item>
           <el-form-item
             label="备用服务器密码"
+            :rules="[
+              { max: 15, message: '密码最长为15个字符', trigger: 'blur' }
+            ]"
             prop="server_2_password">
             <el-input size="small" v-model="workconfigform.server_2_password"></el-input>
           </el-form-item>
           <el-form-item
             label="设备密码"
-            prop="shebeipassword">
-            <el-input size="small" v-model.trim="workconfigform.shebeipassword"></el-input>
+            :rules="[
+              { max: 15, message: '密码最长为15个字符', trigger: 'blur' }
+            ]"
+            prop="d_password">
+            <el-input size="small" v-model.trim="workconfigform.d_password"></el-input>
           </el-form-item>
         </el-form>
       </div>
@@ -222,21 +251,21 @@ export default {
       createsoft: false,
       fzsoft: false,
       workconfigform: {
-        ip: "",
-        shebeiip: "",
-        beiyongip: "",
-        duankou: "",
-        shebeiduankou: "",
-        beiyongduankou: "",
-        sip: "",
-        shebeisip: "",
-        beiyongsip: "",
-        yu: "",
-        shebeiyu: "",
-        beiyongyu: "",
-        password: "",
-        shebeipassword: "",
-        beiyongpassword: ""
+        server_1_ip: "",
+        server_2_ip: "",
+        d_ip_address: "",
+        server_1_port: "",
+        server_2_port: "",
+        d_port: "",
+        server_1_sip: "",
+        server_2_sip: "",
+        d_sip_id: "",
+        server_1_field: "",
+        server_2_field: "",
+        d_field: "",
+        server_1_password: "",
+        server_2_password: "",
+        d_password: ""
       },
       radio: "1",
       ruanData: [],
@@ -250,7 +279,7 @@ export default {
       checkAll2: false,
       casesAll2: [],
       checkedCities2: [], // 仿真选中的软件
-      caselist2: [], // 所有仿真软件数据
+      caselist2: [] // 所有仿真软件数据
     };
   },
   methods: {
@@ -300,7 +329,9 @@ export default {
         type: "warning"
       })
         .then(async () => {
-          const res = await this.$http.delete(`configinfo/${this.$route.params.id}/${this.radio}`);
+          const res = await this.$http.delete(
+            `configinfo/${this.$route.params.id}/${this.radio}`
+          );
           if (res.data.status === 200) {
             this.$message.success(res.data.msg);
             this.getconfig(this.radio);
@@ -363,7 +394,9 @@ export default {
       if (this.$route.params.id === undefined) {
         this.$router.push({ name: "environmentconfig" });
       } else {
-        const res = await this.$http.get(`benchnosimtools/${this.$route.params.id}`);
+        const res = await this.$http.get(
+          `benchnosimtools/${this.$route.params.id}`
+        );
         if (res.data.status === 200) {
           this.ruanData = res.data.toolsinfo;
           this.checkedCities = [];
@@ -383,10 +416,13 @@ export default {
         res.data.tools.forEach(element => {
           this.casesAll.push(element.id);
         });
-        if (this.checkedCities.length > 0 && this.checkedCities.length < this.caselist.length) {
+        if (
+          this.checkedCities.length > 0 &&
+          this.checkedCities.length < this.caselist.length
+        ) {
           this.isIndeterminate = true;
           this.checkAll = false;
-        } else if (this.checkedCities.length ===  this.caselist.length) {
+        } else if (this.checkedCities.length === this.caselist.length) {
           this.isIndeterminate = false;
           this.checkAll = true;
         }
@@ -402,7 +438,8 @@ export default {
     handleCheckedCitiesChange(value) {
       let checkedCount = value.length;
       this.checkAll = checkedCount === this.caselist.length;
-      this.isIndeterminate = checkedCount > 0 && checkedCount < this.caselist.length;
+      this.isIndeterminate =
+        checkedCount > 0 && checkedCount < this.caselist.length;
     },
     // 添加非仿真工具信息
     async creatsofts() {
@@ -423,7 +460,9 @@ export default {
       if (this.$route.params.id === undefined) {
         this.$router.push({ name: "environmentconfig" });
       } else {
-        const res = await this.$http.get(`benchsimtools/${this.$route.params.id}`);
+        const res = await this.$http.get(
+          `benchsimtools/${this.$route.params.id}`
+        );
         if (res.data.status === 200) {
           this.fzdata = res.data.toolsinfo;
           this.checkedCities2 = [];
@@ -443,10 +482,13 @@ export default {
         res.data.tools.forEach(element => {
           this.casesAll2.push(element.id);
         });
-        if (this.checkedCities2.length > 0 && this.checkedCities2.length < this.caselist2.length) {
+        if (
+          this.checkedCities2.length > 0 &&
+          this.checkedCities2.length < this.caselist2.length
+        ) {
           this.isIndeterminate2 = true;
           this.checkAll2 = false;
-        } else if (this.checkedCities2.length ===  this.caselist2.length) {
+        } else if (this.checkedCities2.length === this.caselist2.length) {
           this.isIndeterminate2 = false;
           this.checkAll2 = true;
         }
@@ -462,7 +504,8 @@ export default {
     handleCheckedCitiesChange2(value) {
       let checkedCount = value.length;
       this.checkAll2 = checkedCount === this.caselist2.length;
-      this.isIndeterminate2 = checkedCount > 0 && checkedCount < this.caselist2.length;
+      this.isIndeterminate2 =
+        checkedCount > 0 && checkedCount < this.caselist2.length;
     },
     // 添加仿真工具信息
     async creatsofts2() {

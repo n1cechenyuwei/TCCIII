@@ -147,7 +147,8 @@
       width="576px"
       center>
       <div class="checked-box">
-        <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
+        <div v-if="caselist.length === 0">暂无工作台</div>
+        <el-checkbox :indeterminate="isIndeterminate" v-if="caselist.length !== 0" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
         <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange">
           <el-checkbox class="casescheckbox" v-for="item in caselist" :label="item.id" :key="item.id">{{item.number}}</el-checkbox>
         </el-checkbox-group>
@@ -168,7 +169,8 @@
         <el-form-item
         label="服务器编号"
         :rules="[
-          { required: true, message: '请输入服务器编号', trigger: 'blur' }
+          { required: true, message: '请输入服务器编号', trigger: 'blur' },
+          { max: 15, message: '服务器编号最长为15个汉字', trigger: 'blur' }
         ]"
         prop="number">
           <el-input size="small" class="workconfiginput" v-model="createserverform.number"></el-input>
@@ -176,7 +178,8 @@
         <el-form-item
           label="服务器IP地址"
           :rules="[
-            { required: true, message: '请输入服务器IP地址', trigger: 'blur' }
+            { required: true, message: '请输入服务器IP地址', trigger: 'blur' },
+            { max: 20, message: '服务器ip最长为20个字符', trigger: 'blur' }
           ]"
           prop="ip_address">
           <el-input size="small"  class="workconfiginput" v-model="createserverform.ip_address"></el-input>
@@ -184,7 +187,8 @@
         <el-form-item
           label="系统版本"
           :rules="[
-            { required: true, message: '请输入服务器系统版本', trigger: 'blur' }
+            { required: true, message: '请输入服务器系统版本', trigger: 'blur' },
+            { max: 30, message: '系统版本最长为30个汉字', trigger: 'blur' }
           ]"
           prop="system_version">
           <el-input size="small"  class="workconfiginput" v-model="createserverform.system_version"></el-input>
@@ -205,7 +209,8 @@
         <el-form-item
         label="服务器编号"
         :rules="[
-          { required: true, message: '请输入服务器编号', trigger: 'blur' }
+          { required: true, message: '请输入服务器编号', trigger: 'blur' },
+          { max: 15, message: '服务器编号最长为15个汉字', trigger: 'blur' }
         ]"
         prop="number">
           <el-input size="small" class="workconfiginput" v-model="editeserverform.number"></el-input>
@@ -213,7 +218,8 @@
         <el-form-item
           label="服务器IP地址"
           :rules="[
-            { required: true, message: '请输入服务器IP地址', trigger: 'blur' }
+            { required: true, message: '请输入服务器IP地址', trigger: 'blur' },
+            { max: 20, message: '服务器ip最长为20个字符', trigger: 'blur' }
           ]"
           prop="ip_address">
           <el-input size="small"  class="workconfiginput" v-model="editeserverform.ip_address"></el-input>
@@ -221,7 +227,8 @@
         <el-form-item
           label="系统版本"
           :rules="[
-            { required: true, message: '请输入服务器系统版本', trigger: 'blur' }
+            { required: true, message: '请输入服务器系统版本', trigger: 'blur' },
+            { max: 30, message: '系统版本最长为30个汉字', trigger: 'blur' }
           ]"
           prop="system_version">
           <el-input size="small"  class="workconfiginput" v-model="editeserverform.system_version"></el-input>
@@ -260,7 +267,8 @@
         <el-form-item
         label="软件名称"
         :rules="[
-          { required: true, message: '请输入软件名称', trigger: 'blur' }
+          { required: true, message: '请输入软件名称', trigger: 'blur' },
+          { max: 15, message: '软件名称最长为15个汉字', trigger: 'blur' }
         ]"
         prop="eq_type">
           <el-input size="small" class="workconfiginput" v-model="craetargumentform.eq_type"></el-input>
@@ -268,7 +276,8 @@
         <el-form-item
           label="IP地址"
           :rules="[
-            { required: true, message: '请输入IP地址', trigger: 'blur' }
+            { required: true, message: '请输入IP地址', trigger: 'blur' },
+            { max: 30, message: 'IP地址最长为30个字符', trigger: 'blur' }
           ]"
           prop="ip_address">
           <el-input size="small"  class="workconfiginput" v-model="craetargumentform.ip_address"></el-input>
@@ -276,7 +285,8 @@
         <el-form-item
           label="端口"
           :rules="[
-            { required: true, message: '请输入端口', trigger: 'blur' }
+            { required: true, message: '请输入端口', trigger: 'blur' },
+            { max: 4, message: '端口最长为4个字符', trigger: 'blur' }
           ]"
           prop="port">
           <el-input size="small"  class="workconfiginput" v-model="craetargumentform.port"></el-input>
@@ -284,7 +294,8 @@
         <el-form-item
           label="SIPID"
           :rules="[
-            { required: true, message: '请输入端口', trigger: 'blur' }
+            { required: true, message: '请输入SIPID', trigger: 'blur' },
+            { max: 10, message: 'SIPID最长为10个字符', trigger: 'blur' }
           ]"
           prop="sip_id">
           <el-input size="small"  class="workconfiginput" v-model="craetargumentform.sip_id"></el-input>
@@ -292,7 +303,8 @@
         <el-form-item
           label="域"
           :rules="[
-            { required: true, message: '请输入端口', trigger: 'blur' }
+            { required: true, message: '请输入域名', trigger: 'blur' },
+            { max: 10, message: '域名最长为10个字符', trigger: 'blur' }
           ]"
           prop="field">
           <el-input size="small"  class="workconfiginput" v-model="craetargumentform.field"></el-input>
@@ -300,7 +312,8 @@
         <el-form-item
           label="密码"
           :rules="[
-            { required: true, message: '请输入端口', trigger: 'blur' }
+            { required: true, message: '请输入密码', trigger: 'blur' },
+            { max: 10, message: '密码最长为10个字符', trigger: 'blur' }
           ]"
           prop="password">
           <el-input size="small"  class="workconfiginput" v-model="craetargumentform.password"></el-input>
@@ -329,7 +342,8 @@
         <el-form-item
           label="IP地址"
           :rules="[
-            { required: true, message: '请输入IP地址', trigger: 'blur' }
+            { required: true, message: '请输入IP地址', trigger: 'blur' },
+            { max: 30, message: 'IP地址最长为30个字符', trigger: 'blur' }
           ]"
           prop="ip_address">
           <el-input size="small"  class="workconfiginput" v-model="editargumentform.ip_address"></el-input>
@@ -337,7 +351,8 @@
         <el-form-item
           label="端口"
           :rules="[
-            { required: true, message: '请输入端口', trigger: 'blur' }
+            { required: true, message: '请输入端口', trigger: 'blur' },
+            { max: 4, message: '端口最长为4个字符', trigger: 'blur' }
           ]"
           prop="port">
           <el-input size="small"  class="workconfiginput" v-model="editargumentform.port"></el-input>
@@ -345,7 +360,8 @@
         <el-form-item
           label="SIPID"
           :rules="[
-            { required: true, message: '请输入端口', trigger: 'blur' }
+            { required: true, message: '请输入SIPID', trigger: 'blur' },
+            { max: 10, message: 'SIPID最长为10个字符', trigger: 'blur' }
           ]"
           prop="sip_id">
           <el-input size="small"  class="workconfiginput" v-model="editargumentform.sip_id"></el-input>
@@ -353,7 +369,8 @@
         <el-form-item
           label="域"
           :rules="[
-            { required: true, message: '请输入端口', trigger: 'blur' }
+            { required: true, message: '请输入域名', trigger: 'blur' },
+            { max: 10, message: '域名最长为10个字符', trigger: 'blur' }
           ]"
           prop="field">
           <el-input size="small"  class="workconfiginput" v-model="editargumentform.field"></el-input>
@@ -361,7 +378,8 @@
         <el-form-item
           label="密码"
           :rules="[
-            { required: true, message: '请输入端口', trigger: 'blur' }
+            { required: true, message: '请输入密码', trigger: 'blur' },
+            { max: 10, message: '密码最长为10个字符', trigger: 'blur' }
           ]"
           prop="password">
           <el-input size="small"  class="workconfiginput" v-model="editargumentform.password"></el-input>
@@ -455,7 +473,8 @@ export default {
     handleCheckedCitiesChange(value) {
       let checkedCount = value.length;
       this.checkAll = checkedCount === this.caselist.length;
-      this.isIndeterminate = checkedCount > 0 && checkedCount < this.caselist.length;
+      this.isIndeterminate =
+        checkedCount > 0 && checkedCount < this.caselist.length;
     },
     // 获取表格工作台数据
     async getbench() {
@@ -607,7 +626,8 @@ export default {
     handleCheckedCitiesChange2(value) {
       let checkedCount = value.length;
       this.checkAll2 = checkedCount === this.caselist2.length;
-      this.isIndeterminate2 = checkedCount > 0 && checkedCount < this.caselist2.length;
+      this.isIndeterminate2 =
+        checkedCount > 0 && checkedCount < this.caselist2.length;
     },
     // 提交服务器工具信息
     async serverhandle() {

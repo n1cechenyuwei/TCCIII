@@ -121,7 +121,7 @@
           label="缺陷标题"
           :rules="[
             { required: true, message: '请输入缺陷标题', trigger: 'blur' },
-            { max: 66, message: '最多 66 个字符', trigger: 'blur' }
+            { max: 20, message: '缺陷标题最多 20 个字符', trigger: 'blur' }
           ]">
           <el-input style="width: 300px" size="small" v-model="cfetectsfrom.defect_title"></el-input>
         </el-form-item>
@@ -302,6 +302,9 @@ export default {
           this.$message.success(res.data.msg);
           this.creatdefectsvs = false;
           this.getdefectsdata(1);
+        } else {
+          this.$message.error(res.data.msg);
+          this.creatdefectsvs = false;
         }
       });
     },

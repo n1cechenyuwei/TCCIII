@@ -39,26 +39,31 @@ export default {
       this.treeTwo = "";
       this.treelist = [];
       const res = await this.$http.get("getpermistree");
-      for (const item of res.data.permis_list) {
-        if (item.name === "更多") {
-          this.treeTwo = item;
-          for (const item2 of this.treeTwo.children) {
-            if (item2.name === "系统") {
-              for (const item3 of item2.children) {
-                if (item3.name === "系统管理") {
-                  this.treelist = item3.children;
+      if (res.data.permis_list) {
+        for (const item of res.data.permis_list) {
+          if (item.name === "更多") {
+            this.treeTwo = item;
+            for (const item2 of this.treeTwo.children) {
+              if (item2.name === "系统") {
+                for (const item3 of item2.children) {
+                  if (item3.name === "系统管理") {
+                    this.treelist = item3.children;
+                  }
                 }
+                break;
               }
-              break;
             }
+            break;
           }
-          break;
         }
-      }
-      if (this.treelist.length !== 0) {
-        this.newroute = this.treelist[0].route;
-        this.$router.push({ path: this.newroute });
-      }
+        if (this.treelist.length !== 0) {
+          this.newroute = this.treelist[0].route;
+          this.$router.push({ path: this.newroute });
+        }
+      } else {
+        this.$router.push({ name: "login" });
+        this.$message.error("登陆过期，请重新登录");
+      }      
     },
     // 选中菜单关闭右侧滑块
     handleSelect() {

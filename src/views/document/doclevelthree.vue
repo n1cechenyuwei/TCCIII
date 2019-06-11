@@ -1,5 +1,9 @@
 <template>
-  <div>
+  <div
+    v-loading="up_disabled"
+    element-loading-text="文件上传中，请稍等"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(256, 256, 256, 0.8)">
     <div class="mydoc-top">
       <div class="breac">
         <span class="tiaozhuan" @click="pushdocument">{{levelthreedata.breacname}} </span>
@@ -10,9 +14,10 @@
         <el-upload
           accept=".docx, .doc, .pdf, .xlsx, .txt"
           :name="levelthreedata.upname"
+          :headers="httpheader"
+          :http-request="uploador"
           :action="$store.state.baseurl + levelthreedata.upaction"
           :show-file-list="false"
-          :on-success="uploadsuccess"
           :on-error="uploaderror"
           :data="levelthreedata.updata"
           :multiple="false">
@@ -109,10 +114,49 @@ export default {
         id: "",
         paper_position: ""
       },
-      edittypeurl: ""
+      edittypeurl: "",
+      httpheader: {
+        token: ""
+      },
+      up_disabled: false
     };
   },
   methods: {
+    token() {
+      const token = sessionStorage.getItem("token");
+      this.httpheader.token = token;
+    },
+    async uploador(params) {
+      if (params.file) {
+        const res = await this.$http.get(
+          "verificationpermissions/uploadcommondocs"
+        );
+        if (res.data.status === 333) {
+          return this.$message.error(res.data.msg);
+        } else if (res.data.status === 222) {
+          this.up_disabled = true;
+          const _file = params.file;
+          let formData = new FormData();
+          formData.append(this.levelthreedata.upname, _file);
+          formData.append(
+            this.levelthreedata.updataname,
+            this.levelthreedata.updataid
+          );
+          const res2 = await this.$http.post(
+            `${this.levelthreedata.upaction}`,
+            formData
+          );
+          if (res2.data.status === 200) {
+            this.up_disabled = false;
+            this.$message.success("上传成功");
+            this.getdoc();
+          } else {
+            this.up_disabled = false;
+            this.$message.error(res2.data.msg);
+          }
+        }
+      }
+    },
     loadingdata() {
       this.levelthreedata = this.$route.params.nextdata;
       this.getdoc();
@@ -137,11 +181,6 @@ export default {
       if (res.data.status === 200) {
         this.projectlist = res.data.docs;
       }
-    },
-    // 上传成功
-    uploadsuccess() {
-      this.$message.success("上传成功");
-      this.loadingdata();
     },
     uploaderror() {
       this.$message.error("上传失败");
@@ -197,20 +236,20 @@ export default {
           } else if (this.levelthreedata.levelthreename === "合同文档") {
             this.edittypeurl = "dropfinalcompact";
             const res = await this.$http.delete(`${this.edittypeurl}/${id}`);
-            if (res.status === 200) {
+            if (res.data.status === 200) {
               this.loadingdata();
-              this.$message.success(res.msg);
+              this.$message.success(res.data.msg);
             } else {
-              this.$message.error(res.msg);
+              this.$message.error(res.data.msg);
             }
           } else {
             this.edittypeurl = "report";
             const res = await this.$http.delete(`${this.edittypeurl}/${id}`);
-            if (res.status === 200) {
+            if (res.data.status === 200) {
               this.loadingdata();
-              this.$message.success(res.msg);
+              this.$message.success(res.data.msg);
             } else {
-              this.$message.error(res.msg);
+              this.$message.error(res.data.msg);
             }
           }
         })
@@ -223,6 +262,7 @@ export default {
   },
   created() {
     this.loadingdata();
+    this.token();
   }
 };
 </script>

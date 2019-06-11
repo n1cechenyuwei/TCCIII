@@ -30,6 +30,10 @@
         <el-table
           :data="convmslist"
           class="mytask-content-table-one"
+          v-loading="up_disabled"
+          element-loading-text="文件上传中，请稍等"
+          element-loading-spinner="el-icon-loading"
+          element-loading-background="rgba(256, 256, 256, 0.8)"
           stripe
           max-height="720"
           style="width: 100%">
@@ -71,16 +75,12 @@
                     label="初稿">
                     <el-table-column
                       prop="name"
-                      label="合同名称"
-                      width="550">
+                      label="合同名称">
                     </el-table-column>
                     <el-table-column
                       prop="createtime"
+                      width="550"
                       label="生成时间">
-                    </el-table-column>
-                    <el-table-column
-                      prop="createtime"
-                      label="类型">
                     </el-table-column>
                     <el-table-column
                       width="150"
@@ -104,16 +104,12 @@
                     label="终稿">
                     <el-table-column
                       prop="name"
-                      label="合同名称"
-                      width="550">
+                      label="合同名称">
                     </el-table-column>
                     <el-table-column
                       prop="createtime"
+                      width="550"
                       label="生成时间">
-                    </el-table-column>
-                    <el-table-column
-                      prop="createtime"
-                      label="类型">
                     </el-table-column>
                     <el-table-column
                       width="150"
@@ -122,7 +118,7 @@
                         <a :href="scopezg.row.download_url" :download="scopezg.row.download_url">
                           <el-button type="primary" size="mini" icon="el-icon-download"></el-button>
                         </a>
-                        <el-button class="debtn" type="danger" size="mini" icon="el-icon-delete" @click="htdelete(scopezg.row.id)"></el-button>
+                        <el-button class="debtn" type="danger" size="mini" icon="el-icon-delete" @click="htdelete(scopezg.row.id, scope.row.com_no)"></el-button>
                       </template>
                     </el-table-column>
                   </el-table-column>
@@ -187,9 +183,10 @@
                 class="upload-demo"
                 accept=".docx, .pdf, .xlsx, .txt"
                 name="compactfile"
+                :headers="httpheader"
                 :action="$store.state.baseurl + 'uploadcompact'"
                 :show-file-list="false"
-                :on-success="uploadsuccess"
+                :http-request="uploador"
                 :on-error="uploaderror"
                 :data="{ com_no: scope.row.com_no }"
                 :multiple="false">
@@ -229,10 +226,46 @@ export default {
       htdate: [], // 合同期限
       editshow: true,
       editdateshow: true,
-      inputdateshow: false
+      inputdateshow: false,
+      httpheader: {
+        token: ""
+      },
+      conum: "",
+      up_disabled: false,
+      projclick: ""
     };
   },
   methods: {
+    async uploador(params) {
+      if (params.file) {
+        const res = await this.$http.get(
+          `verificationpermissions/uploadcompact`
+        );
+        if (res.data.status === 333) {
+          return this.$message.error(res.data.msg);
+        } else if (res.data.status === 222) {
+          this.up_disabled = true;
+          this.conum = params.data.com_no;
+          const _file = params.file;
+          let formData = new FormData();
+          formData.append("compactfile", _file);
+          formData.append("com_no", params.data.com_no);
+          const res2 = await this.$http.post(`uploadcompact`, formData);
+          if (res2.data.status === 200) {
+            this.up_disabled = false;
+            this.$message.success("上传成功");
+            this.getdata();
+          } else {
+            this.up_disabled = false;
+            this.$message.error(res2.data.msg);
+          }
+        }
+      }
+    },
+    token() {
+      const token = sessionStorage.getItem("token");
+      this.httpheader.token = token;
+    },
     //筛选按钮
     handleCommand(command) {
       if (command === "a") {
@@ -242,12 +275,16 @@ export default {
       }
     },
     // 上传成功
-    uploadsuccess() {
-      this.$message.success("上传成功");
-      this.contract(this.currentPage);
+    uploadsuccess(response) {
+      if (response.data.status === 200) {
+        this.$message.success("上传成功");
+        this.contract(this.currentPage);
+      } else {
+        this.$message.error(response.data.msg);
+      }
     },
-    uploaderror() {
-      this.$message.error("上传失败");
+    uploaderror(err) {
+      this.$message.error(err);
     },
     // 获取合同数据
     async contract(page) {
@@ -268,21 +305,22 @@ export default {
     },
     // 提交金额
     async handlemoney(id) {
+      this.conum = id;
       if (this.htmoney === "") {
         this.$message.warning("请输入合同金额");
       } else {
         const res = await this.$http.put(`updatecompact/${id}`, {
           com_money: this.htmoney
         });
-        if (res.status === 200) {
+        if (res.data.status === 200) {
           this.$message.success("修改合同金额成功");
-          this.contract(this.currentPage);
+          this.getdata();
           this.inputisshow = false;
           this.editshow = true;
         } else {
           this.inputisshow = false;
           this.editshow = true;
-          this.$message.error(res.msg);
+          this.$message.error(res.data.msg);
         }
       }
     },
@@ -294,6 +332,7 @@ export default {
     },
     // 修改时间提交
     async handledate(id) {
+      this.conum = id;
       if (this.htdate === null) {
         this.$message.warning("请选择合同期限");
       } else {
@@ -301,20 +340,39 @@ export default {
           com_starttime: this.htdate[0],
           com_endtime: this.htdate[1]
         });
-        if (res.status === 200) {
+        if (res.data.status === 200) {
           this.$message.success("修改合同期限成功");
-          this.contract(this.currentPage);
+          this.getdata();
           this.editdateshow = true;
           this.inputdateshow = false;
         } else {
           this.editdateshow = true;
           this.inputdateshow = false;
-          this.$message.error(res.msg);
+          this.$message.error(res.data.msg);
+        }
+      }
+    },
+    // 局部刷新
+    async getdata() {
+      const res = await this.$http.get(`localrefreshcompact/${this.conum}`);
+      if (res.data.status === 200) {
+        for (const item of this.convmslist) {
+          if (item.com_no === this.conum) {
+            item.com_endtime = res.data.pacts_list.com_endtime;
+            item.com_starttime = res.data.pacts_list.com_starttime;
+            item.draft_accessory_list =
+              res.data.pacts_list.draft_accessory_list;
+            item.final_accessory_list =
+              res.data.pacts_list.final_accessory_list;
+            item.money = res.data.pacts_list.money;
+            break;
+          }
         }
       }
     },
     // 删除合同
-    htdelete(id) {
+    htdelete(id, rowid) {
+      this.conum = rowid;
       this.$confirm("确定要删除该合同吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -322,11 +380,11 @@ export default {
       })
         .then(async () => {
           const res = await this.$http.delete(`dropfinalcompact/${id}`);
-          if (res.status === 200) {
+          if (res.data.status === 200) {
             this.$message.success("删除合同初稿成功");
-            this.contract(this.currentPage);
+            this.getdata();
           } else {
-            this.$message.error(res.msg);
+            this.$message.error(res.data.msg);
           }
         })
         .catch(() => {});
@@ -335,24 +393,28 @@ export default {
       this.contract(val);
     },
     goproject(projectid, router) {
-      if (router === 0) {
-        this.$router.push({
-          name: "project",
-          params: {
-            id: projectid,
-            path: "/goingproject",
-            name: "进行中项目"
-          }
-        });
-      } else if (router === 1) {
-        this.$router.push({
-          name: "project",
-          params: {
-            id: projectid,
-            path: "/projected",
-            name: "已完成项目"
-          }
-        });
+      if (this.projclick === 1) {
+        if (router === 0) {
+          this.$router.push({
+            name: "project",
+            params: {
+              id: projectid,
+              path: "/goingproject",
+              name: "进行中项目"
+            }
+          });
+        } else if (router === 1) {
+          this.$router.push({
+            name: "project",
+            params: {
+              id: projectid,
+              path: "/projected",
+              name: "已完成项目"
+            }
+          });
+        }
+      } else {
+        return this.$message.error("没有该权限");
       }
     },
     // 搜索按钮
@@ -363,10 +425,35 @@ export default {
         this.currentPage = 1;
         this.contract(1);
       }
+    },
+    async project_click() {
+      const res = await this.$http.get("getpermistree");
+      if (res.data.permis_list) {
+        for (const item of res.data.permis_list) {
+          if (item.route === "/project") {
+            for (const li2 of item.children) {
+              if (li2.name === "项目") {
+                for (const li3 of li2.children) {
+                  if (li3.route === "/projectdetails") {
+                    this.projclick = 1;
+                    break;
+                  }
+                }
+              }
+              break;
+            }
+          }
+        }
+      } else {
+        this.$router.push({ name: "login" });
+        this.$message.error("登陆过期，请重新登录");
+      }
     }
   },
   created() {
     this.contract(this.currentPage);
+    this.token();
+    this.project_click();
   },
   watch: {
     myprojectsearch(val) {

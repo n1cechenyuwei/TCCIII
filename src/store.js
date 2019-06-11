@@ -591,12 +591,14 @@ export default new Vuex.Store({
         `${reqdata.route}/${reqdata.taskid}`
       );
       if (resdataappfor.data.status === 200) {
+        context.commit("taskhuakuaishow");
         context.commit("routerright", {
           data: resdataappfor.data,
           route: reqdata.route,
           id: reqdata.taskid
         });
       } else {
+        context.commit("taskhuakuaihidden");
         Message.error(resdataappfor.data.msg);
       }
     },

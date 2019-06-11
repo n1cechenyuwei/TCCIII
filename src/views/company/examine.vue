@@ -18,7 +18,7 @@
         <el-input
           size="small"
           class="mytasksearch"
-          placeholder="请输入受检单位名称"
+          placeholder="请输入外委单位名称"
           v-model="myprojectsearch">
         </el-input>
         <i class="el-icon-search sreach-icon"></i>      
@@ -102,7 +102,8 @@
         <el-form-item
         label="单位名称"
         :rules="[
-          { required: true, message: '请输入外委单位名称', trigger: 'blur' }
+          { required: true, message: '请输入外委单位名称', trigger: 'blur' },
+          { max: 20, message: '外委单位名称最长为20个字符', trigger: 'blur' }
         ]"
         prop="name">
           <el-input size="small" class="outsideipt" v-model="craetoutsideform.name"></el-input>
@@ -110,7 +111,8 @@
         <el-form-item
           label="单位地址"
           :rules="[
-            { required: true, message: '请输入外委单位地址', trigger: 'blur' }
+            { required: true, message: '请输入外委单位地址', trigger: 'blur' },
+            { max: 20, message: '单位地址最长为20个字符', trigger: 'blur' }
           ]"
           prop="address">
           <el-input size="small"  class="outsideipt" v-model="craetoutsideform.address"></el-input>
@@ -118,7 +120,8 @@
         <el-form-item
           label="邮编地址"
           :rules="[
-            { required: true, message: '请输入外委邮编地址', trigger: 'blur' }
+            { required: true, message: '请输入外委邮编地址', trigger: 'blur' },
+            { max: 11, message: '邮编最长为11个字符', trigger: 'blur' }
           ]"
           prop="postalcode">
           <el-input size="small"  class="outsideipt" v-model="craetoutsideform.postalcode"></el-input>
@@ -141,7 +144,8 @@
         <el-form-item
           label="联系电话"
           :rules="[
-            { required: true, message: '请输入外委单位联系电话', trigger: 'blur' }
+            { required: true, message: '请输入外委单位联系电话', trigger: 'blur' },
+            { max: 13, message: '电话最长为13个字符', trigger: 'blur' }
           ]"
           prop="link_phone">
           <el-input size="small"  class="outsideipt" v-model="craetoutsideform.link_phone"></el-input>
@@ -162,7 +166,8 @@
         <el-form-item
         label="单位名称"
         :rules="[
-          { required: true, message: '请输入外委单位名称', trigger: 'blur' }
+          { required: true, message: '请输入外委单位名称', trigger: 'blur' },
+          { max: 20, message: '外委单位名称最长为20个字符', trigger: 'blur' }
         ]"
         prop="name">
           <el-input size="small" class="outsideipt" v-model="editoutsideform.name"></el-input>
@@ -170,7 +175,8 @@
         <el-form-item
           label="单位地址"
           :rules="[
-            { required: true, message: '请输入外委单位地址', trigger: 'blur' }
+            { required: true, message: '请输入外委单位地址', trigger: 'blur' },
+            { max: 20, message: '单位地址最长为20个字符', trigger: 'blur' }
           ]"
           prop="address">
           <el-input size="small"  class="outsideipt" v-model="editoutsideform.address"></el-input>
@@ -178,7 +184,8 @@
         <el-form-item
           label="邮编地址"
           :rules="[
-            { required: true, message: '请输入外委邮编地址', trigger: 'blur' }
+            { required: true, message: '请输入外委邮编地址', trigger: 'blur' },
+            { max: 11, message: '邮编最长为11个字符', trigger: 'blur' }
           ]"
           prop="postalcode">
           <el-input size="small"  class="outsideipt" v-model="editoutsideform.postalcode"></el-input>
@@ -201,7 +208,8 @@
         <el-form-item
           label="联系电话"
           :rules="[
-            { required: true, message: '请输入外委单位联系电话', trigger: 'blur' }
+            { required: true, message: '请输入外委单位联系电话', trigger: 'blur' },
+            { max: 13, message: '电话最长为13个字符', trigger: 'blur' }
           ]"
           prop="link_phone">
           <el-input size="small"  class="outsideipt" v-model="editoutsideform.link_phone"></el-input>

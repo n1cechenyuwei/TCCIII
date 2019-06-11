@@ -1,5 +1,9 @@
 <template>
-  <div>
+  <div
+    v-loading="up_disabled"
+    element-loading-text="文件上传中，请稍等"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(256, 256, 256, 0.8)">
     <div class="mydoc-top">
       <div class="push-box">
         <div class="breacpush" v-for="(item, index) in pushbreac" :key="index">
@@ -10,15 +14,15 @@
       <div class="nopushtitle">{{nopushbreac.name}}</div>
       <el-button class="ggdoc-btn1" type="success" size="mini" @click="folderfromvs = true">新建文件夹</el-button>
       <el-upload
-        
         name="file"
+        :headers="httpheader"
         :action="$store.state.baseurl + 'uploadcommondocs'"
         :show-file-list="false"
-        :on-success="uploadsuccess"
+        :http-request="uploador"
         :on-error="uploaderror"
         :data="{ pid: docid }"
         :multiple="false">
-        <el-button class="ggdoc-btn2" size="mini" type="primary">上传文件</el-button>
+        <el-button class="ggdoc-btn2" size="mini" type="primary" @click="uploador">上传文件</el-button>
       </el-upload>
     </div>
     <div class="mytask-content-middle">
@@ -81,7 +85,7 @@
           label="文件夹名"
           :rules="[
             { required: true, message: '请输入文件夹名称', trigger: 'blur' },
-            { max: 66, message: '最多 66 个字符', trigger: 'blur' }
+            { max: 20, message: '最多 20 个字符', trigger: 'blur' }
           ]">
           <el-input style="width: 300px" size="small" v-model="folderfrom.name"></el-input>
         </el-form-item>
@@ -101,7 +105,7 @@
           prop="paper_position"
           label="纸质文档存放位置"
           :rules="[
-            { max: 66, message: '最多 66 个字符', trigger: 'blur' }
+            { max: 25, message: '最多 25 个字符', trigger: 'blur' }
           ]">
           <el-input style="width: 300px" size="small" v-model="docfrom2.paper_position"></el-input>
         </el-form-item>
@@ -137,14 +141,42 @@ export default {
       docfrom2: {
         id: "",
         paper_position: ""
-      }
+      },
+      httpheader: {
+        token: ""
+      },
+      up_disabled: false
     };
   },
   methods: {
-    // 上传成功
-    uploadsuccess() {
-      this.$message.success("上传成功");
-      this.getdocdata();
+    token() {
+      const token = sessionStorage.getItem("token");
+      this.httpheader.token = token;
+    },
+    async uploador(params) {
+      if (params.file) {
+        const res = await this.$http.get(
+          "verificationpermissions/uploadcommondocs"
+        );
+        if (res.data.status === 333) {
+          return this.$message.error(res.data.msg);
+        } else if (res.data.status === 222) {
+          this.up_disabled = true;
+          const _file = params.file;
+          let formData = new FormData();
+          formData.append("file", _file);
+          formData.append("pid", this.docid);
+          const res2 = await this.$http.post("uploadcommondocs", formData);
+          if (res2.data.status === 200) {
+            this.up_disabled = false;
+            this.$message.success("上传成功");
+            this.getdocdata();
+          } else {
+            this.up_disabled = false;
+            this.$message.error(res2.data.msg);
+          }
+        }
+      }
     },
     uploaderror() {
       this.$message.error("上传失败");
@@ -259,6 +291,7 @@ export default {
   },
   created() {
     this.getloading();
+    this.token();
   }
 };
 </script>

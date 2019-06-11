@@ -99,6 +99,7 @@
             :before-upload="upload"
             :disabled="disable || uploadbtn"
             :on-progress="progress"
+            :headers="httpheader"
             :show-file-list="false"
             name="filename"
             :file-list="ctupfilelist"
@@ -136,6 +137,9 @@ export default {
   props: ["taskid", "ht"],
   data() {
     return {
+      httpheader: {
+        token: ""
+      },
       newfile: {
         name: "",
         progress: 0
@@ -206,7 +210,7 @@ export default {
           this.newfile.name = "";
           this.newfile.progress = 0;
           this.$store.dispatch("ctuploadlist", this.deviceinfo.device_id);
-          this.$message.error(response.msg);
+          this.$message.error(response.data.msg);
           this.$store.commit("endctuploading");
         }, 500);
       }
@@ -248,7 +252,14 @@ export default {
     // 更改任务进度
     handletasksechedule() {
       this.$store.dispatch("handletasksechedule", this.taskid);
+    },
+    token() {
+      const token = sessionStorage.getItem("token");
+      this.httpheader.token = token;
     }
+  },
+  created() {
+    this.token();
   },
   computed: mapState({
     taskinfo: "taskinfo",

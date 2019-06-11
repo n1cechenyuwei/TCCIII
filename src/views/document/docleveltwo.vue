@@ -56,7 +56,8 @@ export default {
         geturl: "",
         upname: "",
         upaction: "",
-        updata: "",
+        updataname: "",
+        updataid: "",
         btnname: ""
       }
     };
@@ -79,24 +80,21 @@ export default {
         this.levelthreedata.geturl = "compactdocs";
         this.levelthreedata.upname = "compactfile";
         this.levelthreedata.upaction = "uploadcompact";
-        this.levelthreedata.updata = {
-          com_no: row.id
-        };
+        this.levelthreedata.updataname = "com_no";
+        this.levelthreedata.updataid = row.id;
         this.levelthreedata.btnname = "上传合同终稿";
       } else if (row.name === "其他文档") {
         this.levelthreedata.geturl = "otherdocs";
         this.levelthreedata.upname = "file";
         this.levelthreedata.upaction = "uploadotherdocs";
-        this.levelthreedata.updata = {
-          proid: row.id
-        };
+        this.levelthreedata.updataname = "proid";
+        this.levelthreedata.updataid = row.id;
         this.levelthreedata.btnname = "上传文档";
       } else {
         this.levelthreedata.geturl = "reportdocs";
         this.levelthreedata.upname = "filename";
-        this.levelthreedata.updata = {
-          did: row.id
-        };
+        this.levelthreedata.updataname = "did";
+        this.levelthreedata.updataid = row.id;
         if (row.isentrust === 0) {
           this.levelthreedata.upaction = "uploaddefinalreport";
           this.levelthreedata.btnname = "上传报告终稿";

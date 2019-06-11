@@ -123,7 +123,8 @@
         <el-form-item
         label="软件名称"
         :rules="[
-          { required: true, message: '请输入软件名称', trigger: 'blur' }
+          { required: true, message: '请输入软件名称', trigger: 'blur' },
+          { max: 15, message: '软件名称最长为15个汉字', trigger: 'blur' }
         ]"
         prop="toolname">
           <el-input size="small" class="workconfiginput" v-model.trim="simtoolsform.toolname"></el-input>
@@ -131,7 +132,8 @@
         <el-form-item
           label="软件版本"
           :rules="[
-            { required: true, message: '请输入软件版本号', trigger: 'blur' }
+            { required: true, message: '请输入软件版本号', trigger: 'blur' },
+            { max: 15, message: '软件版本最长为15个汉字', trigger: 'blur' }
           ]"
           prop="version">
           <el-input size="small"  class="workconfiginput" v-model.trim="simtoolsform.version"></el-input>
@@ -152,7 +154,8 @@
         <el-form-item
         label="软件名称"
         :rules="[
-          { required: true, message: '请输入软件名称', trigger: 'blur' }
+          { required: true, message: '请输入软件名称', trigger: 'blur' },
+          { max: 15, message: '软件名称最长为15个汉字', trigger: 'blur' }
         ]"
         prop="toolname">
           <el-input size="small" class="workconfiginput" v-model.trim="editsimtoolsform.toolname"></el-input>
@@ -160,7 +163,8 @@
         <el-form-item
           label="软件版本"
           :rules="[
-            { required: true, message: '请输入软件版本号', trigger: 'blur' }
+            { required: true, message: '请输入软件版本号', trigger: 'blur' },
+            { max: 15, message: '软件版本最长为15个汉字', trigger: 'blur' }
           ]"
           prop="version">
           <el-input size="small"  class="workconfiginput" v-model.trim="editsimtoolsform.version"></el-input>

@@ -1,5 +1,6 @@
 import Vue from "vue";
 import Router from "vue-router";
+// import http from "@/components/vuexajax";
 import { Message } from "element-ui";
 const Login = () => import("@/views/Login.vue");
 const Navigation = () => import("@/views/Navigation.vue");
@@ -51,11 +52,13 @@ const Company = () => import("@/views/company/company.vue");
 const Examine = () => import("@/views/company/examine.vue");
 const Inspection = () => import("@/views/company/inspection.vue");
 const Cases = () => import("@/views/cases/cases.vue");
+const Inforelease = () => import("@/views/inforelease/inforelease.vue");
+const Waterdisplay = () => import("@/views/inforelease/waterdisplay.vue");
+const Screendisplay = () => import("@/views/inforelease/screendisplay.vue");
 const Piscases = () => import("@/views/cases/piscases.vue");
 const Pisconfigcase = () => import("@/views/cases/pisconfigcase.vue");
 const Vmscases = () => import("@/views/cases/vmscases.vue");
 const Vmsconfigcase = () => import("@/views/cases/vmsconfigcase.vue");
-const Vmsdetection = () => import("@/views/display/vmsdetection.vue");
 const Document = () => import("@/views/document/document.vue");
 const Commondocument = () => import("@/views/document/commondocument.vue");
 const Pisdocument = () => import("@/views/document/pisdocument.vue");
@@ -66,6 +69,9 @@ const Knowledge = () => import("@/views/knowledge/knowledge.vue");
 const Defects = () => import("@/views/knowledge/defects.vue");
 const Nodefects = () => import("@/views/knowledge/nodefects.vue");
 const Training = () => import("./views/knowledge/training.vue");
+const Vmsdetection = () => import("@/views/display/vmsdetection.vue");
+const Welcome = () => import("@/views/display/welcome.vue");
+const Nodetection = () => import("./views/display/nodetection.vue");
 
 Vue.use(Router);
 
@@ -362,6 +368,23 @@ const router = new Router({
               component: Training
             }
           ]
+        },
+        {
+          name: "inforelease",
+          path: "/inforelease",
+          component: Inforelease,
+          children: [
+            {
+              name: "waterdisplay",
+              path: "/waterdisplay",
+              component: Waterdisplay
+            },
+            {
+              name: "screendisplay",
+              path: "/screendisplay",
+              component: Screendisplay
+            }
+          ]
         }
       ]
     },
@@ -384,22 +407,37 @@ const router = new Router({
       name: "vmsdetection",
       path: "/vmsdetection",
       component: Vmsdetection
+    },
+    {
+      name: "welcome",
+      path: "/welcome",
+      component: Welcome
+    },
+    {
+      name: "nodetection",
+      path: "/nodetection",
+      component: Nodetection
     }
   ]
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   // 判断当前访问的路由是否是login，如果是login直接next
-  if (to.name === "login" || to.name === "vmsdetection") {
+  if (
+    to.name === "login" ||
+    to.name === "vmsdetection" ||
+    to.name === "nodetection" ||
+    to.name === "welcome"
+  ) {
     next();
   } else {
     // 判断有没有token
-    // const token = sessionStorage.getItem("token");
-    // if (!token) {
-    //   router.push({ name: "login" });
-    //   Message.warning("请登录");
-    //   return;
-    // }
+    const token = sessionStorage.getItem("token");
+    if (!token) {
+      router.push({ name: "login" });
+      Message.warning("请登录");
+      return;
+    }
     next();
   }
 });

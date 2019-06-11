@@ -18,37 +18,32 @@
       </el-row>
     </div>
     <div style="padding: 100px 0 0 100px">
-      <div>
-        <div class="sp_home_left">
+      <div class="nodec_box">
+        <div class="node_home_left">
           <i class="sp_icon iconfont icon-menpaihao01"></i>
           <span style="color: #f59c17">房间号：</span>
-          <span style="color: #fff">{{roomdata.room_num}}</span>
         </div>
         <div class="sp_home_right">
-          <i class="sp_icon iconfont icon-fangzi"></i>
-          <span style="color: #f59c17">房间名：</span>
-          <span style="color: #fff">{{roomdata.room_name}}</span>
+         <span style="color: #fff">{{roomdata.room_num}}</span>
         </div>
       </div>
-      <div class="sp_title">
-        <i class="sp_icon iconfont icon-yonghu"></i>
-        <span style="color: #f59c17">负责人：</span>
-        <span style="color: #fff" v-for="(item, index) in roomdata.duty_person" :key="index">{{item}}&nbsp;&nbsp;</span>
+      <div class="nodec_box">
+        <div class="node_home_left">
+          <i class="sp_icon iconfont icon-fangzi"></i>
+          <span style="color: #f59c17">房间名：</span>
+        </div>
+        <div class="sp_home_right">
+         <span style="color: #fff">{{roomdata.room_name}}</span>
+        </div>
       </div>
-      <div style="font-size: 46px;">
-        <i class="sp_icon_task iconfont icon-gongnengliebiao"></i>
-        <span style="color: #f59c17">当前任务：</span>
-      </div>
-      <div>
-        <el-carousel
-          arrow="never"
-          height="400px"
-          :interval="3000"
-          indicator-position="none">
-          <el-carousel-item v-for="(proli, index) in projects" :key="index">
-            <h3 class="sp_task_box" v-for="(li, index2) in proli" :key="index2">{{li}}</h3>
-          </el-carousel-item>
-        </el-carousel>
+      <div class="nodec_box">
+        <div class="node_home_left">
+          <i class="sp_icon iconfont icon-yonghu"></i>
+          <span style="color: #f59c17">负责人：</span>
+        </div>
+        <div class="sp_home_right">
+          <span style="color: #fff" v-for="(item, index) in roomdata.duty_person" :key="index">{{item}}&nbsp;&nbsp;</span>
+        </div>
       </div>
     </div>
   </div>
@@ -63,8 +58,7 @@ export default {
       nowtime: "",
       nowday: "",
       timer1: null,
-      roomdata: "",
-      projects: []
+      roomdata: ""
     };
   },
   methods: {
@@ -103,10 +97,6 @@ export default {
       const res = await this.$http.get(`signdetail/${room}`);
       if (res.data.status === 200) {
         this.roomdata = res.data.signs;
-        this.projects = [];
-        for (let i = 0; i < res.data.signs.projects.length; i += 3) {
-          this.projects.push(res.data.signs.projects.slice(i, i + 3));
-        }
       }
     },
     route() {
@@ -166,14 +156,17 @@ export default {
   font-size: 22px;
   color: #fff;
 }
-.sp_home_left {
+.node_home_left {
   display: inline-block;
   font-size: 46px;
-  width: 800px;
+  vertical-align: top;
+  /* width: 800px; */
 }
 .sp_home_right {
   display: inline-block;
+  vertical-align: top;
   font-size: 46px;
+  max-width: 1500px;
 }
 .sp_icon {
   font-size: 44px;
@@ -184,20 +177,7 @@ export default {
   font-size: 46px;
   margin: 34px 0 32px 0;
 }
-.sp_icon_task {
-  font-size: 54px;
-  color: #1fd8ff;
-  margin-right: 20px;
-  position: relative;
-  top: 4px;
-}
-.sp_task_box {
-  height: 76px;
-  background-color: rgba(38, 54, 180, 0.8);
-  border: 2px solid #2a69cd;
-  color: #fff;
-  font-size: 40px;
-  line-height: 76px;
-  padding-left: 20px;
+.nodec_box {
+  line-height: 140px;
 }
 </style>

@@ -56,10 +56,10 @@
         <el-form-item label="角色名称" prop="role_name">
           <el-input style="width: 290px" size="small" v-model.number.trim="creatroleform.role_name"></el-input>
         </el-form-item>
-        <el-form-item label="执行任务类型" prop="worktype">
+        <el-form-item label="执行任务类型" prop="execute_task">
           <el-input style="width: 290px" size="small" v-model.number.trim="creatroleform.execute_task"></el-input>
         </el-form-item>
-        <el-form-item label="角色描述" prop="roledescribe">
+        <el-form-item label="角色描述" prop="describe">
           <el-input style="width: 290px" type="textarea" :autosize="{ minRows: 6, maxRows: 6}" resize="none" v-model.trim="creatroleform.describe"></el-input>
         </el-form-item>
       </el-form>
@@ -107,13 +107,16 @@ export default {
       },
       creatroleformrules: {
         role_name: [
-          { required: true, message: "请输入角色名称", trigger: "blur" }
+          { required: true, message: "请输入角色名称", trigger: "blur" },
+          { max: 16, message: "角色名称最长为16个汉字", trigger: "blur" }
         ],
         execute_task: [
-          { required: true, message: "请选择执行任务类型", trigger: "blur" }
+          { required: true, message: "请选择执行任务类型", trigger: "blur" },
+          { max: 50, message: "执行任务类型最长为50个汉字", trigger: "blur" }
         ],
         describe: [
-          { required: true, message: "请输入角色描述", trigger: "blur" }
+          { required: true, message: "请输入角色描述", trigger: "blur" },
+          { max: 100, message: "角色描述最长为100个汉字", trigger: "blur" }
         ]
       },
       rolesData: [],
@@ -187,7 +190,6 @@ export default {
     async handlepermissions() {
       const checkedKeys = this.$refs.rolestree.getCheckedKeys();
       const oneKeys = this.$refs.rolestree.getHalfCheckedKeys();
-      // const allkeys = checkedKeys.concat(oneKeys);
       const res = await this.$http.post(`rolemenus/${this.cosplayid}`, {
         half_selected: oneKeys,
         check_all: checkedKeys

@@ -95,29 +95,34 @@ export default {
       myprojectsearch: "",
       allprojectsearch: this.prosearch,
       propstatus: this.prostatus,
-      searchtype: "1" // 搜索类型
+      searchtype: "1", // 搜索类型
+      projclick: ""
     };
   },
   methods: {
     rownameclick(row) {
-      if (this.propstatus === "projectlist") {
-        this.$router.push({
-          name: "projectdetails",
-          params: {
-            id: row.pro_id,
-            path: "/goingproject",
-            name: "进行中项目"
-          }
-        });
+      if (this.projclick === 1) {
+        if (this.propstatus === "projectlist") {
+          this.$router.push({
+            name: "projectdetails",
+            params: {
+              id: row.pro_id,
+              path: "/goingproject",
+              name: "进行中项目"
+            }
+          });
+        } else {
+          this.$router.push({
+            name: "projectdetails",
+            params: {
+              id: row.pro_id,
+              path: "/projected",
+              name: "已完成项目"
+            }
+          });
+        }
       } else {
-        this.$router.push({
-          name: "projectdetails",
-          params: {
-            id: row.pro_id,
-            path: "/projected",
-            name: "已完成项目"
-          }
-        });
+        this.$message.error("没有该权限");
       }
     },
     //筛选按钮
@@ -164,10 +169,33 @@ export default {
       } else {
         this.$message.error(res.data.msg);
       }
+    },
+    async project_click() {
+      const res = await this.$http.get("getpermistree");
+      if (res.data.permis_list) {
+        for (const item of res.data.permis_list) {
+          if (item.route === "/project") {
+            for (const li2 of item.children) {
+              if (li2.name === "项目") {
+                for (const li3 of li2.children) {
+                  if (li3.route === "/projectdetails") {
+                    this.projclick = 1;
+                    break;
+                  }
+                }
+              }
+            }
+          }
+        }
+      } else {
+        this.$router.push({ name: "login" });
+        this.$message.error("登陆过期，请重新登录");
+      }
     }
   },
   created() {
     this.projecteddata(this.currentPage);
+    this.project_click();
   },
   watch: {
     myprojectsearch(val) {

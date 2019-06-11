@@ -1,5 +1,6 @@
 import _this from "../main.js";
 import axios from "axios";
+import { Message } from "element-ui";
 // axios.defaults.headers.delete['Content-Type'] = 'application/json;charset=utf-8'; // 配置请求头
 
 var MyAxios = {};
@@ -34,13 +35,13 @@ MyAxios.install = function(Vue) {
       return Promise.reject(error);
     }
   );
-
   // // Add a response interceptor
   // 添加响应的拦截器
   instance.interceptors.response.use(
     function(response) {
-      if (response.data.status === 123) {
+      if (response.data.data.status === 123) {
         _this.$router.push({ name: "login" });
+        Message.error("登录过期，请重新登陆");
         return response.data;
       } else {
         return response.data;

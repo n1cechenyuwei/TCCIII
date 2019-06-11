@@ -65,31 +65,35 @@ export default {
           return this.$message.error("请完整输入用户名和密码");
         }
         const res = await this.$http.post("login", this.formData);
-        if (res.status === 200) {
-          this.$message.success(res.msg);
-          const token = res.token;
-          const username = res.username;
+        if (res.data.status === 200) {
+          this.$message.success(res.data.msg);
+          const token = res.data.token;
+          const username = res.data.username;
           sessionStorage.setItem("token", token);
           sessionStorage.setItem("username", username);
           this.treeOne = [];
           this.treeTwo = "";
           const res1 = await this.$http.get("getpermistree");
-          res1.data.permis_list.forEach(element => {
-            if (element.name === "更多") {
-              this.treeTwo = element;
-            } else {
-              this.treeOne.push(element);
+          if (res1.data.permis_list.length !== 0) {
+            res1.data.permis_list.forEach(element => {
+              if (element.name === "更多") {
+                this.treeTwo = element;
+              } else {
+                this.treeOne.push(element);
+              }
+            });
+            if (this.treeOne.length !== 0) {
+              this.newroute = this.treeOne[0].route;
+              this.$router.push({ path: this.newroute });
+            } else if (this.treeOne.length === 0 || this.treeTwo !== "") {
+              this.newroute = this.treeTwo.children[0].children[0].route;
+              this.$router.push({ path: this.newroute });
             }
-          });
-          if (this.treeOne.length !== 0) {
-            this.newroute = this.treeOne[0].route;
-            this.$router.push({ path: this.newroute });
-          } else if (this.treeOne.length === 0 || this.treeTwo !== "") {
-            this.newroute = this.treeTwo.children[0].children[0].route;
-            this.$router.push({ path: this.newroute });
+          } else {
+            this.$message.error("该账号没有任何权限，请联系管理员添加权限");
           }
         } else {
-          this.$message.error(res.msg);
+          this.$message.error(res.data.msg);
         }
       });
     }

@@ -45,30 +45,35 @@ export default {
     async router() {
       this.treeOne = [];
       const res = await this.$http.get("getpermistree");
-      for (const item of res.data.permis_list) {
-        if (item.name !== "更多") {
-          this.treeOne.push(item);
+      if (res.data.permis_list) {
+        for (const item of res.data.permis_list) {
+          if (item.name !== "更多") {
+            this.treeOne.push(item);
+          }
         }
-      }
-      this.treemore = "";
-      this.treelist = [];
-      this.treeOne.forEach(element => {
-        if (element.name === "任务") {
-          element.children.forEach(item => {
-            if (item.name === "任务") {
-              this.treemore = item;
-            } else {
-              this.treelist.push(item);
-            }
-          });
+        this.treemore = "";
+        this.treelist = [];
+        this.treeOne.forEach(element => {
+          if (element.name === "任务") {
+            element.children.forEach(item => {
+              if (item.name === "任务") {
+                this.treemore = item;
+              } else {
+                this.treelist.push(item);
+              }
+            });
+          }
+        });
+        if (this.treemore === "") {
+          this.newroute = this.treelist[0].route;
+          this.$router.push({ path: this.newroute });
+        } else if (this.treemore !== "" || this.treelist.length !== 0) {
+          this.newroute = this.treemore.children[0].route;
+          this.$router.push({ path: this.newroute });
         }
-      });
-      if (this.treemore === "") {
-        this.newroute = this.treelist[0].route;
-        this.$router.push({ path: this.newroute });
-      } else if (this.treemore !== "" || this.treelist.length !== 0) {
-        this.newroute = this.treemore.children[0].route;
-        this.$router.push({ path: this.newroute });
+      } else {
+        this.$router.push({ name: "login" });
+        this.$message.error("登陆过期，请重新登录");
       }
     },
     // 选中菜单关闭右侧滑块

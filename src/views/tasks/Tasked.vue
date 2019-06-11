@@ -47,7 +47,7 @@
           </el-table-column>
           <el-table-column
             prop="reality_endtime"
-            width="160"
+            width="300"
             align="center"
             label="任务完成时间">
           </el-table-column>
@@ -137,7 +137,6 @@ export default {
     },
     // 点击右弹出
     taskedright(row) {
-      this.$store.commit("taskhuakuaishow");
       this.taskid = row.id;
       this.route = row.route;
       this.$store.dispatch("routerright", { taskid: row.id, route: row.route });

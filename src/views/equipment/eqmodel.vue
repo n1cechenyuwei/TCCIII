@@ -18,7 +18,7 @@
         <el-input
           size="small"
           class="mytasksearch"
-          placeholder="请输入任务名称"
+          placeholder="请输入设备名称"
           v-model="myprojectsearch">
         </el-input>
         <i class="el-icon-search sreach-icon"></i>      
@@ -222,10 +222,12 @@ export default {
       }, // 弹窗内容
       eqvmsformrule: {
         receive_or_give: [
-          { required: true, message: "请输入接受/返还人", trigger: "blur" }
+          { required: true, message: "请输入接受/返还人", trigger: "blur" },
+          { max: 6, message: "接受/返还人最长为6个汉字", trigger: "blur" }
         ],
         remarks: [
-          { required: true, message: "请输入操作内容", trigger: "blur" }
+          { required: true, message: "请输入操作内容", trigger: "blur" },
+          { max: 33, message: "操作内容最长为33个汉字", trigger: "blur" }
         ],
         state: [
           { required: true, message: "请选择出入库状态", trigger: "blur" }
@@ -249,7 +251,8 @@ export default {
         }
         const res = await this.$http.post(`record/${this.eqvmsform.did}`, {
           receive_or_give: this.eqvmsform.receive_or_give,
-          remarks: this.eqvmsform.remarks
+          remarks: this.eqvmsform.remarks,
+          state_record: this.eqvmsform.state
         });
         if (res.data.status === 200) {
           this.eqcontentDialogVisible = false;
@@ -262,6 +265,7 @@ export default {
     },
     // 设备操作
     handleeqcaozuo(row) {
+      console.log(row)
       this.eqvmsform.did = row.id;
       this.eqvmsform.eq_name = row.eq_name;
       this.eqvmsform.eq_type = row.eq_type;

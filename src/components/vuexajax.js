@@ -1,5 +1,6 @@
 import _this from "../main.js";
 import axios from "axios";
+import { Message } from "element-ui";
 
 const instance = axios.create({
   baseURL: "http://192.168.1.150:8888/api/v1.0/"
@@ -36,8 +37,9 @@ instance.interceptors.request.use(
 // 添加响应的拦截器
 instance.interceptors.response.use(
   function(response) {
-    if (response.data.status === 123) {
+    if (response.data.data.status && response.data.data.status === 123) {
       _this.$router.push({ name: "login" });
+      Message.error("登录过期，请重新登陆");
       return response.data;
     } else {
       return response.data;

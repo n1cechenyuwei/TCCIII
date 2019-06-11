@@ -170,6 +170,7 @@
                         :disabled="disable || uploadbtn"
                         :on-progress="progress"
                         :show-file-list="false"
+                        :headers="httpheader"
                         name="compactfile"
                         :file-list="finalfile"
                         :data="$store.state.filehetongid"
@@ -235,6 +236,9 @@ export default {
   data() {
     return {
       hetongradio: "",
+      httpheader: {
+        token: ""
+      },
       Isshow: false, //合同不通过原因绑定值
       formhetong: {
         why: "" //文本绑定值
@@ -246,6 +250,10 @@ export default {
     };
   },
   methods: {
+    token() {
+      const token = sessionStorage.getItem("token");
+      this.httpheader.token = token;
+    },
     //是否通过显示文本框
     radiochange() {
       if (this.hetongradio === "签订成功") {
@@ -425,6 +433,9 @@ export default {
         this.$store.state.appcompactinfo.com_no
       );
     }
+  },
+  created() {
+    this.token();
   },
   computed: mapState({
     taskinfo: "taskinfo",

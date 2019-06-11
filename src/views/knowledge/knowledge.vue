@@ -7,7 +7,7 @@
           class="el-menu-vertical-demo taskmenu"
           :router="true"
           >
-           <el-submenu index="2">
+           <el-submenu index="2" v-if="treemore.length !== 0">
             <template slot="title">
               <span class="taskmenu-tittle">{{treemore.name}}</span>
             </template>
@@ -44,32 +44,37 @@ export default {
       this.treemore = "";
       this.treelist = [];
       const res = await this.$http.get("getpermistree");
-      for (const item of res.data.permis_list) {
-        if (item.name === "更多") {
-          for (const item2 of item.children) {
-            if (item2.name === "支持") {
-              for (const item3 of item2.children) {
-                if (item3.name === "知识资源") {
-                  for (const item4 of item3.children) {
-                    if (item4.name === "缺陷管理") {
-                      this.treemore = item4;
-                    } else {
-                      this.treelist.push(item4);
+      if (res.data.permis_list) {
+        for (const item of res.data.permis_list) {
+          if (item.name === "更多") {
+            for (const item2 of item.children) {
+              if (item2.name === "支持") {
+                for (const item3 of item2.children) {
+                  if (item3.name === "知识资源") {
+                    for (const item4 of item3.children) {
+                      if (item4.name === "缺陷管理") {
+                        this.treemore = item4;
+                      } else {
+                        this.treelist.push(item4);
+                      }
                     }
+                    break;
                   }
-                  break;
                 }
               }
             }
           }
         }
-      }
-      if (this.treemore !== "" || this.treelist.length !== 0) {
-        this.newroute = this.treemore.children[0].route;
-        this.$router.push({ path: this.newroute });
-      } else if (this.treemore === "") {
-        this.newroute = this.treelist[0].route;
-        this.$router.push({ path: this.newroute });
+        if (this.treemore !== "") {
+          this.newroute = this.treemore.children[0].route;
+          this.$router.push({ path: this.newroute });
+        } else if (this.treemore === "") {
+          this.newroute = this.treelist[0].route;
+          this.$router.push({ path: this.newroute });
+        }
+      } else {
+        this.$router.push({ name: "login" });
+        this.$message.error("登陆过期，请重新登录");
       }
     }
   }

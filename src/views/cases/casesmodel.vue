@@ -204,40 +204,58 @@ export default {
       },
       createCaseformrules: {
         case_num: [
-          { required: true, message: "请输入用例编号", trigger: "blur" }
+          { required: true, message: "请输入用例编号", trigger: "blur" },
+          { max: 25, message: "用例编号最长为25个字符", trigger: "blur" }
         ],
         case_name: [
-          { required: true, message: "请输入用例名称", trigger: "blur" }
+          { required: true, message: "请输入用例名称", trigger: "blur" },
+          { max: 30, message: "用例名称最长为30个字符", trigger: "blur" }
         ],
         priority: [
-          { required: true, message: "请输入优先级别", trigger: "blur" }
+          { required: true, message: "请输入优先级别", trigger: "blur" },
+          { max: 3, message: "优先级别最长为3个字符", trigger: "blur" }
         ],
         precondition: [
-          { required: true, message: "请输入前提条件", trigger: "blur" }
+          { required: true, message: "请输入前提条件", trigger: "blur" },
+          { max: 160, message: "前提条件最长为160个字符", trigger: "blur" }
         ],
-        step: [{ required: true, message: "请输入步骤描述", trigger: "blur" }],
+        step: [
+          { required: true, message: "请输入步骤描述", trigger: "blur" },
+          { max: 160, message: "步骤描述最长为160个字符", trigger: "blur" }
+        ],
         expectedresult: [
-          { required: true, message: "请输入预期结果", trigger: "blur" }
-        ]
+          { required: true, message: "请输入预期结果", trigger: "blur" },
+          { max: 160, message: "预期结果最长为160个字符", trigger: "blur" }
+        ],
+        msg: [{ max: 160, message: "报文最长为300个字符", trigger: "blur" }]
       },
       editCaseform: {},
       editCaseformrules: {
         case_num: [
-          { required: true, message: "请输入用例编号", trigger: "blur" }
+          { required: true, message: "请输入用例编号", trigger: "blur" },
+          { max: 25, message: "用例编号最长为25个字符", trigger: "blur" }
         ],
         case_name: [
-          { required: true, message: "请输入用例名称", trigger: "blur" }
+          { required: true, message: "请输入用例名称", trigger: "blur" },
+          { max: 30, message: "用例名称最长为30个字符", trigger: "blur" }
         ],
         priority: [
-          { required: true, message: "请输入优先级别", trigger: "blur" }
+          { required: true, message: "请输入优先级别", trigger: "blur" },
+          { max: 3, message: "优先级别最长为3个字符", trigger: "blur" }
         ],
         precondition: [
-          { required: true, message: "请输入前提条件", trigger: "blur" }
+          { required: true, message: "请输入前提条件", trigger: "blur" },
+          { max: 160, message: "前提条件最长为160个字符", trigger: "blur" }
         ],
-        step: [{ required: true, message: "请输入步骤描述", trigger: "blur" }],
+        step: [
+          { required: true, message: "请输入步骤描述", trigger: "blur" },
+          { max: 160, message: "步骤描述最长为160个字符", trigger: "blur" }
+        ],
         expectedresult: [
-          { required: true, message: "请输入预期结果", trigger: "blur" }
-        ]
+          { required: true, message: "请输入预期结果", trigger: "blur" },
+          { max: 160, message: "预期结果最长为160个字符", trigger: "blur" }
+        ],
+        msg: [{ max: 160, message: "报文最长为300个字符", trigger: "blur" }]
       }
     };
   },

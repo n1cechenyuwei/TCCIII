@@ -121,6 +121,7 @@
                   :on-progress="progress"
                   :show-file-list="false"
                   name="filename"
+                  :headers="httpheader"
                   :file-list="final_report"
                   :data="$store.state.uptaskid"
                   :on-success="uploadsuccess"
@@ -161,6 +162,9 @@ export default {
   props: ["taskid", "ht"],
   data() {
     return {
+      httpheader: {
+        token: ""
+      },
       raactive: "first",
       newfile: {
         name: "",
@@ -169,6 +173,10 @@ export default {
     };
   },
   methods: {
+    token() {
+      const token = sessionStorage.getItem("token");
+      this.httpheader.token = token;
+    },
     // 提交任务
     eqconfigsubmit() {
       this.$confirm("确定提交任务吗", "提示", {
@@ -259,9 +267,9 @@ export default {
     },
     // 文件上传失败
     uploaderror() {
-      this.$message.error("文件上传失败");
       this.$store.dispatch("rauploadlist", this.deviceinfo.id);
       this.$store.commit("endctuploading");
+      this.$message.error("文件上传失败");
     },
     // 超出文件限制
     handleExceed(files) {
@@ -274,6 +282,9 @@ export default {
     handletasksechedule() {
       this.$store.dispatch("handletasksechedule", this.taskid);
     }
+  },
+  created() {
+    this.token();
   },
   computed: mapState({
     taskinfo: "taskinfo",

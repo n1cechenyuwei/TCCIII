@@ -29,10 +29,13 @@
         </el-table-column>
         <el-table-column
           show-overflow-tooltip
+          prop="roles"
           label="角色">
-          <template slot-scope="scope">
-            <span v-for="(item, index) in scope.row.roles" :key="index">{{item}}&nbsp;&nbsp;&nbsp;</span>
-          </template>
+        </el-table-column>
+        <el-table-column
+          show-overflow-tooltip
+          prop="retest"
+          label="复检次数">
         </el-table-column>
          <el-table-column
           prop="type"
@@ -60,6 +63,7 @@
               class="systemupload"
               :action="$store.state.baseurl + 'usersignatures/' + scope.row.userid"
               :show-file-list="false"
+              :headers="httpheader"
               :on-success="uploadsuccess"
               :on-error="uploaderror"
               :data="{ id: scope.row.id }"
@@ -97,7 +101,7 @@
       <div>
         <el-form label-position="right" label-width="120px" ref="idform" :model="idform" :rules="idformrules">
           <el-form-item label="工号" prop="username">
-            <el-input size="small" class="systemipt" v-model.number.trim="idform.username"></el-input>
+            <el-input size="small" class="systemipt" v-model.trim="idform.username"></el-input>
           </el-form-item>
           <el-form-item label="密码" prop="password">
             <el-input type="password" class="systemipt" size="small" v-model.trim="idform.password"></el-input>
@@ -131,10 +135,10 @@
       <div>
         <el-form label-position="right" label-width="100px" :rules="rolesfromrules" ref="rolesfrom" :model="rolesfrom" label-suffix="：">
           <el-form-item label="姓名">
-            <span>张三</span>
+            <span>{{rolesfrom.name}}</span>
           </el-form-item>
           <el-form-item label="角色" prop="role">
-            <el-select v-model="rolesfrom.role" placeholder="请选择" style="width: 280px" size="mini">
+            <el-select v-model="rolesfrom.role" placeholder="请选择角色" style="width: 280px" size="mini">
               <el-option
                 v-for="item in roleoptions"
                 :key="item.id"
@@ -144,7 +148,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="状态" prop="state">
-            <el-select v-model="rolesfrom.state" style="width: 280px" placeholder="请选择">
+            <el-select v-model="rolesfrom.state" style="width: 280px" placeholder="请选择状态" size="mini">
               <el-option
                 v-for="item in stateoptions"
                 :key="item.value"
@@ -215,16 +219,6 @@ export default {
         callback();
       }
     };
-    let jobnumber = (rule, value, callback) => {
-      if (!value) {
-        return callback(new Error("工号不能为空"));
-      }
-      if (!Number.isInteger(value)) {
-        callback(new Error("请输入数字值"));
-      } else {
-        callback();
-      }
-    };
     return {
       peoplesearch: "", // 搜索框内容
       currentPage: 1, // 当前页数
@@ -244,7 +238,7 @@ export default {
       idformrules: {
         username: [
           { required: true, message: "请输入工号", trigger: "blur" },
-          { validator: jobnumber, trigger: "blur" }
+          { max: 10, message: "工号最长为10个字符", trigger: "blur" }
         ],
         password: [
           { required: true, message: "请输入密码", trigger: "blur" },
@@ -255,7 +249,8 @@ export default {
           { validator: oldpassword, trigger: "blur" }
         ],
         realname: [
-          { required: true, message: "请输入真实姓名", trigger: "blur" }
+          { required: true, message: "请输入真实姓名", trigger: "blur" },
+          { max: 5, message: "姓名最长为5个汉字", trigger: "blur" }
         ],
         type: [{ required: true, message: "选择账号类型", trigger: "blur" }]
       },
@@ -282,10 +277,43 @@ export default {
         }
       ],
       persontime: "", // 请假时间
-      isshowtime: true
+      isshowtime: true,
+      httpheader: {
+        token: ""
+      }
     };
   },
   methods: {
+    // async uploador(params) {
+    //   if (params.file) {
+    //     const res = await this.$http.get(
+    //       `verificationpermissions/uploadcompact`
+    //     );
+    //     if (res.data.status === 333) {
+    //       return this.$message.error(res.data.msg);
+    //     } else if (res.data.status === 222) {
+    //       this.up_disabled = true;
+    //       this.conum = params.data.com_no;
+    //       const _file = params.file;
+    //       let formData = new FormData();
+    //       formData.append("compactfile", _file);
+    //       formData.append("com_no", params.data.com_no);
+    //       const res2 = await this.$http.post(`uploadcompact`, formData);
+    //       if (res2.data.status === 200) {
+    //         this.up_disabled = false;
+    //         this.$message.success("上传成功");
+    //         this.getdata();
+    //       } else {
+    //         this.up_disabled = false;
+    //         this.$message.error(res2.data.msg);
+    //       }
+    //     }
+    //   }
+    // },
+    token() {
+      const token = sessionStorage.getItem("token");
+      this.httpheader.token = token;
+    },
     peopleseac() {
       if (this.peoplesearch === "") {
         this.$message.warning("请输入内容");
@@ -356,9 +384,13 @@ export default {
       // this.timeVisible = false;
     },
     // 上传成功
-    uploadsuccess() {
-      this.$message.success("上传成功");
-      this.iddata(this.currentPage);
+    uploadsuccess(res) {
+      if (res.data.status === 200) {
+        this.$message.success(res.data.msg);
+        this.iddata(this.currentPage);
+      } else {
+        this.$message.error(res.data.msg);
+      }
     },
     uploaderror() {
       this.$message.error("上传失败");
@@ -370,11 +402,12 @@ export default {
           return this.$message.error("请正确输入信息");
         }
         const res = await this.$http.post(`inneruserlist`, this.idform);
-        if (res.status === 201) {
+        if (res.data.status === 201) {
           this.$message.success("创建成功");
+          this.iddata(this.currentPage);
           this.IdDialogVisible = false;
         } else {
-          this.$message.error(res.msg);
+          this.$message.error(res.data.msg);
         }
       });
     },
@@ -422,6 +455,7 @@ export default {
   created() {
     this.iddata(this.currentPage);
     this.rolesdata();
+    this.token();
   },
   watch: {
     peoplesearch(val) {

@@ -174,8 +174,8 @@
     <!-- 图表模块 -->
     <Chart v-if="false" class="chart-box-home">
     </Chart>
-    <Chart1 v-if="false" class="chart-box-home">
-    </Chart1>
+    <!-- <Chart1 v-if="true" class="chart-box-home">
+    </Chart1> -->
     <!-- 任务右滑模块 -->
     <div
       :class="{ 'hiddenhome': $store.state.noShow, 'sardhome': $store.state.isShow }"
@@ -467,7 +467,7 @@ export default {
     },
     //点击任务右滑
     taskright(item) {
-      this.$store.commit("taskhuakuaishow");
+      // this.$store.commit("taskhuakuaishow");
       this.taskid = item.taskid;
       this.route = item.route;
       this.$store.dispatch("routerright", {

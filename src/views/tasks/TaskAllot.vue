@@ -465,20 +465,11 @@ export default {
         `taskcharts/${this.PVtabPosition}/${page}?${date}`
       );
       if (res.data.status === 200) {
-        // const mindate = Math.min.apply(Math, res.taskinfo.map(function(o) {return new Date(o.starttime.replace(/-/g, '/'))}));
-        // const maxdate = Math.max.apply(Math, res.taskinfo.map(function(o) {return new Date(o.endtime.replace(/-/g, '/'))}));
-        // const diffdate = (maxdate - mindate) / 1000 / 60 / 60 / 24;
-        // if (diffdate > 18) {
-        //   this.tickCountNumber = 18;
-        // } else {
-        //   this.tickCountNumber = diffdate;
-        // }
         res.data.taskinfo.forEach(obj => {
           if (obj.taskname !== "") {
+            obj.starttime = obj.starttime + " 01:00:00";
+            obj.endtime = obj.endtime + " 23:00:00";
             obj.range = [obj.starttime, obj.endtime];
-            // obj.range = [];
-            // obj.range[0] = obj.starttime + " " + "00:30:00";
-            // obj.range[1] = obj.endtime + " " + "24:00:00";
           } else {
             obj.range = [obj.starttime, obj.endtime];
           }
@@ -500,26 +491,11 @@ export default {
       const date = new Date().getTime();
       const res = await this.$http.get(`taskcharts/${type}/1?${date}`);
       if (res.data.status === 200) {
-        // const mindate = Math.min.apply(Math, res.taskinfo.map(function(o) {return new Date(o.starttime.replace(/-/g, '/'))}));
-        // const maxdate = Math.max.apply(Math, res.taskinfo.map(function(o) {return new Date(o.endtime.replace(/-/g, '/'))}));
-        // const diffdate = (maxdate - mindate) / 1000 / 60 / 60 / 24;
-        // if (diffdate > 18) {
-        //   this.tickCountNumber = 18;
-        // } else {
-        //   this.tickCountNumber = diffdate;
-        // }
         res.data.taskinfo.forEach(obj => {
           if (obj.taskname !== "") {
+            obj.starttime = obj.starttime + " 01:00:00";
+            obj.endtime = obj.endtime + " 23:00:00";
             obj.range = [obj.starttime, obj.endtime];
-            // obj.range = [];
-            // obj.range[0] = obj.starttime + " " + "00:30:00";
-            // const enddate = new Date(obj.endtime.replace(/-/g, '/')).getTime() + (1000 * 60 * 60 * 24);
-            // const Y = new Date(enddate).getFullYear();
-            // const M = new Date(enddate).getMonth()+1;
-            // const D = new Date(enddate).getDate();
-            // obj.range[1] = Y + "-" + M + "-" + D + " 00:10:01";
-            // console.log(obj.range[1])
-            // obj.range[1] = obj.endtime + " " + "23:00:00";
           } else {
             obj.range = [obj.starttime, obj.endtime];
           }

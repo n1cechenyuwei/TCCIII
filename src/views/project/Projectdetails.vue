@@ -317,7 +317,6 @@ export default {
     },
     // 任务表格名称点击
     rownameclick(row) {
-      this.$store.commit("taskhuakuaishow");
       this.taskid = row.id;
       this.route = row.route;
       this.$store.dispatch("routerright", { taskid: row.id, route: row.route });

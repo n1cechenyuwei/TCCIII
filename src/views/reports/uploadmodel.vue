@@ -31,6 +31,11 @@
           :data="eqpislist"
           class="mytask-content-table-one"
           stripe
+          v-loading="up_disabled"
+          element-loading-text="文件上传中，请稍等"
+          element-loading-spinner="el-icon-loading"
+          element-loading-background="rgba(256, 256, 256, 0.8)"
+          height="760"
           style="width: 100%">
           <el-table-column
             type="expand">
@@ -100,7 +105,8 @@
                 name="filename"
                 :action="$store.state.baseurl + reportsuploadurl"
                 :show-file-list="false"
-                :on-success="uploadsuccess"
+                :headers="httpheader"
+                :http-request="uploador"
                 :on-error="uploaderror"
                 :data="{ did: scope.row.device_id }"
                 :multiple="false">
@@ -127,6 +133,9 @@ export default {
   props: ["alldata", "load", "uploadurl"],
   data() {
     return {
+      httpheader: {
+        token: ""
+      },
       reprotsalldata: this.alldata,
       reportsload: this.load,
       reportsuploadurl: this.uploadurl,
@@ -135,10 +144,44 @@ export default {
       eqpistotal: 0,
       eqpislist: [],
       myprojectsearch: "",
-      devid: "" // 设备id
+      devid: "", // 设备id
+      up_disabled: false,
+      projclick: ""
     };
   },
   methods: {
+    async uploador(params) {
+      if (params.file) {
+        const res = await this.$http.get(
+          `verificationpermissions/${this.reportsuploadurl}`
+        );
+        if (res.data.status === 333) {
+          return this.$message.error(res.data.msg);
+        } else if (res.data.status === 222) {
+          this.up_disabled = true;
+          const _file = params.file;
+          let formData = new FormData();
+          formData.append("filename", _file);
+          formData.append("did", params.data.did);
+          const res2 = await this.$http.post(
+            `${this.reportsuploadurl}`,
+            formData
+          );
+          if (res2.data.status === 200) {
+            this.up_disabled = false;
+            this.$message.success("上传成功");
+            this.updata();
+          } else {
+            this.up_disabled = false;
+            this.$message.error(res2.data.msg);
+          }
+        }
+      }
+    },
+    token() {
+      const token = sessionStorage.getItem("token");
+      this.httpheader.token = token;
+    },
     //筛选按钮
     handleCommand(command) {
       if (command === "a") {
@@ -164,34 +207,33 @@ export default {
     uploadbtn(devid) {
       this.devid = devid;
     },
-    // 上传成功
-    uploadsuccess() {
-      this.$message.success("上传成功");
-      this.updata();
-    },
     uploaderror() {
       this.$message.error("上传失败");
     },
     // 项目跳转
     goproject(projectid, router) {
-      if (router === 0) {
-        this.$router.push({
-          name: "project",
-          params: {
-            id: projectid,
-            path: "/goingproject",
-            name: "进行中项目"
-          }
-        });
-      } else if (router === 1) {
-        this.$router.push({
-          name: "project",
-          params: {
-            id: projectid,
-            path: "/projected",
-            name: "已完成项目"
-          }
-        });
+      if (this.projclick === 1) {
+        if (router === 0) {
+          this.$router.push({
+            name: "project",
+            params: {
+              id: projectid,
+              path: "/goingproject",
+              name: "进行中项目"
+            }
+          });
+        } else if (router === 1) {
+          this.$router.push({
+            name: "project",
+            params: {
+              id: projectid,
+              path: "/projected",
+              name: "已完成项目"
+            }
+          });
+        }
+      } else {
+        return this.$message.error("没有该权限");
       }
     },
     // 终稿删除
@@ -204,9 +246,11 @@ export default {
       })
         .then(async () => {
           const res = await this.$http.delete(`report/${id}`);
-          if (res.status === 200) {
+          if (res.data.status === 200) {
             this.$message.success("删除成功");
             this.updata();
+          } else {
+            this.$message.error(res.data.msg);
           }
         })
         .catch(() => {});
@@ -230,10 +274,35 @@ export default {
         this.currentPage = 1;
         this.reports(1);
       }
+    },
+    async project_click() {
+      const res = await this.$http.get("getpermistree");
+      if (res.data.permis_list) {
+        for (const item of res.data.permis_list) {
+          if (item.route === "/project") {
+            for (const li2 of item.children) {
+              if (li2.name === "项目") {
+                for (const li3 of li2.children) {
+                  if (li3.route === "/projectdetails") {
+                    this.projclick = 1;
+                    break;
+                  }
+                }
+              }
+              break;
+            }
+          }
+        }
+      } else {
+        this.$router.push({ name: "login" });
+        this.$message.error("登陆过期，请重新登录");
+      }
     }
   },
   created() {
     this.reports(this.currentPage);
+    this.token();
+    this.project_click();
   },
   watch: {
     myprojectsearch(val) {
@@ -281,7 +350,7 @@ export default {
   color: #409eff;
 }
 .mytask-content-table {
-  height: 720px;
+  height: 760px;
   min-width: 1670px;
 }
 .mytask-content-table-one {

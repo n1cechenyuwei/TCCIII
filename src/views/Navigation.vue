@@ -7,15 +7,16 @@
           </div>
         </el-col>
         <el-col :span="16">
+          <i v-if="daohangloading" class="el-icon-loading daohangload"></i>
           <el-menu 
-          :router="true"
-          mode="horizontal"
-          :default-active="newroute"
-          class="menuitem"
-          @select="handleSelect"
-          background-color="#004fa1"
-          text-color="#fff"
-          active-text-color="#fff">
+            :router="true"
+            mode="horizontal"
+            :default-active="newroute"
+            class="menuitem"
+            @select="handleSelect"
+            background-color="#004fa1"
+            text-color="#fff"
+            active-text-color="#fff">
             <el-menu-item v-for="(item, index) in treeOne" :key="index" :index="item.route" class="aaa">{{item.name}}</el-menu-item>
             <el-submenu index="2" popper-class="more-menu" v-if="treeTwo.length !== 0">
               <template slot="title">{{treeTwo.name}}</template>
@@ -352,6 +353,7 @@ export default {
     };
     return {
       data: "r",
+      daohangloading: true,
       username: "",
       newroute: "",
       eqimgshow: false, //设备生产厂家照片显示
@@ -431,15 +433,22 @@ export default {
       this.treeOne = [];
       this.treeTwo = "";
       const res = await this.$http.get("getpermistree");
-      res.data.permis_list.forEach(element => {
-        if (element.name === "更多") {
-          this.treeTwo = element;
-        } else {
-          this.treeOne.push(element);
-        }
-      });
-      this.newroute = this.$route.matched[1].path;
-      this.username = sessionStorage.getItem("username");
+      if (res.data.permis_list) {
+        this.daohangloading = false;
+        res.data.permis_list.forEach(element => {
+          if (element.name === "更多") {
+            this.treeTwo = element;
+          } else {
+            this.treeOne.push(element);
+          }
+        });
+        this.newroute = this.$route.matched[1].path;
+        this.username = sessionStorage.getItem("username");
+      } else {
+        this.daohangloading = false;
+        this.$router.push({ name: "login" });
+        this.$message.error("登陆过期，请重新登录");
+      }
     },
     handleCommandUser(command) {
       if (command === "logout") {
@@ -521,12 +530,12 @@ export default {
           `generatereport/${this.$store.state.devid}`,
           { caseid_list: newArr }
         );
-        if (res.status === 200) {
+        if (res.data.status === 200) {
           this.$message.success("报告生成成功");
           this.$store.state.caselistshow = false;
           this.$store.dispatch("draft_report", this.$store.state.devid);
         } else {
-          this.$message.error(res.msg);
+          this.$message.error(res.data.msg);
         }
       }
     },
@@ -543,7 +552,7 @@ export default {
         }
         this.passloading = true;
         const res = await this.$http.put("changepassword", this.passform);
-        if (res.status === 200) {
+        if (res.data.status === 200) {
           this.$message.success("密码修改成功");
           this.dialogrese = false;
           this.passloading = false;
@@ -552,7 +561,7 @@ export default {
           this.$router.push({ name: "login" });
         } else {
           this.passloading = false;
-          this.$message.error(res.msg);
+          this.$message.error(res.data.msg);
         }
       });
     }
@@ -577,7 +586,7 @@ export default {
   line-height: 60px;
   color: #fff;
   text-align: center;
-  background: url(../assets/LOGO.png) no-repeat;
+  background: url(../assets/logo.png) no-repeat;
   background-position: 10px 14px;
 }
 .menuitem {
@@ -648,5 +657,11 @@ export default {
   display: inline-block;
   vertical-align: top;
   margin: 0 10px 0 10px;
+}
+.daohangload {
+  color: #fff;
+  font-size: 28px;
+  position: relative;
+  top: 16px;
 }
 </style>

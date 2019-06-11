@@ -147,7 +147,8 @@ export default {
       caselist: [],
       caseloading: false,
       checkedKeys: [], // 选中的测试用例
-      devid: "" // 设备id
+      devid: "", // 设备id
+      projclick: ""
     };
   },
   methods: {
@@ -196,35 +197,39 @@ export default {
         const res = await this.$http.post(`generatereport/${this.devid}`, {
           caseid_list: newArr
         });
-        if (res.status === 200) {
+        if (res.data.status === 200) {
           this.$message.success("报告生成成功");
           this.upload();
           this.caseshow = false;
         } else {
-          this.$message.error(res.msg);
+          this.$message.error(res.data.msg);
         }
       }
     },
     // 项目跳转
     goproject(projectid, router) {
-      if (router === 0) {
-        this.$router.push({
-          name: "project",
-          params: {
-            id: projectid,
-            path: "/goingproject",
-            name: "进行中项目"
-          }
-        });
-      } else if (router === 1) {
-        this.$router.push({
-          name: "project",
-          params: {
-            id: projectid,
-            path: "/projected",
-            name: "已完成项目"
-          }
-        });
+      if (this.projclick === 1) {
+        if (router === 0) {
+          this.$router.push({
+            name: "project",
+            params: {
+              id: projectid,
+              path: "/goingproject",
+              name: "进行中项目"
+            }
+          });
+        } else if (router === 1) {
+          this.$router.push({
+            name: "project",
+            params: {
+              id: projectid,
+              path: "/projected",
+              name: "已完成项目"
+            }
+          });
+        }
+      } else {
+        return this.$message.error("没有该权限");
       }
     },
     // 外委报告删除
@@ -237,9 +242,11 @@ export default {
       })
         .then(async () => {
           const res = await this.$http.delete(`report/${id}`);
-          if (res.status === 200) {
+          if (res.data.status === 200) {
             this.upload();
             this.$message.success("删除成功");
+          } else {
+            this.$message.error(res.data.mag);
           }
         })
         .catch(() => {});
@@ -263,10 +270,34 @@ export default {
         this.currentPage = 1;
         this.reports(1);
       }
+    },
+    async project_click() {
+      const res = await this.$http.get("getpermistree");
+      if (res.data.permis_list) {
+        for (const item of res.data.permis_list) {
+          if (item.route === "/project") {
+            for (const li2 of item.children) {
+              if (li2.name === "项目") {
+                for (const li3 of li2.children) {
+                  if (li3.route === "/projectdetails") {
+                    this.projclick = 1;
+                    break;
+                  }
+                }
+              }
+              break;
+            }
+          }
+        }
+      } else {
+        this.$router.push({ name: "login" });
+        this.$message.error("登陆过期，请重新登录");
+      }
     }
   },
   created() {
     this.reports(this.currentPage);
+    this.project_click();
   },
   watch: {
     myprojectsearch(val) {

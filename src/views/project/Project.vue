@@ -51,42 +51,54 @@ export default {
       this.treeOne = [];
       this.treeTwo = "";
       const res = await this.$http.get("getpermistree");
-      for (const item of res.data.permis_list) {
-        if (item.name !== "更多") {
-          this.treeOne.push(item);
+      if (res.data.permis_list) {
+        for (const item of res.data.permis_list) {
+          if (item.name !== "更多") {
+            this.treeOne.push(item);
+          }
         }
-      }
-      this.treemore = "";
-      this.treelist = [];
-      this.treeOne.forEach(element => {
-        if (element.name === "项目") {
-          element.children.forEach(item => {
-            if (item.name === "项目") {
-              this.treemore = item;
-            } else {
-              this.treelist.push(item);
+        this.treemore = "";
+        this.treelist = [];
+        this.treeOne.forEach(element => {
+          if (element.name === "项目") {
+            element.children.forEach(item => {
+              if (item.name === "项目") {
+                const itemlist = [];
+                for (const li of item.children) {
+                  if (li.route !== "/projectdetails") {
+                    itemlist.push(li);
+                  }
+                }
+                item.children = itemlist;
+                this.treemore = item;
+              } else {
+                this.treelist.push(item);
+              }
+            });
+          }
+        });
+        if (this.$route.params.id === undefined) {
+          if (this.treemore === "") {
+            this.newroute = this.treelist[0].route;
+            this.$router.push({ path: this.newroute });
+          } else if (this.treemore !== "" || this.treelist.length !== 0) {
+            this.newroute = this.treemore.children[0].route;
+            this.$router.push({ path: this.newroute });
+          }
+        } else {
+          this.newroute = this.$route.params.path;
+          this.$router.push({
+            name: "projectdetails",
+            params: {
+              id: this.$route.params.id,
+              path: this.$route.params.path,
+              name: this.$route.params.name
             }
           });
         }
-      });
-      if (this.$route.params.id === undefined) {
-        if (this.treemore === "") {
-          this.newroute = this.treelist[0].route;
-          this.$router.push({ path: this.newroute });
-        } else if (this.treemore !== "" || this.treelist.length !== 0) {
-          this.newroute = this.treemore.children[0].route;
-          this.$router.push({ path: this.newroute });
-        }
       } else {
-        this.newroute = this.$route.params.path;
-        this.$router.push({
-          name: "projectdetails",
-          params: {
-            id: this.$route.params.id,
-            path: this.$route.params.path,
-            name: this.$route.params.name
-          }
-        });
+        this.$router.push({ name: "login" });
+        this.$message.error("登陆过期，请重新登录");
       }
     }
   }
