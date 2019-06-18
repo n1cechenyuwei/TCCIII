@@ -28,7 +28,7 @@
         </el-table-column>
         <el-table-column
           prop="projects"
-          label="任务">
+          label="项目">
           <template slot-scope="scope">
             <span v-for="(item, index) in scope.row.projects" :key="index">{{item}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
           </template>
@@ -70,7 +70,7 @@
           </el-form-item>
           <el-form-item label="当前任务" prop="projects">
             <el-checkbox-group v-model="waterform.projects" class="wainfo_checkbox">
-              <el-checkbox size="mini" border class="wainfo_checkbox_li" v-for="(item, index) in taskoptions" :label="item.project_name" :key="index">{{item.project_name}}</el-checkbox>
+              <el-checkbox size="mini" border class="wainfo_checkbox_li" v-for="(item, index) in taskoptions" :label="item.proid" :key="index">{{item.project_name}}</el-checkbox>
             </el-checkbox-group>
           </el-form-item>
         </el-form>
@@ -122,7 +122,7 @@
         </el-form-item>
         <el-form-item label="当前任务" prop="projects">
           <el-checkbox-group v-model="editwaterform.projects" class="wainfo_checkbox">
-            <el-checkbox size="mini" border class="wainfo_checkbox_li" v-for="(item, index) in taskoptions" :label="item.project_name" :key="index">{{item.project_name}}</el-checkbox>
+            <el-checkbox size="mini" border class="wainfo_checkbox_li" v-for="(item, index) in taskoptions" :label="item.proid" :key="index">{{item.project_name}}</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
       </el-form>
@@ -199,7 +199,11 @@ export default {
         this.permissionsVisible = true;
         this.editwaterform.id = res.data.signs.id;
         this.editwaterform.duty_person = res.data.signs.duty_person;
-        this.editwaterform.projects = res.data.signs.projects;
+        if (res.data.signs.projects === null) {
+          this.editwaterform.projects = [];
+        } else {
+          this.editwaterform.projects = res.data.signs.projects;
+        }
         this.editwaterform.room_name = res.data.signs.room_name;
         this.editwaterform.room_num = res.data.signs.room_num;
       } else {
@@ -211,6 +215,7 @@ export default {
         if (!valid) {
           return this.$message.error("请完整输入房间信息");
         }
+        console.log(this.editwaterform)
         const res = await this.$http.put(
           `sign/${this.editwaterform.id}`,
           this.editwaterform

@@ -96,7 +96,7 @@ export default {
     workschart() {
       this.chartGone1 = new G2.Chart({
         container: "chartGone1",
-        width: 750,
+        width: 700,
         forceFit: false,
         padding: [20, 100, 30, 40], // 上，右，下，左
         height: 370

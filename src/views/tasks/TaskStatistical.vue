@@ -116,8 +116,8 @@ export default {
       }
       this.chartGone1 = new G2.Chart({
         container: "chartGone1",
-        width: 750,
-        padding: [20, 240, 30, 40], // 上，右，下，左
+        width: 780,
+        padding: [20, 220, 30, 40], // 上，右，下，左
         // forceFit: true,
         height: 370
       });
@@ -143,6 +143,7 @@ export default {
       });
       this.chartGone1.tooltip({
         showTitle: true,
+        position: "left",
         itemTpl:
           '<li style="text-align: left"><span style="background-color:{color};" class="g2-tooltip-marker"></span>{value}</li>'
       });

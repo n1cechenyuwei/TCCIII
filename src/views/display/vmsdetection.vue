@@ -1,55 +1,37 @@
 <template>
-  <div id="quan">  
-    <div class="topmohu">
-      <el-row>
-        <el-col :span="19">
-          <div class="sp_top_logo">
-            <img class="sp_logo" src="../../assets/sp_logo.png">
-          </div>
-          <div class="sp_top_title">
-            <div style="margin: 10px 0 6px 0">北京市轨道交通指挥中心</div>
-            <div style="font-size: 14px">BEIJING METRO NETWORK CONTROL CENTER</div>
-          </div>
-        </el-col>
-        <el-col :span="5">
-          <div class="sp_time">{{nowdate}}&nbsp;&nbsp;&nbsp;&nbsp;{{nowtime}}</div>
-          <div class="sp_day">{{nowday}}</div>
-        </el-col>
-      </el-row>
+  <div id="quan">
+    <div>
+      <div class="fjnum">
+        <span class="fjbq">房 间 号：</span>
+        <span class="fjcontent hm">{{roomdata.room_num}}</span>
+      </div>
+      <div class="fjming">
+        <span class="fjbq">房 间 名：</span>
+        <span class="fjcontent hn">{{roomdata.room_name}}</span>
+      </div>
     </div>
-    <div style="padding: 100px 0 0 100px">
-      <div>
-        <div class="sp_home_left">
-          <i class="sp_icon iconfont icon-menpaihao01"></i>
-          <span style="color: #f59c17">房间号：</span>
-          <span style="color: #fff">{{roomdata.room_num}}</span>
-        </div>
-        <div class="sp_home_right">
-          <i class="sp_icon iconfont icon-fangzi"></i>
-          <span style="color: #f59c17">房间名：</span>
-          <span style="color: #fff">{{roomdata.room_name}}</span>
-        </div>
-      </div>
-      <div class="sp_title">
-        <i class="sp_icon iconfont icon-yonghu"></i>
-        <span style="color: #f59c17">负责人：</span>
-        <span style="color: #fff" v-for="(item, index) in roomdata.duty_person" :key="index">{{item}}&nbsp;&nbsp;</span>
-      </div>
-      <div style="font-size: 46px;">
-        <i class="sp_icon_task iconfont icon-gongnengliebiao"></i>
-        <span style="color: #f59c17">当前任务：</span>
-      </div>
-      <div>
-        <el-carousel
-          arrow="never"
-          height="400px"
-          :interval="3000"
-          indicator-position="none">
-          <el-carousel-item v-for="(proli, index) in projects" :key="index">
-            <h3 class="sp_task_box" v-for="(li, index2) in proli" :key="index2">{{li}}</h3>
-          </el-carousel-item>
-        </el-carousel>
-      </div>
+    <div class="fjname">
+      <span class="fjbq">负 责 人：</span>
+      <span class="fjcontent fzr"><span v-for="(item, index) in roomdata.duty_person" :key="index">{{item}} </span></span>
+    </div>
+    <div class="task">
+      <span class="fjbq">当前项目：</span>
+    </div>
+    <div>
+      <el-carousel
+        arrow="never"
+        height="300px"
+        :interval="3000"
+        v-show="taskor === 1"
+        indicator-position="none">
+        <el-carousel-item class="aaaaaaa" v-for="(proli, index) in projects" :key="index">
+          <div class="sp_task_box" v-for="(li, index2) in proli" :key="index2">
+            <div class="task_line">{{li.company}}</div>
+            <div class="task_line">{{li.proname}}</div>
+          </div>
+        </el-carousel-item>
+      </el-carousel>
+      <div v-show="taskor === 0">无任务</div>
     </div>
   </div>
 </template>
@@ -58,54 +40,24 @@
 export default {
   data() {
     return {
-      timer: null,
-      nowdate: "",
-      nowtime: "",
-      nowday: "",
-      timer1: null,
       roomdata: "",
-      projects: []
+      projects: [],
+      taskor: 0
     };
   },
   methods: {
-    date() {
-      let date = new Date();
-      const year = date.getFullYear();
-      const month = this.dateadd(date.getMonth() + 1);
-      const day = date.getDate();
-      const h = this.dateadd(date.getHours());
-      const m = this.dateadd(date.getMinutes());
-      const wonday = date.getDay();
-      let zhouji = "";
-      if (wonday === 2) {
-        zhouji = "二";
-      } else if (wonday === 1) {
-        zhouji = "一";
-      } else if (wonday === 3) {
-        zhouji = "三";
-      } else if (wonday === 4) {
-        zhouji = "四";
-      } else if (wonday === 5) {
-        zhouji = "五";
-      } else if (wonday === 6) {
-        zhouji = "六";
-      } else if (wonday === 0) {
-        zhouji = "日";
-      }
-      this.nowday = "星期" + zhouji;
-      this.nowdate = `${year}年${month}月${day}日`;
-      this.nowtime = `${h}:${m}`;
-    },
-    dateadd(m) {
-      return m < 10 ? "0" + m : m;
-    },
     async getdata(room) {
       const res = await this.$http.get(`signdetail/${room}`);
       if (res.data.status === 200) {
         this.roomdata = res.data.signs;
         this.projects = [];
-        for (let i = 0; i < res.data.signs.projects.length; i += 3) {
-          this.projects.push(res.data.signs.projects.slice(i, i + 3));
+        if (res.data.signs.projects !== null) {
+          this.taskor = 1;
+          for (let i = 0; i < res.data.signs.projects.length; i += 3) {
+            this.projects.push(res.data.signs.projects.slice(i, i + 3));
+          }
+        } else {
+          this.taskor = 0;
         }
       }
     },
@@ -121,14 +73,7 @@ export default {
     }
   },
   created() {
-    this.date();
     this.route();
-  },
-  mounted() {
-    this.timer1 = setInterval(this.date, 5000);
-  },
-  beforeDestroy() {
-    clearInterval(this.timer1);
   }
 };
 </script>
@@ -137,67 +82,75 @@ export default {
 #quan {
   width: 100%;
   height: 100%;
-  background: url(../../assets/spbg.png) no-repeat;
+  background: url(../../assets/shuipaibg.jpg) no-repeat;
 }
-.topmohu {
-  height: 116px;
-  background-color: rgba(255, 255, 255, 0.3);
-}
-.sp_top_logo {
-  display: inline-block;
-  vertical-align: middle;
-  margin: 24px 26px 0 20px;
-}
-.sp_top_title {
-  display: inline-block;
-  vertical-align: middle;
+.fjcontent {
   color: #fff;
-  font-size: 26px;
-}
-.sp_logo {
-  height: 64px;
-}
-.sp_time {
-  margin: 20px 0 10px 0;
-  font-size: 22px;
-  color: #fff;
-}
-.sp_day {
-  font-size: 22px;
-  color: #fff;
-}
-.sp_home_left {
   display: inline-block;
   font-size: 46px;
-  width: 800px;
-}
-.sp_home_right {
-  display: inline-block;
-  font-size: 46px;
-}
-.sp_icon {
-  font-size: 44px;
-  color: #1fd8ff;
-  margin: 0 26px 0 4px;
-}
-.sp_title {
-  font-size: 46px;
-  margin: 34px 0 32px 0;
-}
-.sp_icon_task {
-  font-size: 54px;
-  color: #1fd8ff;
-  margin-right: 20px;
+  margin: 0 0 0 70px;
   position: relative;
-  top: 4px;
+  top: 6px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.fjcontent.hm {
+  max-width: 270px;
+}
+.fjcontent.hn {
+  max-width: 640px;
+}
+.fzr.fjcontent {
+  width: 1300px;
+  text-overflow: ellipsis;
+}
+.fjnum {
+  display: inline-block;
+  vertical-align: top;
+  width: 560px;
+  font-weight: 900;
+  margin: 292px 0 0 150px;
+}
+.fjname {
+  width: 1600px;
+  font-weight: 900;
+  margin: 72px 0 0 150px;
+}
+.fjming {
+  display: inline-block;
+  vertical-align: top;
+  width: 1000px;
+  font-weight: 900;
+  margin: 294px 0 0 96px;
+}
+.task {
+  width: 600px;
+  font-weight: 900;
+  margin: 70px 0 0 150px;
+}
+.fjbq {
+  vertical-align: top;
+  font-size: 46px;
+  color: #f6941f;
 }
 .sp_task_box {
   height: 76px;
-  background-color: rgba(38, 54, 180, 0.8);
-  border: 2px solid #2a69cd;
+  margin-top: 20px;
   color: #fff;
   font-size: 40px;
   line-height: 76px;
   padding-left: 20px;
+}
+.task_line {
+  display: inline-block;
+  width: 860px;
+  text-align: left;
+  padding-left: 20px;
+  margin: 0px 10px 0 10px;
+  background-color: rgba(38, 54, 180, 0.8);
+  border: 1px solid #fff;
+}
+.aaaaaaa {
+  text-align: center;
 }
 </style>

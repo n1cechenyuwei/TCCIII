@@ -71,7 +71,15 @@ const Nodefects = () => import("@/views/knowledge/nodefects.vue");
 const Training = () => import("./views/knowledge/training.vue");
 const Vmsdetection = () => import("@/views/display/vmsdetection.vue");
 const Welcome = () => import("@/views/display/welcome.vue");
-const Nodetection = () => import("./views/display/nodetection.vue");
+const Nodetection = () => import("@/views/display/nodetection.vue");
+const PisStaffInfo = () => import("./views/inforelease/pisStaffInfo.vue");
+const PisTestingProcess = () => import("./views/inforelease/pisTestingProcess.vue");
+const PisTestingProgress = () => import("./views/inforelease/pisTestingProgress.vue");
+const ProjectInfo = () => import("./views/inforelease/projectInfo.vue");
+const PvprojectStatistical = () => import("./views/inforelease/pvprojectStatistical.vue");
+const VmsStaffInfo = () => import("./views/inforelease/vmsStaffInfo.vue");
+const VmsTestingProcess = () => import("./views/inforelease/vmsTestingProcess.vue");
+const VmsTestingProgress = () => import("./views/inforelease/vmsTestingProgress.vue");
 
 Vue.use(Router);
 
@@ -417,6 +425,46 @@ const router = new Router({
       name: "nodetection",
       path: "/nodetection",
       component: Nodetection
+    },
+    {
+      name: "pisStaffInfo",
+      path: "/pisStaffInfo",
+      component: PisStaffInfo
+    },
+    {
+      name: "pisTestingProcess",
+      path: "/pisTestingProcess",
+      component: PisTestingProcess
+    },
+    {
+      name: "pisTestingProgress",
+      path: "/pisTestingProgress",
+      component: PisTestingProgress
+    },
+    {
+      name: "projectInfo",
+      path: "/projectInfo",
+      component: ProjectInfo
+    },
+    {
+      name: "pvprojectStatistical",
+      path: "/pvprojectStatistical",
+      component: PvprojectStatistical
+    },
+    {
+      name: "vmsStaffInfo",
+      path: "/vmsStaffInfo",
+      component: VmsStaffInfo
+    },
+    {
+      name: "vmsTestingProcess",
+      path: "/vmsTestingProcess",
+      component: VmsTestingProcess
+    },
+    {
+      name: "vmsTestingProgress",
+      path: "/vmsTestingProgress",
+      component: VmsTestingProgress
     }
   ]
 });
@@ -427,7 +475,15 @@ router.beforeEach(async (to, from, next) => {
     to.name === "login" ||
     to.name === "vmsdetection" ||
     to.name === "nodetection" ||
-    to.name === "welcome"
+    to.name === "welcome" ||
+    to.name === "pvprojectStatistical" ||
+    to.name === "vmsTestingProgress" ||
+    to.name === "vmsTestingProcess" ||
+    to.name === "vmsStaffInfo" ||
+    to.name === "projectInfo" ||
+    to.name === "pisTestingProgress" ||
+    to.name === "pisTestingProcess" ||
+    to.name === "pisStaffInfo"
   ) {
     next();
   } else {

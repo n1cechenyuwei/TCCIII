@@ -467,9 +467,9 @@ export default {
       if (res.data.status === 200) {
         res.data.taskinfo.forEach(obj => {
           if (obj.taskname !== "") {
-            obj.starttime = obj.starttime + " 01:00:00";
-            obj.endtime = obj.endtime + " 23:00:00";
-            obj.range = [obj.starttime, obj.endtime];
+            // obj.starttime = obj.starttime + " 01:00:00";
+            // obj.endtime = obj.endtime + " 23:00:00";
+            obj.range = [obj.starttime + " 01:00:00", obj.endtime  + " 23:00:00"];
           } else {
             obj.range = [obj.starttime, obj.endtime];
           }
@@ -493,13 +493,14 @@ export default {
       if (res.data.status === 200) {
         res.data.taskinfo.forEach(obj => {
           if (obj.taskname !== "") {
-            obj.starttime = obj.starttime + " 01:00:00";
-            obj.endtime = obj.endtime + " 23:00:00";
-            obj.range = [obj.starttime, obj.endtime];
+            // obj.starttime = obj.starttime + " 01:00:00";
+            // obj.endtime = obj.endtime + " 23:00:00";
+            obj.range = [obj.starttime + " 01:00:00", obj.endtime + " 23:00:00"];
           } else {
             obj.range = [obj.starttime, obj.endtime];
           }
         });
+       
         this.chartlist = res.data.taskinfo;
         this.tasklisttotal = res.data.data_total;
         this.newchartone();
