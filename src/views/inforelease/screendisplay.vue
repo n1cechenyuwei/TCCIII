@@ -12,7 +12,7 @@
       </el-table-column>
       <el-table-column
         prop="name"
-        label="水牌名称">
+        label="展示名称">
       </el-table-column>
       <el-table-column
         prop="path"
@@ -51,7 +51,7 @@ export default {
           path: "vmsStaffInfo"
         },
         {
-          name: "项目信息简介",
+          name: "年度项目信息简介",
           path: "projectInfo"
         },
         {

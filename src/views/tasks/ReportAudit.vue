@@ -2,7 +2,7 @@
   <div class="height-auto">
     <div class="applyfor-top">
       <i id="detection-icon" class="iconfont icon-gongsimingcheng"></i>
-      <i class="font">{{taskinfo.taskname}}任务</i>
+      <i class="font task_title">{{taskinfo.taskname}}任务</i>
     </div>
     <div class="ra-content">
       <div>
@@ -159,7 +159,7 @@
 <script>
 import { mapState } from "vuex";
 export default {
-  props: ["taskid", "ht"],
+  props: ["taskid", "ht", "page"],
   data() {
     return {
       httpheader: {
@@ -193,11 +193,12 @@ export default {
               this.$message.success("提交成功");
               this.$store.commit("taskhuakuaihidden");
               if (this.ht === "mytask") {
-                this.$store.dispatch("loadingMytask", 1);
+                this.$store.dispatch("loadingMytask", this.$store.state.mysxform);
               } else if (this.ht === "alltask") {
-                this.$store.dispatch("loadingAlltask", 1);
+                this.$store.dispatch("loadingAlltask", this.$store.state.allsxform);
+              } else {
+                this.$store.dispatch("hometask");
               }
-              this.$store.dispatch("hometask");
             } else {
               this.$message.error(res.data.msg);
             }
@@ -208,7 +209,11 @@ export default {
     // 生成初稿按钮点击
     createdraft() {
       this.$store.commit("opencreatedraft");
-      this.$store.dispatch("handlecreatedraft", this.deviceinfo.id);
+      if(this.deviceinfo.devicename == null) {
+        this.$store.dispatch("systembaogao", this.taskid);
+      } else {
+        this.$store.dispatch("handlecreatedraft", this.deviceinfo.id);
+      }
     },
     // 上传之前
     upload(file) {
@@ -236,7 +241,10 @@ export default {
           .then(async () => {
             const res = await this.$http.delete(`report/${item.id}`);
             if (res.data.status === 200) {
-              this.$store.dispatch("rauploadlist", this.deviceinfo.id);
+              this.$store.dispatch("rauploadlist", {
+                devi_id: this.deviceinfo.id,
+                taskid: this.taskid
+              });
               this.$message.success("删除成功");
             } else {
               this.$message.error(res.data.msg);
@@ -251,7 +259,10 @@ export default {
         setTimeout(() => {
           this.newfile.name = "";
           this.newfile.progress = 0;
-          this.$store.dispatch("rauploadlist", this.deviceinfo.id);
+          this.$store.dispatch("rauploadlist", {
+            devi_id: this.deviceinfo.id,
+            taskid: this.taskid
+          });
           this.$message.success("上传成功");
           this.$store.commit("endctuploading");
         }, 500);
@@ -259,7 +270,10 @@ export default {
         setTimeout(() => {
           this.newfile.name = "";
           this.newfile.progress = 0;
-          this.$store.dispatch("rauploadlist", this.deviceinfo.id);
+          this.$store.dispatch("rauploadlist", {
+            devi_id: this.deviceinfo.id,
+            taskid: this.taskid
+          });
           this.$message.error(response.data.msg);
           this.$store.commit("endctuploading");
         }, 500);
@@ -378,10 +392,10 @@ export default {
   margin-top: 6px;
 }
 .ralist-box {
-  padding-left: 0;
-  margin: 6px 0 0 0;
-  height: 180px;
+  padding: 0 0 0 0;
+  height: 172px;
   overflow: auto;
+  margin-top: 6px;
 }
 .zglist {
   height: 28px;

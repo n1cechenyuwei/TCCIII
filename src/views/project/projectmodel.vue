@@ -1,29 +1,54 @@
 <template>
   <div>
     <div class="mytask-content-top">
-      <el-dropdown
-        @command="handleCommand"
-        placement="bottom-start"
-        class="mytask-dropdown">
-        <el-button type="primary" size="small">
-          筛选<i class="el-icon-arrow-down el-icon--right"></i>
-        </el-button>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item command="a">按开始时间(最新)</el-dropdown-item>
-          <el-dropdown-item command="b">按结束时间(最新)</el-dropdown-item>
-          <el-dropdown-item command="c">按任务进度(最新)</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
       <div class="search-box">
+        <span class="top_title">项目名称</span>
         <el-input
           size="small"
-          class="mytasksearch"
+          class="myprosearch"
           placeholder="请输入项目名称"
-          v-model="myprojectsearch">
+          @keyup.enter.native="projectsearch"
+          v-model="search">
         </el-input>
-        <i class="el-icon-search sreach-icon"></i>      
+        <span class="top_title">开始时间</span>
+        <el-date-picker
+          v-model="end_stime"
+          value-format="yyyy-MM-dd"
+          class="top_input"
+          type="date"
+          size="small"
+          placeholder="选择日期">
+        </el-date-picker>
+        <span class="top_title">结束时间</span>
+        <el-date-picker
+          v-model="end_etime"
+          class="top_input"
+          value-format="yyyy-MM-dd"
+          type="date"
+          size="small"
+          placeholder="选择日期">
+        </el-date-picker>
+        <span class="top_title">申请类型</span>
+        <el-select v-model="testtype" class="top_input" size="small" placeholder="请选择">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+        <span class="top_title">申请单位</span>
+        <el-select v-model="company_id" style="width: 200px; margin-right: 30px" size="small" placeholder="请选择">
+          <el-option
+            v-for="item in companyoptions"
+            :key="item.id"
+            :label="item.company"
+            :value="item.id">
+          </el-option>
+        </el-select>
       </div>     
       <el-button type="primary" size="mini" @click="projectsearch">搜索</el-button>
+      <el-button type="warning" size="mini" @click="projectcz">重置</el-button>
     </div>
     <div class="mytask-content-middle">
       <div class="mytask-content-tableje">
@@ -36,6 +61,7 @@
             prop="pro_id"
             align="center"
             label="项目编号"
+            show-overflow-tooltip
             width="120">
           </el-table-column>
           <el-table-column
@@ -44,6 +70,12 @@
             <template slot-scope="scope">
               <span class="colcell" @click="rownameclick(scope.row)">{{ scope.row.pro_name }}</span>
             </template>
+          </el-table-column>
+          <el-table-column
+            prop="applycompany"
+            label="申请单位"
+            show-overflow-tooltip
+            width="400">
           </el-table-column>
           <el-table-column
             prop="starttime"
@@ -85,18 +117,32 @@
 
 <script>
 export default {
-  props: ["prostatus", "prosearch"],
+  props: ["prostatus", "prosearch", "sxrequest"],
   data() {
     return {
       currentPage: 1, //默认第几页
       taskpagesize: 14, //每页显示几条
       projecttotal: 0,
       projectlist: [],
-      myprojectsearch: "",
+      search: "",
       allprojectsearch: this.prosearch,
       propstatus: this.prostatus,
-      searchtype: "1", // 搜索类型
-      projclick: ""
+      projclick: "",
+      options: [
+        {
+          value: "vms",
+          label: "VMS"
+        },
+        {
+          value: "pis",
+          label: "PIS"
+        }
+      ],
+      testtype: "",
+      end_stime: "",
+      end_etime: "",
+      company_id: "",
+      companyoptions: []
     };
   },
   methods: {
@@ -125,43 +171,24 @@ export default {
         this.$message.error("没有该权限");
       }
     },
-    //筛选按钮
-    handleCommand(command) {
-      if (command === "a") {
-        console.log("aaa");
-      } else if (command === "b") {
-        console.log("bbb");
-      }
+    projectcz() {
+      this.end_stime = "";
+      this.end_etime = "";
+      this.search = "";
+      this.testtype = "";
+      this.company_id = "";
+      this.projecteddata(1);
     },
     async projecteddata(page) {
-      const res = await this.$http.get(`${this.propstatus}/${page}`);
-      if (res.data.status === 200) {
-        this.projecttotal = res.data.total_num;
-        this.projectlist = res.data.project_list;
-      } else {
-        this.$message.error(res.data.msg);
+      if (this.company_id === "") {
+        this.company_id = null;
       }
-    },
-    handleprojectChange(val) {
-      if (this.searchtype === "1") {
-        this.projecteddata(val);
-      } else if (this.searchtype === "2") {
-        this.searchfnc(val);
-      }
-    },
-    // 搜索按钮
-    projectsearch() {
-      if (this.myprojectsearch === "") {
-        this.$message.warning("请输入内容");
-      } else {
-        this.searchtype = "2";
-        this.searchfnc(1);
-      }
-    },
-    // 搜索请求
-    async searchfnc(page) {
-      const res = await this.$http.post(`${this.allprojectsearch}/${page}`, {
-        search: this.myprojectsearch
+      const res = await this.$http.post(`${this.propstatus}/${page}`, {
+        end_stime: this.end_stime,
+        end_etime: this.end_etime,
+        search: this.search,
+        testtype: this.testtype,
+        company_id: this.company_id
       });
       if (res.data.status === 200) {
         this.projecttotal = res.data.total_num;
@@ -169,6 +196,16 @@ export default {
       } else {
         this.$message.error(res.data.msg);
       }
+    },
+    conver(s) {
+      return s < 10 ? "0" + s : s;
+    },
+    handleprojectChange(val) {
+      this.projecteddata(val);
+    },
+    // 搜索按钮
+    projectsearch() {
+      this.projecteddata(1);
     },
     async project_click() {
       const res = await this.$http.get("getpermistree");
@@ -191,16 +228,22 @@ export default {
         this.$router.push({ name: "login" });
         this.$message.error("登陆过期，请重新登录");
       }
+    },
+    async company() {
+      const res = await this.$http.get("applycompany");
+      if (res.data.status === 200) {
+        this.companyoptions = res.data.companies;
+      }
     }
   },
   created() {
     this.projecteddata(this.currentPage);
     this.project_click();
+    this.company();
   },
   watch: {
-    myprojectsearch(val) {
+    search(val) {
       if (val === "") {
-        this.searchtype = "1";
         this.projecteddata(1);
       }
     }
@@ -225,16 +268,11 @@ export default {
 .mytask-content-table-one {
   font-size: 16px;
 }
-.mytasksearch {
-  width: 300px;
+.myprosearch {
+  width: 200px;
   margin-top: 11px;
-  margin-left: 20px;
   margin-right: 10px;
   position: relative;
-}
-.sreach-icon {
-  position: absolute;
-  top: 0px;
 }
 .mytask-dropdown {
   margin-left: 30px;

@@ -1,24 +1,43 @@
 <template>
   <div>
     <div class="mytask-content-top">
-      <el-dropdown
-        @command="handleCommand"
+      <el-popover
         placement="bottom-start"
-        class="mytask-dropdown">
-        <el-button type="primary" size="small">
-          筛选<i class="el-icon-arrow-down el-icon--right"></i>
-        </el-button>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item command="a">按开始时间(最新)</el-dropdown-item>
-          <el-dropdown-item command="b">按结束时间(最新)</el-dropdown-item>
-          <el-dropdown-item command="c">按任务进度(最新)</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
+        width="220"
+        transition="el-zoom-in-bottom"
+        trigger="click">
+        <div>
+          <div class="sx_li">工作台类型</div>
+          <el-select v-model="sxform.workbench_type" class="sx_li sx_input" placeholder="请选择" size="mini">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+          <div class="sx_li">工作台是否支持仿真</div>
+          <el-select v-model="sxform.issimulation" class="sx_li sx_input" placeholder="请选择" size="mini">
+            <el-option
+              v-for="item in lioptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+          <div class="sx_btn_box">
+            <el-button type="primary" size="mini" @click="reqest">重置</el-button>
+            <el-button type="primary" size="mini" @click="sx">筛选</el-button>
+          </div>
+        </div>
+        <el-button style="margin-left: 20px" slot="reference" type="primary" size="small">筛选<i class="el-icon-arrow-down el-icon--right"></i></el-button>
+      </el-popover>
       <div class="search-box">
         <el-input
           size="small"
           class="mytasksearch"
           placeholder="请输入工作台编号"
+          @keyup.enter.native="benchsearch"
           v-model="myprojectsearch">
         </el-input>
         <i class="el-icon-search sreach-icon"></i>      
@@ -242,7 +261,7 @@ export default {
           { max: 15, message: "工作台编号最长为15个字符", trigger: "blur" }
         ],
         workbench_type: [
-          { required: true, message: "请选择工作台类型", trigger: "blur" }
+          { required: true, message: "请选择工作台类型", trigger: "change" }
         ],
         ip_address: [
           { required: true, message: "请输入工作台IP地址", trigger: "blur" },
@@ -260,18 +279,35 @@ export default {
           { max: 33, message: "系统版本最长为33个字符", trigger: "blur" }
         ]
       },
-      workform: {} // 修改工作台表单
+      workform: {}, // 修改工作台表单
+      options: [
+        {
+          value: "VMS",
+          label: "VMS"
+        },
+        {
+          value: "PIS",
+          label: "PIS"
+        }
+      ],
+      sxform: {
+        workbench_type: "",
+        issimulation: null
+      },
+      searchtype: "1",
+      lioptions: [
+        {
+          value: 0,
+          label: "不支持"
+        },
+        {
+          value: 1,
+          label: "支持"
+        }
+      ]
     };
   },
   methods: {
-    //筛选按钮
-    handleCommand(command) {
-      if (command === "a") {
-        console.log("aaa");
-      } else if (command === "b") {
-        console.log("bbb");
-      }
-    },
     handleeqcaozuo(row) {
       this.$router.push({
         name: "workconfig",
@@ -284,7 +320,11 @@ export default {
       });
     },
     handleprojectChange(val) {
-      this.worklistdata(val);
+      if (this.searchtype === "1") {
+        this.worklistdata(val);
+      } else if (this.searchtype === "3") {
+        this.sxqq(val);
+      }
     },
     workclose() {
       this.$refs.createworkform.resetFields();
@@ -324,7 +364,11 @@ export default {
       });
       if (res.data.status === 200) {
         this.$message.success(res.data.msg);
-        this.worklistdata(this.currentPage);
+        if (this.searchtype === "1") {
+          this.worklistdata(this.currentPage);
+        } else {
+          this.sxqq(this.currentPage);
+        }
       } else {
         this.$message.error(res.data.msg);
       }
@@ -340,7 +384,11 @@ export default {
           const res = await this.$http.delete(`bench/${id}`);
           if (res.data.status === 200) {
             this.$message.success("工作台删除成功");
-            this.worklistdata(this.currentPage);
+            if (this.searchtype === "1") {
+              this.worklistdata(this.currentPage);
+            } else {
+              this.sxqq(this.currentPage);
+            }
           } else {
             this.$message.error(res.data.msg);
           }
@@ -367,7 +415,11 @@ export default {
         );
         if (res.data.status === 200) {
           this.$message.success("修改成功");
-          this.worklistdata(this.currentPage);
+          if (this.searchtype === "1") {
+            this.worklistdata(this.currentPage);
+          } else {
+            this.sxqq(this.currentPage);
+          }
           this.workbench = false;
         } else {
           this.$message.error(res.data.mag);
@@ -381,6 +433,40 @@ export default {
       } else {
         this.currentPage = 1;
         this.worklistdata(1);
+      }
+    },
+    // 重置按钮
+    reqest() {
+      this.sxform.workbench_type = "";
+      this.sxform.issimulation = "";
+      this.searchtype = "1";
+    },
+    // 筛选按钮
+    sx() {
+      if (
+        this.sxform.workbench_type === "" &&
+        this.sxform.issimulation === ""
+      ) {
+        this.searchtype = "1";
+        this.currentPage = 1;
+        this.worklistdata(1);
+      } else {
+        this.searchtype = "3";
+        this.currentPage = 1;
+        this.sxqq(1);
+      }
+    },
+    // 筛选请求
+    async sxqq(page) {
+      const res = await this.$http.post(
+        `screenworkbench/${page}`,
+        this.sxform
+      );
+      if (res.data.status === 200) {
+        this.eqprojectlist = res.data.workbench_list;
+        this.eqpistotal = res.data.total_num;
+      } else {
+        this.$message.error(res.data.msg);
       }
     }
   },

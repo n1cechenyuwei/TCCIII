@@ -135,7 +135,7 @@
             <div class="achistory scrollbar" v-if="seehistorytwo">
               <div v-for="item in history" :key="item.noti_id" class="historylist">
                 <div class="hislisttittle inblock" @click="showannouncement(item.noti_id)">{{item.title}}</div>
-                <div class="hislisttime inblock">{{item.datetime}}</div>
+                <div class="hislisttime inblock">{{item.datetime}}<el-button @click="deletenotice(item.noti_id)" size="mini" style="margin-left: 10px" type="danger" plain>删除</el-button></div>
               </div>
             </div>
           </div>
@@ -313,22 +313,6 @@ export default {
     this.docment();
     this.calendarTwo();
     this.$store.commit("taskhuakuaihidden");
-    // console.log("     \\\\            //\n" +
-    //   "      \\\\          //\n" +
-    //   "       \\\\        //\n" +
-    //   "##DDDDDDDDDDDDDDDDDDDDDD##\n"+
-    //   "## DDDDDDDDDDDDDDDDDDDD ##   ________   ___   ___        ___   ________   ___   ___        ___\n"+
-    //   "## hh                hh ##   |\\   __  \\ |\\  \\ |\\  \\      |\\  \\ |\\   __  \\ |\\  \\ |\\  \\      |\\  \\ \n"+
-    //   "## hh    //    \\\\    hh ##   \\ \\  \\|\\ /_\\ \\  \\\\ \\  \\     \\ \\  \\\\ \\  \\|\\ /_\\ \\  \\\\ \\  \\     \\ \\  \\ \n"+
-    //   "## hh   //      \\\\   hh ##    \\ \\  \\|\\ /_\\ \\  \\\\ \\  \\     \\ \\  \\\\ \\  \\|\\ /_\\ \\  \\\\ \\  \\     \\ \\  \\ \n"+
-    //   "## hh  //        \\\\  hh ##     \\ \\   __  \\\\ \\  \\\\ \\  \\     \\ \\  \\\\ \\   __  \\\\ \\  \\\\ \\  \\     \\ \\  \\ \n"+
-    //   "## hh                hh ##      \\ \\  \\|\\  \\\\ \\  \\\\ \\  \\____ \\ \\  \\\\ \\  \\|\\  \\\\ \\  \\\\ \\  \\____ \\ \\  \\ \n"+
-    //   "## hh      wwww      hh ##       \\ \\_______\\\\ \\__\\\\ \\_______\\\\ \\__\\\\ \\_______\\\\ \\__\\\\ \\_______\\\\ \\__\\ \n"+
-    //   "## hh                hh ##        \\|_______| \\|__| \\|_______| \\|__| \\|_______| \\|__| \\|_______| \\|__| \n"+
-    //   "## MMMMMMMMMMMMMMMMMMMM ##\n"+
-    //   "##MMMMMMMMMMMMMMMMMMMMMM##\n"+
-    //   "     \\/            \\/"
-    // );
   },
   methods: {
     // dialog关闭设备营业图片消失
@@ -433,6 +417,23 @@ export default {
       } else {
         this.$message.error(resdata.data.msg);
       }
+    },
+    // 删除公告
+    deletenotice(id) {
+      this.$confirm("确定删除此公告吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(async () => {
+          const res = await this.$http.delete(`notidetail/${id}`);
+          if (res.data.status === 200) {
+            this.$message.success("删除成功");
+            this.noticehostory();
+            this.newnotice();
+          }
+        })
+        .catch(() => {});
     },
     //获取文档列表
     async docment() {
@@ -565,19 +566,6 @@ export default {
     Chart1: resolve => {
       require(["./chart1"], resolve);
     }
-    // Mytabs,
-    // calendar,
-    // Chart,
-    // Applyfor,
-    // ApprovalContract,
-    // Contractor,
-    // Detection,
-    // Eqconfig,
-    // PutStorage,
-    // OutStorage,
-    // ReportAudit,
-    // DetectionAudit,
-    // Chart1
   },
   computed: mapState({
     demoEventsone: "hometaskdata",
@@ -743,7 +731,7 @@ export default {
 }
 .historylist .hislisttime {
   position: absolute;
-  right: 20px;
+  right: 0px;
 }
 .NewAnnouncementBtn {
   margin-left: 45%;
@@ -870,8 +858,10 @@ export default {
 .MyTaskcontent-icon {
   color: #409efe;
   font-size: 24px;
+  position: relative;
+  top: 12px;
   margin-left: 20px;
-  vertical-align: middle;
+  vertical-align: top;
 }
 .MyTaskcontent-time {
   position: absolute;
@@ -961,10 +951,15 @@ export default {
   position: relative;
 }
 .MyTaskcontent-list-span {
+  display: inline-block;
   margin-left: 10px;
+  text-overflow: ellipsis;
   cursor: pointer;
   position: relative;
   top: 2px;
+  width: 650px;
+  overflow: hidden;
+  white-space: nowrap;
 }
 .sardhome {
   overflow: hidden;

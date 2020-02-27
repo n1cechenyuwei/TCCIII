@@ -1,5 +1,5 @@
 <template>
-  <Reportsmodel reportdata="pisdraftreports"></Reportsmodel>
+  <Reportsmodel reportdata="pisdraftreports" sxrequest="screenpisdraftreport"></Reportsmodel>
 </template>
 
 <script>

@@ -1,29 +1,48 @@
 <template>
   <div class="tasked-box">
     <div class="mytask-content-top">
-      <el-dropdown
-        @command="handleCommand"
+      <el-popover
         placement="bottom-start"
-        class="mytask-dropdown">
-        <el-button type="primary" size="small">
-          筛选<i class="el-icon-arrow-down el-icon--right"></i>
-        </el-button>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item command="a">按开始时间(最新)</el-dropdown-item>
-          <el-dropdown-item command="b">按结束时间(最新)</el-dropdown-item>
-          <el-dropdown-item command="c">按任务进度(最新)</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
-      <div class="search-box">
-        <el-input
-          size="small"
-          class="mytasksearch"
-          placeholder="请输入任务名称"
-          v-model.trim="taskedsearch">
-        </el-input>
-        <i class="el-icon-search sreach-icon"></i>      
-      </div>
-      <el-button type="primary" size="mini" @click="mytaskseac">搜索</el-button>
+        width="220"
+        transition="el-zoom-in-bottom"
+        trigger="click">
+        <div>
+          <div class="sx_li">任务名称：</div>
+          <el-input size="small" class="sx_input sx_li" @keyup.enter.native="allsearch" v-model.trim="sxform.search" placeholder="请输入任务名称"></el-input>
+          <div class="sx_li">项目名称筛选：</div>
+          <el-select v-model="sxform.proid" class="sx_li sx_input" size="small" placeholder="请选择">
+            <el-option
+              v-for="item in projectoptions"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
+          <div class="sx_li">开始时间(按任务完成日期筛选)：</div>
+          <el-date-picker
+            v-model="sxform.stime"
+            size="mini"
+            value-format="yyyy-MM-dd HH:mm:ss"
+            type="datetime"
+            class="sx_li sx_input"
+            placeholder="选择日期时间">
+          </el-date-picker>
+          <div class="sx_li">结束时间(按任务完成日期筛选)：</div>
+          <el-date-picker
+            v-model="sxform.etime"
+            size="mini"
+            value-format="yyyy-MM-dd HH:mm:ss"
+            type="datetime"
+            class="sx_li sx_input"
+            placeholder="选择日期时间">
+          </el-date-picker>
+          <div class="sx_btn_box">
+            <el-button type="primary" size="mini" @click="reqest">重置</el-button>
+            <el-button type="primary" size="mini" @click="sx">筛选</el-button>
+          </div>
+        </div>
+        <el-button style="margin: 10px 0 0 20px" slot="reference" type="primary" size="small">筛选<i class="el-icon-arrow-down el-icon--right"></i></el-button>
+      </el-popover>
     </div>
     <div class="mytask-content-middle">
       <div class="table-box">
@@ -39,6 +58,7 @@
             width="120">
           </el-table-column>
           <el-table-column
+            show-overflow-tooltip
             label="任务名称">
             <template slot-scope="scope">
               <span class="tablespan" @click="taskedright(scope.row)">{{scope.row.taskname}}</span>
@@ -106,34 +126,36 @@
 export default {
   data() {
     return {
-      taskedsearch: "", //搜索框
       currentPage: 1, //默认第几页
       taskpagesize: 14, //每页几条
       taskid: 0, //任务id
       route: "", //任务组件别名
-      searchtype: "1" // 根据类型不同发送不同请求
+      sxform: {
+        proid: null,
+        stime: "",
+        etime: "",
+        search: ""
+      },
+      projectoptions: []
     };
   },
   created() {
-    this.$store.dispatch("loadingTasked", this.currentPage);
+    this.allsearch();
+    this.projectlist();
     this.$store.commit("taskhuakuaihidden"); // 关闭右滑任务详情
   },
   methods: {
-    //按钮事件案例
-    handleCommand(command) {
-      if (command === "a") {
-        console.log("aaa");
-      } else if (command === "b") {
-        console.log("bbb");
-      }
+    // 筛选和获取所有数据请求
+    allsearch() {
+      let data = {};
+      data.sxform = this.sxform;
+      data.page = this.currentPage;
+      this.$store.dispatch("loadingTasked", data);
     },
     //分页事件
     handlePageChange(val) {
-      if (this.searchtype === "1") {
-        this.$store.dispatch("loadingTasked", val);
-      } else if (this.searchtype === "2") {
-        this.searchfnc(val);
-      }
+      this.currentPage = val;
+      this.allsearch();
     },
     // 点击右弹出
     taskedright(row) {
@@ -145,25 +167,26 @@ export default {
     close() {
       this.$store.commit("taskhuakuaihidden");
     },
-    // 搜索按钮
-    async mytaskseac() {
-      if (this.taskedsearch === "") {
-        this.$message.warning("请输入内容");
-      } else {
-        this.searchtype = "2";
-        this.searchfnc(1);
-      }
+    // 重置按钮
+    reqest() {
+      this.sxform.proid = null;
+      this.sxform.stime = "";
+      this.sxform.etime = "";
+      this.sxform.search = "";
+      this.currentPage = 1;
+      this.allsearch();
     },
-    // 搜索请求
-    async searchfnc(page) {
-      const res = await this.$http.post(`searchcomtask/${page}`, {
-        search: this.taskedsearch
-      });
+    // 筛选按钮
+    sx() {
+      this.currentPage = 1;
+      this.allsearch();
+    },
+    async projectlist() {
+      const res = await this.$http.get(`projectname/1`);
       if (res.data.status === 200) {
-        this.$store.state.taskedtotal = res.data.total_num;
-        this.$store.state.tasked = res.data.tasklist;
+        this.projectoptions = res.data.info;
       } else {
-        this.$message.warning(res.data.msg);
+        this.$message.error(res.data.msg);
       }
     }
   },
@@ -203,14 +226,6 @@ export default {
     },
     DetectionAudit: resolve => {
       require(["./DetectionAudit"], resolve);
-    }
-  },
-  watch: {
-    taskedsearch(val) {
-      if (val === "") {
-        this.searchtype = "1";
-        this.$store.dispatch("loadingTasked", 1);
-      }
     }
   }
 };

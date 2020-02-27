@@ -102,50 +102,48 @@
         <div class="bb-left">
           <div class="grn-bbbb">
             <div class="kuai tijiaop">提交人</div>
-            <div class="kuai tjpeople"></div>
+            <div class="kuai tjpeople">————</div>
             <div class="kuai tijiaot">提交时间</div>
-            <div class="youkuai tjtime">
-              <el-date-picker
-                v-model="value1"
-                class="timer5"
-                value-format="yyyy-MM-dd"
-                type="date"
-                placeholder="选择日期">
-              </el-date-picker>
-            </div>
+            <div class="youkuai tjtime">————</div>
           </div>
           <div >
             <div class="kuai tijiaop">领取人</div>
-            <div class="kuai tjpeople">————</div>
+            <div class="kuai tjpeople"></div>
             <div class="kuai tijiaot">领取时间</div>
-            <div class="youkuai tjtime">————</div>
+            <div class="youkuai tjtime">
+              <el-date-picker
+                v-model="value1"
+                class="timer5 timer8"
+                value-format="yyyy-MM-dd"
+                type="date"
+                placeholder="选择日期">
+              </el-date-picker></div>
           </div>
         </div>
         <div class="bb-right">
           <div class="grn-bbbb">
             <div class="kuai tijiaop">接受人</div>
-            <div class="kuai tjpeople">{{GRNdata.recipient}}</div>
+            <div class="kuai tjpeople">————</div>
             <div class="kuai tijiaot">接受时间</div>
-            <div class="youkuai tjtime">
-              <el-date-picker
-                v-model="value2"
-                class="timer5"
-                value-format="yyyy-MM-dd"
-                type="date"
-                placeholder="选择日期">
-              </el-date-picker>
-            </div>
+            <div class="youkuai tjtime">————</div>
           </div>
           <div >
             <div class="kuai tijiaop">返还人</div>
-            <div class="kuai tjpeople">————</div>
+            <div class="kuai tjpeople">{{GRNdata.restitution_person}}</div>
             <div class="kuai tijiaot">返还时间</div>
-            <div class="youkuai tjtime">————</div>
+            <div class="youkuai tjtime">
+              <el-date-picker
+                v-model="value2"
+                class="timer5 timer8"
+                value-format="yyyy-MM-dd"
+                type="date"
+                placeholder="选择日期">
+              </el-date-picker></div>
           </div>
         </div>
       </div>
       <div style="text-align: center; margin-top: 50px">
-        <el-button type="primary" @click="print">打印入库单</el-button>
+        <el-button type="primary" @click="print">打印出库单</el-button>
       </div>
     </div>
   </div>
@@ -186,7 +184,7 @@ export default {
         device_info2.push(JSON.stringify(this.GRNdata.device_info[i]))
       }
       let routeData = this.$router.resolve({
-        name: "putprint",
+        name: "outprint",
         query: {
           testphases: this.GRNdata.testphases,
           serial_number: this.GRNdata.serial_number,
@@ -197,7 +195,7 @@ export default {
           linkman: this.GRNdata.linkman,
           device_info: device_info2,
           email: this.GRNdata.email,
-          recipient: this.GRNdata.recipient,
+          restitution_person: this.GRNdata.restitution_person,
           value1: this.value1,
           value2: this.value2,
           textvalue: this.textarea
@@ -306,7 +304,7 @@ export default {
 }
 /* 样品信息表格结束 */
 .yanshou {
-  /* height: 154px; */
+  height: 154px;
   box-sizing: border-box;
   border: 1px solid #000;
   border-top: none;
@@ -519,7 +517,8 @@ export default {
 .timer5 {
   width: 160px !important;
 }
-.dib {
-  display: inline-block;
+.timer8 {
+  position: relative;
+  top: -2px
 }
 </style>

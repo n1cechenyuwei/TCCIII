@@ -6,6 +6,7 @@
           size="small"
           class="mytasksearch"
           placeholder="请输入想查找的内容"
+          @keyup.enter.native="projectsearch"
           v-model="myprojectsearch">
         </el-input>
         <i class="el-icon-search sreach-icon"></i>      

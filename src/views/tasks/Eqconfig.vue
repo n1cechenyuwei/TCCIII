@@ -3,7 +3,7 @@
     <div>
       <div class="applyfor-top">
         <i id="eqconfig-icon" class="iconfont icon-gongsimingcheng"></i>
-        <i class="font">{{taskinfo.taskname}}任务</i>
+        <i class="font task_title">{{taskinfo.taskname}}任务</i>
       </div>
       <div class="statuss">
         <div>
@@ -221,7 +221,7 @@
 <script>
 import { mapState } from "vuex";
 export default {
-  props: ["taskid", "ht"],
+  props: ["taskid", "ht", "page"],
   data() {
     return {};
   },
@@ -236,14 +236,15 @@ export default {
         .then(async () => {
           const res = await this.$http.put(`eqconfig/${this.taskid}`);
           if (res.data.status === 200) {
-            this.$message.success("提交成功");
             if (this.ht === "mytask") {
-              this.$store.dispatch("loadingMytask", 1);
+              this.$store.dispatch("loadingMytask", this.$store.state.mysxform);
             } else if (this.ht === "alltask") {
-              this.$store.dispatch("loadingAlltask", 1);
+              this.$store.dispatch("loadingAlltask", this.$store.state.allsxform);
+            } else {
+              this.$store.dispatch("hometask");
             }
+            this.$message.success("提交成功");
             this.$store.commit("taskhuakuaihidden");
-            this.$store.dispatch("hometask");
           } else {
             this.$message.error(res.data.meg);
           }
@@ -256,9 +257,35 @@ export default {
     },
     // 环境配置单
     handlerukudan() {
+      console.log(this.deviceinfo.devicetype)
+      let bh = this.taskinfo.projectname.match(/(\S*) /)[1];
       let routeData = this.$router.resolve({
         name: "configuration",
-        query: { id: this.taskid }
+        query: {
+          bh: bh,
+          company: this.appconbb.company,
+          divicename: this.deviceinfo.divicename,
+          model: this.deviceinfo.model,
+          devicetype: this.deviceinfo.devicetype,
+          serialnumber: this.deviceinfo.serialnumber,
+          de_sipid: this.workbenchinfo.de_sipid,
+          de_port: this.workbenchinfo.de_port,
+          de_field: this.workbenchinfo.de_field,
+          de_password: this.workbenchinfo.de_password,                                                        
+          server_1_ip: this.workbenchinfo.server_1_ip,
+          server_2_ip: this.workbenchinfo.server_2_ip,
+          server_1_port: this.workbenchinfo.server_1_port,
+          server_2_port: this.workbenchinfo.server_2_port,
+          server_1_sip: this.workbenchinfo.server_1_sip,
+          server_2_sip: this.workbenchinfo.server_2_sip,
+          server_1_field: this.workbenchinfo.server_1_field,
+          server_2_field: this.workbenchinfo.server_2_field,
+          server_1_password: this.workbenchinfo.server_1_password,
+          server_2_password: this.workbenchinfo.server_2_password,
+          bench_num: this.workbench.bench_num,
+          ip_address: this.workbench.ip_address,
+          system_version: this.workbench.system_version,
+        }
       });
       window.open(routeData.href, "_blank");
     }

@@ -74,7 +74,7 @@
                 <el-button size="mini" type="primary" icon="el-icon-download"></el-button>
               </a>
               <el-button size="mini" @click="editposition(scope.row)" type="primary" icon="el-icon-edit"></el-button>
-              <el-button size="mini" @click="deletedoc(scope.row.id)" type="danger" icon="el-icon-delete"></el-button>
+              <el-button size="mini" v-show="scope.row.type === '终稿'" @click="deletedoc(scope.row.id)" type="danger" icon="el-icon-delete"></el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -159,6 +159,7 @@ export default {
     },
     loadingdata() {
       this.levelthreedata = this.$route.params.nextdata;
+      // console.log(this.levelthreedata)
       this.getdoc();
     },
     pushdocument() {
@@ -178,6 +179,7 @@ export default {
       const res = await this.$http.get(
         `${this.levelthreedata.geturl}/${this.levelthreedata.toid}`
       );
+      console.log(res)
       if (res.data.status === 200) {
         this.projectlist = res.data.docs;
       }

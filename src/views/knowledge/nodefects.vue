@@ -1,5 +1,5 @@
 <template>
-  <Defectsmodel defectsurl="repairdefects"></Defectsmodel>
+  <Defectsmodel defectsurl="repairdefects" sxrequest="screenrepairdefects"></Defectsmodel>
 </template>
 
 <script>
@@ -8,9 +8,8 @@ export default {
   components: {
     Defectsmodel
   }
-}
+};
 </script>
 
 <style>
-
 </style>

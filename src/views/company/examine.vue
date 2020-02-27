@@ -1,24 +1,12 @@
 <template>
   <div>
     <div class="mytask-content-top">
-      <el-dropdown
-        @command="handleCommand"
-        placement="bottom-start"
-        class="mytask-dropdown">
-        <el-button type="primary" size="small">
-          筛选<i class="el-icon-arrow-down el-icon--right"></i>
-        </el-button>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item command="a">按开始时间(最新)</el-dropdown-item>
-          <el-dropdown-item command="b">按结束时间(最新)</el-dropdown-item>
-          <el-dropdown-item command="c">按任务进度(最新)</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
       <div class="search-box">
         <el-input
           size="small"
           class="mytasksearch"
           placeholder="请输入外委单位名称"
+          @keyup.enter.native="reportssearch"
           v-model="myprojectsearch">
         </el-input>
         <i class="el-icon-search sreach-icon"></i>      
@@ -73,11 +61,12 @@
             label="联系电话">
           </el-table-column>
           <el-table-column
-            width="100"
+            width="150"
             show-overflow-tooltip
             label="操作">
             <template slot-scope="scope">
               <el-button type="primary" size="mini" icon="el-icon-edit" @click="editexamine(scope.row.id)"></el-button>
+              <el-button type="danger" size="mini" icon="el-icon-delete" @click="deleteexamine(scope.row.id)"></el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -191,7 +180,7 @@
           <el-input size="small"  class="outsideipt" v-model="editoutsideform.postalcode"></el-input>
         </el-form-item>
         <el-form-item
-          label="外检测类型"
+          label="外委检测类型"
           :rules="[
             { required: true, message: '请选择外委单位检测类型', trigger: 'blur' }
           ]"
@@ -255,14 +244,6 @@ export default {
     };
   },
   methods: {
-    //筛选按钮
-    handleCommand(command) {
-      if (command === "a") {
-        console.log("aaa");
-      } else if (command === "b") {
-        console.log("bbb");
-      }
-    },
     handleprojectChange(val) {
       this.getexamine(val);
     },
@@ -355,6 +336,24 @@ export default {
         this.currentPage = 1;
         this.getexamine(1);
       }
+    },
+    // 删除外委单位
+    async deleteexamine(id) {
+      this.$confirm("确定要删除该单位吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(async () => {
+          const res = await this.$http.delete(`ecompany/${id}`);
+          if (res.data.status === 200) {
+            this.$message.success(res.data.msg);
+            this.getexamine(this.currentPage);
+          } else {
+            this.$message.error(res.data.msg);
+          }
+        })
+        .catch(() => {});
     }
   },
   created() {

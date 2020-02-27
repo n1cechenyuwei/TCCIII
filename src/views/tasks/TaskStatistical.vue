@@ -156,7 +156,22 @@ export default {
         .interval()
         .position("name*number")
         .tooltip(max)
-        .color("name", ["#02B541", "#E6A23C", "#22DC02", "#FFAB0F"]);
+        .color("name", ["#02B541", "#E6A23C", "#22DC02", "#FFAB0F"])
+        .label("number", val => {
+          if (val < 1) {
+            return false;
+          }
+          return {
+            position: "middle",
+            offset: -10,
+            // textStyle: {
+            //   fill: '#fff',
+            //   fontSize: 12,
+            //   shadowBlur: 2,
+            //   shadowColor: 'rgba(0, 0, 0, .45)'
+            // },
+          }
+        });
       this.chartGone1.render();
     },
     // 工作台数据加渲染
@@ -175,7 +190,7 @@ export default {
         container: "chartThree1",
         height: 370,
         width: 760,
-        padding: [0, 100, 0, 0]
+        padding: [30, 100, 0, 0]
       });
       this.chartThree1.source(taskdatalist);
       this.chartThree1.coord("polar", {
@@ -201,6 +216,21 @@ export default {
         .style({
           lineWidth: 1,
           stroke: "#fff"
+        })
+        .label("tasknumber", val => {
+          if (val < 1) {
+            return false;
+          }
+          return {
+            position: "middle",
+            offset: 6,
+            // textStyle: {
+            //   fill: '#fff',
+            //   fontSize: 12,
+            //   shadowBlur: 2,
+            //   shadowColor: 'rgba(0, 0, 0, .45)'
+            // },
+          }
         });
       this.chartThree1.render();
     },

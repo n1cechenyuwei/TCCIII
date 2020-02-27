@@ -2,8 +2,10 @@
   <div>
     <div class="tatop">
       <div class="tatop-left">
-        <span class="font-cor">任务名称：</span>
-        <el-tooltip class="item" effect="dark" :content="taskdata.taskname" placement="top">
+        <span class="font-cor rrr">任务名称：</span>
+        <el-tooltip class="item taskalll"
+        effect="dark"
+        :content="taskdata.taskname" placement="top">
           <span>{{taskdata.taskname}}</span>
         </el-tooltip>
       </div>
@@ -27,6 +29,15 @@
             :key="index"
             :label="item.realname"
             :value="item.userid">
+          </el-option>
+        </el-select>
+        <span class="font-cor" style="margin-left: 10px">工作台：</span>
+        <el-select v-model="taskdata.bench_id" clearable placeholder="请选择" size="small" class="select">
+          <el-option
+            v-for="(item, index) in workoptions"
+            :key="index"
+            :label="item.name"
+            :value="item.id">
           </el-option>
         </el-select>
       </div>
@@ -85,7 +96,7 @@
           <el-table-column
             prop="pro_name"
             show-overflow-tooltip
-            width="300"
+            width="240"
             :filters="filter"
             :filter-method="filterHandler"
             filter-placement="bottom"
@@ -94,32 +105,40 @@
           <el-table-column
             prop="entrust_name"
             show-overflow-tooltip
+            width="130"
             label="检测单位">
           </el-table-column>
           <el-table-column
+            prop="bench_num"
+            width="120"
+            show-overflow-tooltip
+            label="工作台">
+          </el-table-column>
+          <el-table-column
             prop="username"
-            width="180"
+            width="120"
+            show-overflow-tooltip
             label="负责人">
           </el-table-column>
           <el-table-column
             prop="starttime"
-            width="180"
+            width="150"
             label="开始时间">
           </el-table-column>
           <el-table-column
             prop="endtime"
-            width="180"
+            width="150"
             label="结束时间">
           </el-table-column>
           <el-table-column
-            width="100"
+            width="90"
             label="进度">
             <template slot-scope="scope">
               <span>{{scope.row.sechedule}}%</span>
             </template>
           </el-table-column>
           <el-table-column
-            width="120"
+            width="100"
             label="状态">
             <template slot-scope="scope">
               <span v-show="scope.row.istimeout === 0">{{scope.row.state}}</span>
@@ -174,11 +193,13 @@ export default {
       tools: false,
       options: [],
       waioptions: [],
+      workoptions: [], // 工作台列表
       PVtabPosition: "vms", // 默认人员类型
       taskdata: {
         taskname: "",
         userid: "",
-        tasktime: null
+        tasktime: null,
+        bench_id: ""
       },
       tabledata: [], // table数据存储
       tabletasktotal: 0, // table数据总条数
@@ -193,6 +214,7 @@ export default {
   },
   created() {
     this.gettaskpeople("vms");
+    this.work_stations("vms");
     this.alltasktable();
     this.getentrust_name();
   },
@@ -215,6 +237,7 @@ export default {
       if (this.PVtabPosition === "pis") {
         this.tacurrentpage = 1;
         this.gettaskpeople("pis");
+        this.work_stations("pis");
         this.chartslistdata(1);
         this.alltasktable();
         this.taskdata.taskname = "";
@@ -226,6 +249,7 @@ export default {
       } else {
         this.tacurrentpage = 1;
         this.gettaskpeople("vms");
+        this.work_stations("vms");
         this.handleGoneChange(1);
         this.alltasktable();
         this.taskdata.taskname = "";
@@ -365,6 +389,11 @@ export default {
           ev.data._origin.starttime,
           ev.data._origin.endtime
         ];
+        if (ev.data._origin.bench_id !== 0) {
+          this.taskdata.bench_id = ev.data._origin.bench_id;
+        } else {
+          this.taskdata.bench_id = "";
+        }
         if (ev.data._origin.entrust_name === "检测中心") {
           this.selectishow = false;
           this.spanishow = true;
@@ -405,7 +434,8 @@ export default {
             {
               userid: this.taskdata.userid,
               starttime: this.taskdata.tasktime[0],
-              endtime: this.taskdata.tasktime[1]
+              endtime: this.taskdata.tasktime[1],
+              bench_id: this.taskdata.bench_id
             }
           );
           if (res.data.status === 200) {
@@ -426,7 +456,8 @@ export default {
               userid: this.taskdata.userid,
               starttime: this.taskdata.tasktime[0],
               endtime: this.taskdata.tasktime[1],
-              entrust_id: this.entrustid
+              entrust_id: this.entrustid,
+              bench_id: this.taskdata.bench_id
             }
           );
           if (res.data.status === 200) {
@@ -500,7 +531,6 @@ export default {
             obj.range = [obj.starttime, obj.endtime];
           }
         });
-       
         this.chartlist = res.data.taskinfo;
         this.tasklisttotal = res.data.data_total;
         this.newchartone();
@@ -520,16 +550,20 @@ export default {
           filterlist[i].text = this.tabledata[i].pro_name;
           filterlist[i].value = this.tabledata[i].pro_id;
         }
-        const hash = [];
+        // const hash = [];
         for (let i = 0; i < filterlist.length; i++) {
-          for (let j = i + 1; j < filterlist.length; j++) {
-            if (filterlist[i].value === filterlist[j].value) {
-              ++i;
+          let hash8 = 0;
+          for (let j = 0; j < this.filter.length; j++) {
+            if (filterlist[i].value === this.filter[j].value) {
+              hash8 = 1;
+              break;
             }
           }
-          hash.push(filterlist[i]);
+          if (hash8 === 0) {
+            this.filter.push(filterlist[i]);
+          }
         }
-        this.filter = hash;
+        // this.filter = hash;
       } else {
         this.$message.error(res.data.msg);
       }
@@ -543,6 +577,11 @@ export default {
       this.taskdata.tasktime = [];
       this.taskdata.tasktime[0] = row.starttime;
       this.taskdata.tasktime[1] = row.endtime;
+      if (row.bench_id !== 0) {
+        this.taskdata.bench_id = row.bench_id;
+      } else {
+        this.taskdata.bench_id = "";
+      }
       if (row.entrust_name === "检测中心") {
         this.selectishow = false;
         this.spanishow = true;
@@ -560,6 +599,15 @@ export default {
     // 表格所选项目筛选
     filterHandler(value, row) {
       return row.pro_id === value;
+    },
+    // 工作台数据列表
+    async work_stations(type) {
+      const res = await this.$http.get(`workbenchnum/${type}`);
+      if (res.data.status === 200) {
+        this.workoptions = res.data.workbench;
+      } else {
+        this.$message.error(res.data.msg);
+      }
     }
   },
   mounted() {
@@ -577,8 +625,8 @@ export default {
 }
 .tatop-left {
   display: inline-block;
-  margin-left: 40px;
-  width: 600px;
+  margin-left: 30px;
+  width: 520px;
   vertical-align: top;
 }
 .tatop-right {
@@ -594,7 +642,7 @@ export default {
 .tatop-center {
   display: inline-block;
   margin-left: 10px;
-  margin-right: 50px;
+  margin-right: 40px;
   vertical-align: top;
 }
 .select {
@@ -631,10 +679,20 @@ export default {
   color: #409eff;
 }
 .se-left {
-  width: 200px;
+  width: 180px;
 }
 .leftsele {
   display: inline-block;
-  width: 330px;
+  width: 280px;
+}
+.taskalll {
+  display: inline-block;
+  overflow: hidden;
+  width: 400px !important;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rrr {
+  vertical-align: top;
 }
 </style>

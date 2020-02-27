@@ -9,11 +9,6 @@ const instance = axios.create({
 // // 添加请求的拦截器
 instance.interceptors.request.use(
   function(config) {
-    // 请求被发送之前要做的处理
-    // Do something before request is sent
-    // console.log('拦截器', config);
-    // console.log(config.headers);
-    // console.log(config.url);
     // 判断当前请求的地址是否是login
     if (config.url.toLowerCase() !== "login") {
       const token = sessionStorage.getItem("token");
@@ -49,8 +44,5 @@ instance.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-// Vue.prototype.$http = instance;
-// };
 
 export default instance;

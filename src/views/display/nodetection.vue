@@ -22,12 +22,14 @@
 export default {
   data() {
     return {
-      roomdata: ""
+      roomdata: "",
+      timer: ""
     };
   },
   methods: {
     async getdata(room) {
       const res = await this.$http.get(`signdetail/${room}`);
+      console.log(1111)
       if (res.data.status === 200) {
         this.roomdata = res.data.signs;
         this.projects = [];
@@ -43,6 +45,9 @@ export default {
         this.$message.error("请在网址vmsdetection后输入'?' + '房间名'");
       }
     }
+  },
+  mounted() {
+    this.timer = setInterval(this.route, 1800000);
   },
   created() {
     this.route();
@@ -87,7 +92,7 @@ export default {
   max-width: 750px;
   overflow: hidden;
   white-space: nowrap;
-  margin-left: 60px;
+  margin-left: 80px;
 }
 .fjm.fjcconternt {
   position: relative;

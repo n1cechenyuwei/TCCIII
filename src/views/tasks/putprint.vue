@@ -54,15 +54,8 @@
         </div>
         <div class="grn-xuanxinag">
           <div class="dib" style="vertical-align: top;">备注:&nbsp;</div>
-          <div class="dib" style="width: 730px">
-            <el-input
-              type="textarea"
-              resize="none"
-              :rows="2"
-              placeholder="请输入内容"
-              v-model.trim="textarea">
-            </el-input>
-          </div>
+          <div v-if="GRNdata.textvalue.length > 0" class="dib" style="width: 730px">{{GRNdata.textvalue}}</div>
+          <div v-if="GRNdata.textvalue.length < 1" class="dib" style="width: 730px">无</div>
         </div>
       </div>
       <div class="fanhui">
@@ -105,13 +98,7 @@
             <div class="kuai tjpeople"></div>
             <div class="kuai tijiaot">提交时间</div>
             <div class="youkuai tjtime">
-              <el-date-picker
-                v-model="value1"
-                class="timer5"
-                value-format="yyyy-MM-dd"
-                type="date"
-                placeholder="选择日期">
-              </el-date-picker>
+              {{time1}}
             </div>
           </div>
           <div >
@@ -127,13 +114,7 @@
             <div class="kuai tjpeople">{{GRNdata.recipient}}</div>
             <div class="kuai tijiaot">接受时间</div>
             <div class="youkuai tjtime">
-              <el-date-picker
-                v-model="value2"
-                class="timer5"
-                value-format="yyyy-MM-dd"
-                type="date"
-                placeholder="选择日期">
-              </el-date-picker>
+              {{time2}}
             </div>
           </div>
           <div >
@@ -144,9 +125,6 @@
           </div>
         </div>
       </div>
-      <div style="text-align: center; margin-top: 50px">
-        <el-button type="primary" @click="print">打印入库单</el-button>
-      </div>
     </div>
   </div>
 </template>
@@ -155,23 +133,30 @@
 export default {
   data() {
     return {
-      GRNdata: "",
-      value1: "",
-      value2: "",
-      textarea: ""
+      GRNdata: {},
+      time1: "",
+      time2: ""
     };
   },
   methods: {
     router() {
-      this.getdata(this.$route.query.id);
-    },
-    async getdata(id) {
-      const res = await this.$http.get(`getputoutstorageinfo/${id}`);
-      if (res.data.status === 200) {
-        this.GRNdata = res.data.data;
-      } else {
-        this.$message.error(res.data.msg);
+      this.GRNdata.testphases = this.$route.query.testphases;
+      this.GRNdata.serial_number = this.$route.query.serial_number;
+      this.GRNdata.company = this.$route.query.company;
+      this.GRNdata.expect_back_time = this.$route.query.expect_back_time;
+      this.GRNdata.phone = this.$route.query.phone;
+      this.GRNdata.address = this.$route.query.address;
+      this.GRNdata.linkman = this.$route.query.linkman;
+      this.GRNdata.email = this.$route.query.email;
+      this.GRNdata.recipient = this.$route.query.recipient;
+      this.GRNdata.textvalue = this.$route.query.textvalue;
+      let device_info2 = [];
+      for (let i = 0; i < this.$route.query.device_info.length; i++) {
+        device_info2.push(JSON.parse(this.$route.query.device_info[i]))
       }
+      this.GRNdata.device_info = device_info2;
+      this.time1 = this.$route.query.value1;
+      this.time2 = this.$route.query.value2;
     },
     choose(e, obj) {
       const ss = document.getElementsByName(obj);
@@ -179,35 +164,13 @@ export default {
         ss[i].checked = false;
       }
       e.currentTarget.checked = true;
-    },
-    print() {
-      let device_info2 = [];
-      for (let i = 0; i < this.GRNdata.device_info.length; i++) {
-        device_info2.push(JSON.stringify(this.GRNdata.device_info[i]))
-      }
-      let routeData = this.$router.resolve({
-        name: "putprint",
-        query: {
-          testphases: this.GRNdata.testphases,
-          serial_number: this.GRNdata.serial_number,
-          company: this.GRNdata.company,
-          expect_back_time: this.GRNdata.expect_back_time,
-          phone: this.GRNdata.phone,
-          address: this.GRNdata.address,
-          linkman: this.GRNdata.linkman,
-          device_info: device_info2,
-          email: this.GRNdata.email,
-          recipient: this.GRNdata.recipient,
-          value1: this.value1,
-          value2: this.value2,
-          textvalue: this.textarea
-        }
-      });
-      window.open(routeData.href, "_blank");
     }
   },
   created() {
     this.router();
+  },
+  mounted() {
+    window.print();
   }
 };
 </script>
@@ -220,8 +183,8 @@ export default {
 }
 .grn-contentbox {
   font-family: "SimSun";
-  width: 800px;
-  margin: auto;
+  width: 1070px;
+  /* margin: 0 0 0 160px; */
 }
 .grn-top {
   text-align: center;
@@ -518,8 +481,5 @@ export default {
 }
 .timer5 {
   width: 160px !important;
-}
-.dib {
-  display: inline-block;
 }
 </style>

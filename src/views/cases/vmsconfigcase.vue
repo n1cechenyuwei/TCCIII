@@ -1,5 +1,5 @@
 <template>
-  <Caseconfigmodel caseconfig="vmstasktype" getcaseall="getvmscase"></Caseconfigmodel>
+  <Caseconfigmodel caseconfig="vmstasktype" getcaseall="getvmscase" timetype="vms"></Caseconfigmodel>
 </template>
 
 <script>

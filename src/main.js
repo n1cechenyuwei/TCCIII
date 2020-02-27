@@ -8,7 +8,6 @@ import ElementUI from "element-ui";
 import VideoPlayer from "vue-video-player";
 import "video.js/dist/lang/zh-CN";
 import Breadcrumb from "@/components/Breadcrumb";
-import Viser from "viser-vue"
 
 import "@/assets/css/style.css";
 require("video.js/dist/video-js.css");
@@ -19,7 +18,6 @@ import "element-ui/lib/theme-chalk/index.css";
 Vue.use(ElementUI);
 Vue.use(MyAxios);
 Vue.use(VideoPlayer);
-Vue.use(Viser)
 // 注册全局组件
 Vue.component(Breadcrumb.name, Breadcrumb);
 

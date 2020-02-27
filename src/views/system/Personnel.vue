@@ -6,6 +6,7 @@
         size="small"
         class="peoplesearch"
         placeholder="请输入工号"
+        @keyup.enter.native="peopleseac"
         v-model.trim="peoplesearch">
       </el-input>
       <i class="el-icon-search sreach-icon"></i>
@@ -51,11 +52,11 @@
           </template>
         </el-table-column>
         <el-table-column
-          width="200px"
+          width="300px"
           class-name="imgperson"
           label="电子签名">
           <template slot-scope="scope">
-            <img v-if="scope.row.signature_path !== ''" :src="scope.row.signature_path" alt="" style="width: 80px; height: 40px; margin-top: 6px">
+            <img v-if="scope.row.signature_path !== ''" :src="scope.row.signature_path" alt="" class="dzqm_pic">
             <el-upload
               v-if="scope.row.signature_path === ''"
               accept=".png, .jpg, .JPG, .PNG, .jpeg, .JPEG"
@@ -70,6 +71,7 @@
               :multiple="false">
               <el-button type="primary" size="mini" icon="el-icon-plus"></el-button>
             </el-upload>
+            <el-button v-show="scope.row.signature_path !== ''" class="pic-delete-btn" type="danger" icon="el-icon-delete" size="mini" @click="deletedzqm(scope.row.userid)"></el-button>
           </template>
         </el-table-column>
         <el-table-column
@@ -79,6 +81,7 @@
             <el-button type="primary" size="mini" icon="el-icon-edit" @click="handleEdit(scope.row)"></el-button>
             <el-button type="warning" size="mini" icon="el-icon-time" @click="handletime"></el-button>
             <el-button size="mini" type="danger" icon="el-icon-delete" @click="handleDelete(scope.row.userid)"></el-button>
+            <el-button size="mini" type="danger" icon="el-icon-refresh" @click="handleRefresh(scope.row.userid)"></el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -362,6 +365,30 @@ export default {
         })
         .catch(() => {});
     },
+    // 重置密码
+    handleRefresh(id) {
+      this.$confirm(
+        "<div>确定重置该账号密码吗？重置后密码为 “<span style='color: red'>000000</span>” ！</div>",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+          dangerouslyUseHTMLString: true
+        }
+      )
+        .then(async () => {
+          const res = await this.$http.put("resetpassword", {
+            userid: id
+          });
+          if (res.data.status === 200) {
+            this.$message.success("密码重置成功");
+          } else {
+            this.$message.error(res.data.msg);
+          }
+        })
+        .catch(() => {});
+    },
     // 账号请假时间
     handletime() {
       this.timeVisible = true;
@@ -450,6 +477,24 @@ export default {
           this.$message.error(res.data.msg);
         }
       });
+    },
+    // 删除电子签名
+    async deletedzqm(id) {
+      this.$confirm("确定要删除该电子签名吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(async () => {
+          const res = await this.$http.delete(`usersignatures/${id}`);
+          if (res.data.status === 200) {
+            this.$message.success(res.data.msg);
+            this.iddata(this.currentPage);
+          } else {
+            this.$message.error(res.data.msg);
+          }
+        })
+        .catch(() => {});
     }
   },
   created() {
@@ -517,5 +562,16 @@ export default {
 }
 .imgperson {
   padding: 0 !important;
+}
+.dzqm_pic {
+  width: 80px;
+  height: 40px;
+  position: relative;
+  top: 6px;
+}
+.pic-delete-btn {
+  position: relative;
+  top: -10px;
+  left: 10px;
 }
 </style>

@@ -75,7 +75,8 @@ export default new Vuex.Store({
     out_entrust_info: "", // 外委单位信息
     contradeviceinfo: "", // 外委设备信息
     uptaskid: {
-      did: 0
+      did: 0,
+      taskid: 0
     }, // 外委报告上传需要的设备id
     ctupfilelist: [], // 外委报告上传的文件列表
     ctuploading: false, // 报告上传列表加载动画
@@ -132,7 +133,31 @@ export default new Vuex.Store({
     chartone: "", // 任务分配表实例
     alltask: [], // 全部任务数据
     alltasktotal: 0, // 全部任务总数据条数
-    mytaskloading: false // 任务加载
+    mytaskloading: false, // 任务加载
+    opeditname: false,
+    editnameform: {
+      apply_name: ""
+    },
+    apply_id: "",
+    reporttype: 0,
+    mysxform: {
+      proid: null,
+      stime: "",
+      etime: "",
+      currentPage: 1,
+      search: ""
+    }, // 我的任务公共筛选数据
+    allsxform: {
+      page: 1,
+      sxform: {
+        proid: null,
+        stime: "",
+        etime: "",
+        search: "",
+        userid: null,
+        state: ""
+      }
+    } // 全部任务筛选数据
   },
   mutations: {
     // 任务读取
@@ -160,6 +185,16 @@ export default new Vuex.Store({
     taskhuakuaihidden(state) {
       state.noShow = true;
       state.isShow = false;
+    },
+    // 修改申请名称
+    handlename(state, data) {
+      state.opeditname = true;
+      state.editnameform.apply_name = data.name;
+      state.apply_id = data.id;
+    },
+    putapply_name(state) {
+      state.appforcompany.apply_name = this.state.editnameform.apply_name;
+      state.opeditname = false;
     },
     // 我的任务点击表格发请求并带入任务id  和刷新右侧页面
     routerright(state, data) {
@@ -263,13 +298,21 @@ export default new Vuex.Store({
           state.disable = false;
         }
       } else if (data.route === "reportaudit") {
+        if (data.data.device_info.devicename == null) {
+          state.reporttype = 1;
+          state.uptaskid.did = 0;
+          state.uptaskid.taskid = data.id;
+        } else {
+          state.reporttype = 0;
+          state.uptaskid.did = data.data.device_info.id;
+          state.uptaskid.taskid = 0;
+        }
         state.taskinfo = data.data.taskinfo;
         state.tasksechedule = data.data.taskinfo.sechedule;
         state.appconbb = data.data.company_info;
         state.deviceinfo = data.data.device_info;
         state.final_report = data.data.final_report;
         state.draft_report = data.data.draft_report;
-        state.uptaskid.did = data.data.device_info.id;
         if (data.data.taskinfo.state === "已完成") {
           state.disable = true;
         } else {
@@ -478,6 +521,7 @@ export default new Vuex.Store({
       state.caselist = data.data;
       state.devid = data.devid;
       state.caseloading = false;
+      state.reporttype = data.retype;
     },
     // 报告审核获取初稿列表
     draft_report(state, data) {
@@ -554,8 +598,8 @@ export default new Vuex.Store({
       }
     },
     // 任务读取
-    async loadingMytask(context, page) {
-      const res = await http.get(`tasks/${page}`);
+    async loadingMytask(context, data) {
+      const res = await http.post(`tasks/${data.currentPage}`, data);
       if (res.data.status === 200) {
         context.commit("loadingMytask", {
           data: res.data.data,
@@ -564,8 +608,8 @@ export default new Vuex.Store({
       }
     },
     // 全部任务读取
-    async loadingAlltask(context, page) {
-      const res = await http.get(`alltasklist/${page}`);
+    async loadingAlltask(context, data) {
+      const res = await http.post(`alltasklist/${data.page}`, data.sxform);
       if (res.data.status === 200) {
         context.commit("loadingAlltask", {
           data: res.data.task_list,
@@ -576,8 +620,8 @@ export default new Vuex.Store({
       }
     },
     // 已完成任务
-    async loadingTasked(context, page) {
-      const res = await http.get(`comtasks/${page}`);
+    async loadingTasked(context, data) {
+      const res = await http.post(`comtasks/${data.page}`, data.sxform);
       if (res.data.status === 200) {
         context.commit("loadingTasked", {
           data: res.data.data,
@@ -737,7 +781,21 @@ export default new Vuex.Store({
       if (res.data.status === 200) {
         context.commit("handlecreatedraft", {
           devid: devid,
-          data: res.data.case_info
+          data: res.data.case_info,
+          retype: 0
+        });
+      } else {
+        Message.error(res.msg);
+      }
+    },
+    // 系统报告获取用例
+    async systembaogao(context, devid) {
+      const res = await http.get(`getsysreportcase/${devid}`);
+      if (res.data.status === 200) {
+        context.commit("handlecreatedraft", {
+          devid: devid,
+          data: res.data.case_info,
+          retype: 1
         });
       } else {
         Message.error(res.msg);
@@ -745,8 +803,16 @@ export default new Vuex.Store({
     },
     // 报告审核获取初稿列表
     async draft_report(context, id) {
-      const date = new Date().getTime();
-      const res = await http.get(`drafttestreport/${id}?${date}`);
+      let data = {
+        taskid: null,
+        devi_id: null
+      }
+      if (this.state.reporttype === 0) {
+        data.devi_id = id;
+      } else {
+        data.taskid = id;
+      }
+      const res = await http.post(`drafttestreport`, data);
       if (res.data.status === 200) {
         context.commit("draft_report", res.data.reportlist);
       } else {
@@ -754,9 +820,23 @@ export default new Vuex.Store({
       }
     },
     // 获取报告审核终稿
-    async rauploadlist(context, id) {
-      const date = new Date().getTime();
-      const res = await http.get(`finaltestreport/${id}?${date}`);
+    async rauploadlist(context, data) {
+      // console.log(taskid)
+      // let data = {
+      //   taskid: 0,
+      //   devi_id: 0
+      // }
+      if (this.state.reporttype == 0) {
+        data.taskid = 0;
+      } else {
+        data.devi_id = 0;
+      }
+      // if (this.state.reporttype === 0) {
+      //   data.devi_id = id;
+      // } else {
+      //   data.taskid = id;
+      // }
+      const res = await http.post(`finaltestreport`, data);
       if (res.data.status === 200) {
         context.commit("rauploadlist", res.data.reportlist);
       } else {

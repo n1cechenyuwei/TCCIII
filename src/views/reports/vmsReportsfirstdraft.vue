@@ -1,5 +1,5 @@
 <template>
-  <Reportsmodel reportdata="vmsdraftreports"></Reportsmodel>
+  <Reportsmodel reportdata="vmsdraftreports" sxrequest="screenvmsdraftreport"></Reportsmodel>
 </template>
 
 <script>

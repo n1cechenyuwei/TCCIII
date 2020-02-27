@@ -1,5 +1,5 @@
 <template>
-  <Uploadmodel alldata="pisfinalreports" load="finallocalsearch" uploadurl="uploaddefinalreport"></Uploadmodel>
+  <Uploadmodel alldata="pisfinalreports" load="finallocalsearch" uploadurl="uploaddefinalreport" sxrequest="screenpisfinalreport"></Uploadmodel>
 </template>
 
 <script>

@@ -1,5 +1,5 @@
 <template>
-  <Uploadmodel alldata="vmsfinalreports" load="finallocalsearch" uploadurl="uploaddefinalreport"></Uploadmodel>
+  <Uploadmodel alldata="vmsfinalreports" load="finallocalsearch" uploadurl="uploaddefinalreport" sxrequest="screenvmsfinalreport"></Uploadmodel>
 </template>
 
 <script>

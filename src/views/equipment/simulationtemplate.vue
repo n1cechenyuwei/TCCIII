@@ -103,7 +103,7 @@
         <el-table-column
           prop="eq_type"
           show-overflow-tooltip
-          label="软件名称">
+          label="设备名称">
         </el-table-column>
         <el-table-column
           prop="ip_address"
@@ -201,7 +201,7 @@
     </el-dialog>
     <!-- 修改服务器信息 -->
     <el-dialog
-      title="新建服务器"
+      title="修改服务器"
       :visible.sync="editserverDialogVisible"
       width="500px"
       center>
@@ -265,10 +265,10 @@
       center>
       <el-form label-position="right" label-width="150px" ref="craetargumentform" :model="craetargumentform">
         <el-form-item
-        label="软件名称"
+        label="设备名称"
         :rules="[
-          { required: true, message: '请输入软件名称', trigger: 'blur' },
-          { max: 15, message: '软件名称最长为15个汉字', trigger: 'blur' }
+          { required: true, message: '请输入设备名称', trigger: 'blur' },
+          { max: 15, message: '设备名称最长为15个汉字', trigger: 'blur' }
         ]"
         prop="eq_type">
           <el-input size="small" class="workconfiginput" v-model="craetargumentform.eq_type"></el-input>
@@ -295,7 +295,7 @@
           label="SIPID"
           :rules="[
             { required: true, message: '请输入SIPID', trigger: 'blur' },
-            { max: 10, message: 'SIPID最长为10个字符', trigger: 'blur' }
+            { max: 13, message: 'SIPID最长为13个字符', trigger: 'blur' }
           ]"
           prop="sip_id">
           <el-input size="small"  class="workconfiginput" v-model="craetargumentform.sip_id"></el-input>
@@ -332,9 +332,9 @@
       center>
       <el-form label-position="right" label-width="150px" ref="editargumentform" :model="editargumentform">
         <el-form-item
-        label="软件名称"
+        label="设备名称"
         :rules="[
-          { required: true, message: '请输入软件名称', trigger: 'blur' }
+          { required: true, message: '请输入设备名称', trigger: 'blur' }
         ]"
         prop="eq_type">
           <el-input size="small" class="workconfiginput" v-model="editargumentform.eq_type"></el-input>

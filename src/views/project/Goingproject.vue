@@ -1,5 +1,5 @@
 <template>
-  <Projectmodel prostatus="projectlist" prosearch="searchprojects"></Projectmodel>
+  <Projectmodel sxrequest="screenprojecting" prostatus="projectlist" prosearch="searchprojects"></Projectmodel>
 </template>
 
 <script>

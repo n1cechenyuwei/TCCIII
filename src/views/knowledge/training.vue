@@ -39,26 +39,29 @@
             label="名称">
             <template slot-scope="scope">
               <i v-show="scope.row.doc_type === 'F'" class="iconfont wenjianjia icon-tubiaozhizuomoban"></i>
-              <i v-show="scope.row.doc_type === 'D' && scope.row.file_ext !== 'xlsx' && scope.row.file_ext !== 'doc' && scope.row.file_ext !== 'docx' && scope.row.file_ext !== 'pptx' && scope.row.file_ext !== 'pdf' && scope.row.file_ext !== 'txt' && scope.row.file_ext !== 'mp4' && scope.row.file_ext !== 'webm' && scope.row.file_ext !== 'ogg'" class="el-icon-document wenjian"></i>
+              <i v-show="scope.row.doc_type === 'D' && scope.row.file_ext !== 'jpg' && scope.row.file_ext !== 'jpeg' && scope.row.file_ext !== 'JPG' && scope.row.file_ext !== 'JPEG' && scope.row.file_ext !== 'png' && scope.row.file_ext !== 'PNG' && scope.row.file_ext !== 'PDF' && scope.row.file_ext !== 'xlsx' && scope.row.file_ext !== 'doc' && scope.row.file_ext !== 'docx' && scope.row.file_ext !== 'pptx' && scope.row.file_ext !== 'pdf' && scope.row.file_ext !== 'txt' && scope.row.file_ext !== 'mp4' && scope.row.file_ext !== 'webm' && scope.row.file_ext !== 'ogg'" class="el-icon-document wenjian"></i>
               <i v-show="scope.row.file_ext === 'xlsx'" class="iconfont icon-excel docexcel"></i>
               <i v-show="scope.row.file_ext === 'doc' || scope.row.file_ext === 'docx'" class="iconfont icon-excel docword"></i>
               <i v-show="scope.row.file_ext === 'pptx'" class="iconfont icon-ppt1 docppt"></i>
-              <i v-show="scope.row.file_ext === 'pdf'" class="iconfont icon-pdf docpdf"></i>
+              <i v-show="scope.row.file_ext === 'jpg' || scope.row.file_ext === 'jpeg' || scope.row.file_ext === 'JPG' || scope.row.file_ext === 'JPEG' || scope.row.file_ext === 'png' || scope.row.file_ext === 'PNG'" class="el-icon-picture docpic"></i>
+              <i v-show="scope.row.file_ext === 'pdf' || scope.row.file_ext === 'PDF'" class="iconfont icon-pdf docpdf"></i>
               <i v-show="scope.row.file_ext === 'txt'" class="iconfont icon-txt doctxt"></i>
               <i v-show="scope.row.doc_type === 'D' && scope.row.file_ext === 'mp4' || scope.row.file_ext === 'ogg' || scope.row.file_ext === 'webm'" class="iconfont icon-video docvideo"></i>
               <span class="docclick" @click="pushF(scope.row)">{{scope.row.filename}}</span>
             </template>
           </el-table-column>
           <el-table-column
-            width="200"
+            width="150"
+            align="center"
             label="操作">
             <template slot-scope="scope">
               <div style="text-align: right">
                 <el-button style="margin-right: 10px" v-show="scope.row.file_ext === 'mp4' || scope.row.file_ext === 'ogg' || scope.row.file_ext === 'webm' || scope.row.file_ext === 'pdf'" size="mini" type="primary" icon="el-icon-view" @click="videoorpdf(scope.row.down_url)"></el-button>
-                <a v-show="scope.row.doc_type === 'D' && scope.row.file_ext !== 'mp4' && scope.row.file_ext !== 'ogg' && scope.row.file_ext !== 'webm' && scope.row.file_ext !== 'pdf'" :href="scope.row.down_url" download class="docbtn">
+                <a v-show="scope.row.doc_type === 'D' && scope.row.file_ext !== 'mp4' && scope.row.file_ext !== 'ogg' && scope.row.file_ext !== 'webm' && scope.row.file_ext !== 'pdf' && scope.row.file_ext !== 'PDF' && scope.row.file_ext !== 'jpg' && scope.row.file_ext !== 'jpeg' && scope.row.file_ext !== 'JPG' && scope.row.file_ext !== 'JPEG' && scope.row.file_ext !== 'png' && scope.row.file_ext !== 'PNG'" :href="scope.row.down_url" download class="docbtn">
                   <el-button size="mini" type="primary" icon="el-icon-download"></el-button>
                 </a>
-                <el-button style="margin-right: 10px" size="mini" @click="deletedoc(scope.row.id)" type="danger" icon="el-icon-delete"></el-button>
+                <el-button v-show="scope.row.file_ext === 'jpg' || scope.row.file_ext === 'jpeg' || scope.row.file_ext === 'JPG' || scope.row.file_ext === 'JPEG' || scope.row.file_ext === 'png' || scope.row.file_ext === 'PNG'" style="margin-right: 10px" size="mini" @click="picview(scope.row.down_url)" type="primary" icon="el-icon-view"></el-button>
+                <el-button style="margin-right: 10px" size="mini" @click="deletedoc(scope.row.id, scope.row.doc_type)" type="danger" icon="el-icon-delete"></el-button>
               </div>
             </template>
           </el-table-column>
@@ -86,6 +89,12 @@
         <el-button type="primary" size="small" class="dialogbtn-right" @click="submifolderfrom">确 定</el-button>
       </div>
     </el-dialog>
+    <el-dialog
+      title="查看图片"
+      :visible.sync="picvs"
+      width="576px">
+      <img style="width: 100%" :src="picurl" alt="图片丢失了">
+    </el-dialog>
   </div>
 </template>
 
@@ -93,6 +102,7 @@
 export default {
   data() {
     return {
+      picvs: false,
       folderfromvs: false,
       loading: false,
       projectlist: [],
@@ -111,10 +121,15 @@ export default {
       httpheader: {
         token: ""
       },
-      up_disabled: false
+      up_disabled: false,
+      picurl: ""
     };
   },
   methods: {
+    picview(url) {
+      this.picvs = true;
+      this.picurl = url;
+    },
     async uploador(params) {
       if (params.file) {
         const res = await this.$http.get(
@@ -214,8 +229,14 @@ export default {
       }
     },
     // 删除文件及文件夹
-    deletedoc(id) {
-      this.$confirm(`确定删除该文档吗`, "提示", {
+    deletedoc(id, doctype) {
+      let doc = "";
+      if (doctype === "D") {
+        doc = "确定删除该文件吗";
+      } else {
+        doc = "确定删除该文件夹吗";
+      }
+      this.$confirm(doc, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
@@ -342,5 +363,10 @@ export default {
   font-size: 20px;
   margin: 0 12px 0 4px;
   color: #088fff;
+}
+.docpic {
+  color: #409eff;
+  font-size: 20px;
+  margin: 0 12px 0 4px;
 }
 </style>

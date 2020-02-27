@@ -145,7 +145,7 @@
                     </div>
                     <div v-show="item.taskname.search('外委') === -1 && item.taskname.search('审核') === -1" class="chaifen-btn">
                       <el-button v-if="item.cases.length != 0" type="primary" size="mini" @click="editcases(scope.row.id, item.id, item.cases)">修改用例</el-button>
-                      <el-button type="warning" size="mini" @click="transfer(scope.row.id, item.id, item.cases)">拆分用例</el-button>
+                      <el-button v-show="scope.row.id !== 0" type="warning" size="mini" @click="transfer(scope.row.id, item.id, item.cases)">拆分用例</el-button>
                       <el-button v-show="item.taskname.substr(-1, 1) !== '1' && item.taskname.substr(-1, 1) !== '测'" type="danger" size="mini" @click="deletetask(scope.row.id, item.id)">删除任务</el-button>
                     </div>
                   </el-card>
@@ -238,13 +238,24 @@
     <el-dialog
       title="选取用例"
       :visible.sync="caseDialogVisible"
-      @close="caseworkclose"
-      width="576px"
+      @closed="caseworkclose"
+      :close-on-click-modal="false"
+      width="800px"
       center>
-      <div class="checked-box">
-        <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
+      <div>
+        <el-input
+          placeholder="输入用例编号进行过滤"
+          size="small"
+          style="margin-bottom: 10px; display: inline-block; width: 91%; margin-right: 10px"
+          @keyup.enter.native="caselistSearch"
+          v-model="filterCaseID">
+        </el-input>
+        <el-button type="primary" size="small" @click="caselistSearch">搜索</el-button>
+      </div>
+      <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
+      <div class="checked-box" style="margin-top: 4px">
         <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange">
-          <el-checkbox class="casescheckbox" v-for="item in caselist" :label="item.id" :key="item.id">{{item.case_name}}</el-checkbox>
+          <el-checkbox class="casescheckbox" v-for="item in caselist" :label="item.id" :key="item.id">{{item.case_no}} - {{item.case_name}}</el-checkbox>
         </el-checkbox-group>
       </div>
       <span slot="footer" class="dialog-footer">
@@ -256,12 +267,24 @@
     <el-dialog
       title="修改用例配置"
       :visible.sync="editcaseDialogVisible"
-      width="576px"
+      :close-on-click-modal="false"
+      width="800px"
+      @closed="caseeditclose"
       center>
-      <div class="checked-box">
-        <el-checkbox :indeterminate="editisIndeterminate" v-model="editcheckAll" @change="handleeditCheckAll">全选</el-checkbox>
+      <div>
+        <el-input
+          placeholder="输入用例编号进行过滤"
+          size="small"
+          style="margin-bottom: 10px; display: inline-block; width: 91%; margin-right: 10px"
+          @keyup.enter.native="caselistSearch2"
+          v-model="filterCaseID2">
+        </el-input>
+        <el-button type="primary" size="small" @click="caselistSearch2">搜索</el-button>
+      </div>
+      <el-checkbox :indeterminate="editisIndeterminate" v-model="editcheckAll" @change="handleeditCheckAll">全选</el-checkbox>
+      <div class="checked-box" style="margin-top: 4px">
         <el-checkbox-group v-model="checkededit" @change="editCheckedChange">
-          <el-checkbox class="casescheckbox" v-for="item in caselist" :label="item.id" :key="item.id">{{item.case_name}}</el-checkbox>
+          <el-checkbox class="casescheckbox" v-for="item in caselist" :label="item.id" :key="item.id">{{item.case_no}} - {{item.case_name}}</el-checkbox>
         </el-checkbox-group>
       </div>
       <span slot="footer" class="dialog-footer">
@@ -274,7 +297,7 @@
 
 <script>
 export default {
-  props: ["caseconfig", "getcaseall"],
+  props: ["caseconfig", "getcaseall", "timetype"],
   data() {
     return {
       caseconfigtype: this.caseconfig,
@@ -301,7 +324,12 @@ export default {
       editisIndeterminate: true, // 修改全选按钮
       editcheckAll: false, // 修改用例全选按钮是否选中
       rowid: 0, // 设备id
-      taskid: 0 // 任务id
+      taskid: 0, // 任务id
+      filterCaseID: "", // 用例编号搜索
+      filterCaseID2: "", // 修改用例编号搜索
+      allcaselist: [], // 不会变得全部用例
+      editSearchType: 0, // 用例修改搜索状态
+      editSearchType2: 0 // 用例选取搜索状态
     };
   },
   methods: {
@@ -411,7 +439,9 @@ export default {
       } else if (day < 1) {
         this.$message.warning("修改失败,任务天数不得小于1天");
       } else {
-        const res = await this.$http.put(`usetime/${id}`, { days: day });
+        const res = await this.$http.put(`usetime/${this.timetype}/${id}`, {
+          days: day
+        });
         if (res.data.status === 200) {
           this.$message.success("修改成功");
         } else {
@@ -424,6 +454,7 @@ export default {
       const res = await this.$http.get(`${this.getcasealldata}`);
       if (res.data.status === 200) {
         this.caselist = res.data.case_list;
+        this.allcaselist = res.data.case_list;
         for (let i = 0; i < this.caselist.length; i++) {
           this.casesAll.push(this.caselist[i].id);
         }
@@ -433,14 +464,52 @@ export default {
     },
     // 用例选取全选
     handleCheckAllChange(val) {
-      this.checkedCities = val ? this.casesAll : [];
+      this.casesAll = [];
+      for (let i = 0; i < this.caselist.length; i++) {
+        this.casesAll.push(this.caselist[i].id);
+      }
+      if (val) {
+        if (this.editSearchType2 === 0) {
+          this.checkedCities = this.casesAll;
+        } else {
+          let arr = this.checkedCities.concat(this.casesAll);
+          this.checkedCities = this.unique(arr);
+        }
+      } else {
+        if (this.editSearchType2 === 0) {
+          this.checkedCities = [];
+        } else {
+          this.checkedCities = this.array_diff(
+            this.checkedCities,
+            this.casesAll
+          );
+        }
+      }
       this.isIndeterminate = false;
     },
     handleCheckedCitiesChange(value) {
-      let checkedCount = value.length;
-      this.checkAll = checkedCount === this.caselist.length;
-      this.isIndeterminate =
-        checkedCount > 0 && checkedCount < this.caselist.length;
+      if (this.editSearchType2 === 0) {
+        let checkedCount = value.length;
+        this.checkAll = checkedCount === this.caselist.length;
+        this.isIndeterminate =
+          checkedCount > 0 && checkedCount < this.caselist.length;
+      } else {
+        let arr2 = [];
+        for (let i = 0; i < this.caselist.length; i++) {
+          arr2.push(this.caselist[i].id);
+        }
+        let arr3 = [];
+        for (let j = 0; j < arr2.length; j++) {
+          for (let k = 0; k < value.length; k++) {
+            if (arr2[j] === value[k]) {
+              arr3.push(arr2[j]);
+            }
+          }
+        }
+        this.checkAll = arr3.length === this.caselist.length;
+        this.isIndeterminate =
+          arr3.length > 0 && arr3.length < this.caselist.length;
+      }
     },
     xuanqucases(rowid, id) {
       this.rowid = rowid;
@@ -453,27 +522,92 @@ export default {
         caselist: this.checkedCities
       });
       if (res.data.status === 200) {
-        this.$message.success("用例添加成功");
         this.dataloading();
+        this.$message.success("用例添加成功");
         this.caseDialogVisible = false;
       } else {
         this.$message.error(res.data.msg);
       }
     },
-    // 修改用例
+    // 修改用例全选
     handleeditCheckAll(val) {
-      this.checkededit = val ? this.casesAll : [];
+      this.casesAll = [];
+      for (let i = 0; i < this.caselist.length; i++) {
+        this.casesAll.push(this.caselist[i].id);
+      }
+      if (val) {
+        if (this.editSearchType === 0) {
+          this.checkededit = this.casesAll;
+        } else {
+          let arr = this.checkededit.concat(this.casesAll);
+          this.checkededit = this.unique(arr);
+        }
+      } else {
+        if (this.editSearchType === 0) {
+          this.checkededit = [];
+        } else {
+          this.checkededit = this.array_diff(this.checkededit, this.casesAll);
+        }
+      }
       this.editisIndeterminate = false;
     },
+    // 数组去重
+    unique(arr) {
+      let hash = [];
+      for (var i = 0; i < arr.length; i++) {
+        for (var j = i + 1; j < arr.length; j++) {
+          if (arr[i] === arr[j]) {
+            ++i;
+          }
+        }
+        hash.push(arr[i]);
+      }
+      return hash;
+    },
+
+    // 数组消除
+    array_diff(a, b) {
+      for (let i = 0; i < b.length; i++) {
+        for (let j = 0; j < a.length; j++) {
+          if (a[j] == b[i]) {
+            a.splice(j, 1);
+            j = j - 1;
+          }
+        }
+      }
+      return a;
+    },
+
     editCheckedChange(value) {
-      let checkedCount = value.length;
-      this.checkAll = checkedCount === this.caselist.length;
-      this.editisIndeterminate =
-        checkedCount > 0 && checkedCount < this.caselist.length;
+      if (this.editSearchType === 0) {
+        let checkedCount = value.length;
+        this.editcheckAll = checkedCount === this.caselist.length;
+        this.editisIndeterminate =
+          checkedCount > 0 && checkedCount < this.caselist.length;
+      } else {
+        let arr2 = [];
+        for (let i = 0; i < this.caselist.length; i++) {
+          arr2.push(this.caselist[i].id);
+        }
+        let arr3 = [];
+        for (let j = 0; j < arr2.length; j++) {
+          for (let k = 0; k < value.length; k++) {
+            if (arr2[j] === value[k]) {
+              arr3.push(arr2[j]);
+            }
+          }
+        }
+        this.editcheckAll = arr3.length === this.caselist.length;
+        this.editisIndeterminate =
+          arr3.length > 0 && arr3.length < this.caselist.length;
+      }
     },
     // 选取用例关闭
     caseworkclose() {
       this.checkedCities = [];
+      this.filterCaseID = "";
+      this.caselist = this.allcaselist;
+      this.editSearchType2 = 0;
     },
     // 用例修改按钮
     editcases(rowid, id, cases) {
@@ -497,7 +631,7 @@ export default {
     },
     // 任务删除按钮
     deletetask(rowid, id) {
-      this.$confirm("确定要删除该用例吗?", "提示", {
+      this.$confirm("确定要删除该任务吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
@@ -544,15 +678,20 @@ export default {
       this.transfervalue = [];
     },
     // 用例修改关闭
-    // caseeditclose() {},
+    caseeditclose() {
+      this.checkedCities = [];
+      this.filterCaseID2 = "";
+      this.caselist = this.allcaselist;
+      this.editSearchType = 0;
+    },
     async caseedit() {
       if (this.checkededit.length > 0) {
         const res = await this.$http.put(`tasktypeusecasemap/${this.taskid}`, {
           caselist: this.checkededit
         });
         if (res.data.status === 200) {
-          this.$message.success("用例添加成功");
           this.dataloading();
+          this.$message.success("用例添加成功");
           this.editcaseDialogVisible = false;
         } else {
           this.$message.error(res.data.msg);
@@ -563,7 +702,13 @@ export default {
     },
     // 局部刷新
     async dataloading() {
-      const res = await this.$http.get(`devicetasktype/${this.rowid}`);
+      let pv = "";
+      if(this.caseconfig == "pistasktype") {
+        pv = "pis";
+      } else {
+        pv = "vms";
+      }
+      const res = await this.$http.get(`devicetasktype/${this.rowid}/${pv}`);
       if (res.data.status === 200) {
         for (let i = 0; i < this.eqpislist.length; i++) {
           if (res.data.info.id === this.eqpislist[i].id) {
@@ -581,6 +726,44 @@ export default {
             });
           }
         }
+      }
+    },
+    // 用例搜索
+    caselistSearch() {
+      if (this.filterCaseID === "") {
+        this.editSearchType2 = 0;
+        this.caselist = this.allcaselist;
+      } else {
+        this.caselist = [];
+        this.editSearchType2 = 1;
+        this.allcaselist.forEach(element => {
+          if (
+            element.case_no.search(this.filterCaseID.toUpperCase()) != -1 ||
+            element.case_name.search(this.filterCaseID.toUpperCase()) != -1
+          ) {
+            this.caselist.push(element);
+          }
+        });
+        this.editCheckedChange(this.checkedCities);
+      }
+    },
+    // 修改用例搜索
+    caselistSearch2() {
+      if (this.filterCaseID2 === "") {
+        this.editSearchType = 0;
+        this.caselist = this.allcaselist;
+      } else {
+        this.editSearchType = 1;
+        this.caselist = [];
+        this.allcaselist.forEach(element => {
+          if (
+            element.case_no.search(this.filterCaseID2.toUpperCase()) != -1 ||
+            element.case_name.search(this.filterCaseID2.toUpperCase()) != -1
+          ) {
+            this.caselist.push(element);
+          }
+        });
+        this.editCheckedChange(this.checkededit);
       }
     }
   },

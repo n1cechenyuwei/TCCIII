@@ -1,24 +1,75 @@
 <template>
   <div>
     <div class="mytask-content-top">
-      <el-dropdown
-        @command="handleCommand"
+      <el-popover
         placement="bottom-start"
-        class="mytask-dropdown">
-        <el-button type="primary" size="small">
-          筛选<i class="el-icon-arrow-down el-icon--right"></i>
-        </el-button>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item command="a">按开始时间(最新)</el-dropdown-item>
-          <el-dropdown-item command="b">按结束时间(最新)</el-dropdown-item>
-          <el-dropdown-item command="c">按任务进度(最新)</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
+        width="220"
+        transition="el-zoom-in-bottom"
+        trigger="click">
+        <div>
+          <div class="sx_li">缺陷类型：</div>
+          <el-select class="sx_li sx_input" size="mini" v-model="sxform.df_type" placeholder="请选择">
+            <el-option
+              v-for="item in qxoptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+          <div class="sx_li">缺陷系统：</div>
+          <el-cascader
+            class="sx_li sx_input"
+            size="mini"
+            v-model="sxform.menu"
+            :options="system1options">
+          </el-cascader>
+          <div class="sx_li">开始时间（按缺陷提交时间）：</div>
+          <el-date-picker
+            v-model="sxform.sub_stime"
+            size="mini"
+            class="sx_li sx_input"
+            type="datetime"
+            placeholder="选择日期时间">
+          </el-date-picker>
+          <div v-if="this.sxrequest === 'screenrepairdefects'">
+            <div class="sx_li">结束时间（按缺陷提交时间）：</div>
+            <el-date-picker
+              v-model="sxform.sub_etime"
+              class="sx_li sx_input"
+              size="mini"
+              type="datetime"
+              placeholder="选择日期时间">
+            </el-date-picker>
+            <div class="sx_li">开始时间（按缺陷修复时间）：</div>
+            <el-date-picker
+              v-model="sxform.repair_stime"
+              size="mini"
+              class="sx_li sx_input"
+              type="datetime"
+              placeholder="选择日期时间">
+            </el-date-picker>
+            <div class="sx_li">结束时间（按缺陷修复时间）：</div>
+            <el-date-picker
+              v-model="sxform.repair_etime"
+              class="sx_li sx_input"
+              size="mini"
+              type="datetime"
+              placeholder="选择日期时间">
+            </el-date-picker>
+          </div>
+          <div class="sx_btn_box">
+            <el-button type="primary" size="mini" @click="reqest">重置</el-button>
+            <el-button type="primary" size="mini" @click="sx">筛选</el-button>
+          </div>
+        </div>
+        <el-button style="margin-left: 20px" slot="reference" type="primary" size="small">筛选<i class="el-icon-arrow-down el-icon--right"></i></el-button>
+      </el-popover>
       <div class="search-box">
         <el-input
           size="small"
           class="mytasksearch"
           placeholder="请输入缺陷名称"
+          @keyup.enter.native="projectsearch"
           v-model="myprojectsearch">
         </el-input>
         <i class="el-icon-search sreach-icon"></i>      
@@ -144,7 +195,7 @@
           prop="menu"
           label="缺陷系统"
           :rules="[
-            { required: true, message: '请选择缺陷系统', trigger: 'blur' }
+            { required: true, message: '请选择缺陷系统', trigger: 'change' }
           ]">
           <el-cascader
             expand-trigger="hover"
@@ -198,7 +249,7 @@
         <el-form-item
           prop="defect"
           label="缺陷表述">
-          <span>{{editdetectsfrom.defect}}</span>
+          <div style="line-height: 16px; margin-top: 10px; word-wrap: break-word;">{{editdetectsfrom.defect}}</div>
         </el-form-item>
         <el-form-item
           prop="defect_reason"
@@ -220,7 +271,7 @@
 
 <script>
 export default {
-  props: ["defectsurl"],
+  props: ["defectsurl", "sxrequest"],
   data() {
     return {
       creatdefectsvs: false,
@@ -255,18 +306,29 @@ export default {
         type: "",
         defect_title: "",
         defect_reason: ""
-      }
+      },
+      sxform: {
+        df_type: null,
+        menu: [],
+        sub_stime: "",
+        sub_etime: "",
+        repair_stime: "",
+        repair_etime: ""
+      },
+      searchtype: "1",
+      qxoptions: [
+        {
+          label: "故障",
+          value: 9
+        },
+        {
+          label: "待修复项",
+          value: 1
+        }
+      ]
     };
   },
   methods: {
-    //筛选按钮
-    handleCommand(command) {
-      if (command === "a") {
-        console.log("aaa");
-      } else if (command === "b") {
-        console.log("bbb");
-      }
-    },
     // 获取系统
     async getoptions() {
       const res = await this.$http.get(`menu`);
@@ -329,7 +391,11 @@ export default {
           const res = await this.$http.delete(`rpdefect/${id}`);
           if (res.data.status === 200) {
             this.$message.success(res.data.msg);
-            this.getdefectsdata(1);
+            if (this.searchtype === "1") {
+              this.getdefectsdata(this.currentPage);
+            } else if (this.searchtype === "3") {
+              this.sxqq(this.currentPage);
+            }
           } else {
             this.$message.error(res.data.msg);
           }
@@ -370,6 +436,48 @@ export default {
           this.$message.error(res.data.msg);
         }
       });
+    },
+    // 重置按钮
+    reqest() {
+      this.sxform.df_type = null;
+      this.sxform.menu = [];
+      this.sxform.sub_stime = "";
+      this.sxform.sub_etime = "";
+      this.sxform.repair_stime = "";
+      this.sxform.repair_etime = "";
+      this.searchtype = "1";
+    },
+    // 筛选按钮
+    sx() {
+      if (
+        this.sxform.df_type === null &&
+        this.sxform.menu === [] &&
+        this.sxform.sub_stime === "" &&
+        this.sxform.sub_etime === "" &&
+        this.sxform.repair_stime === "" &&
+        this.sxform.repair_etime === ""
+      ) {
+        this.searchtype = "1";
+        this.currentPage = 1;
+        this.getdefectsdata(this.currentPage);
+      } else {
+        this.searchtype = "3";
+        this.currentPage = 1;
+        this.sxqq(1);
+      }
+    },
+    // 筛选请求
+    async sxqq(page) {
+      const res = await this.$http.post(
+        `${this.sxrequest}/${page}`,
+        this.sxform
+      );
+      if (res.data.status === 200) {
+        this.projecttotal = res.data.total_num;
+        this.projectlist = res.data.defects;
+      } else {
+        this.$message.error(res.data.msg);
+      }
     }
   },
   created() {
@@ -432,6 +540,7 @@ export default {
 .deright-right {
   display: inline-block;
   width: 780px;
+  word-wrap: break-word;
   vertical-align: top;
 }
 .defects-title {
@@ -450,8 +559,9 @@ export default {
 }
 .biaoshu-content {
   display: inline-block;
+  word-wrap: break-word;
   vertical-align: top;
-  width: 1200px;
+  width: 1400px;
 }
 .xiufu {
   font-size: 12px;

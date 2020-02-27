@@ -2,29 +2,65 @@
   <div class="aaaaa">
     <div class="mytask-boxbox">
       <div class="mytask-content-top">
-        <el-dropdown
-          @command="handleCommand"
+        <el-popover
           placement="bottom-start"
-          class="mytask-dropdown">
-          <el-button type="primary" size="small">
-            筛选<i class="el-icon-arrow-down el-icon--right"></i>
-          </el-button>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="a">按开始时间(最新)</el-dropdown-item>
-            <el-dropdown-item command="b">按结束时间(最新)</el-dropdown-item>
-            <el-dropdown-item command="c">按任务进度(最新)</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-        <div class="search-box">
-          <el-input
-            size="small"
-            class="mytasksearch"
-            placeholder="请输入任务名称"
-            v-model.trim="mytasksearch">
-          </el-input>
-          <i class="el-icon-search sreach-icon"></i>      
-        </div>     
-        <el-button type="primary" size="mini" @click="mytaskseac">搜索</el-button>
+          width="220"
+          transition="el-zoom-in-bottom"
+          trigger="click">
+          <div>
+            
+            <div class="sx_li">项目名称筛选：</div>
+            <el-select v-model="$store.state.allsxform.sxform.proid" class="sx_li sx_input" size="small" placeholder="请选择">
+              <el-option
+                v-for="item in projectoptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id">
+              </el-option>
+            </el-select>
+            <div class="sx_li">负责人筛选：</div>
+            <el-select v-model="$store.state.allsxform.sxform.userid" class="sx_li sx_input" size="small" placeholder="请选择">
+              <el-option
+                v-for="item in peopleoptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id">
+              </el-option>
+            </el-select>
+            <div class="sx_li">任务状态筛选：</div>
+            <el-select v-model="$store.state.allsxform.sxform.state" class="sx_li sx_input" size="small" placeholder="请选择">
+              <el-option
+                v-for="item in stateoptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id">
+              </el-option>
+            </el-select>
+            <div class="sx_li">开始时间(按任务到期日筛选)：</div>
+            <el-date-picker
+              size="mini"
+              v-model="$store.state.allsxform.sxform.stime"
+              type="date"
+              value-format="yyyy-MM-dd"
+              class="sx_li sx_input"
+              placeholder="选择日期">
+            </el-date-picker>
+            <div class="sx_li">结束时间(按任务到期日筛选)：</div>
+            <el-date-picker
+              size="mini"
+              v-model="$store.state.allsxform.sxform.etime"
+              value-format="yyyy-MM-dd"
+              class="sx_li sx_input"
+              type="date"
+              placeholder="选择日期">
+            </el-date-picker>
+            <div class="sx_btn_box">
+              <el-button type="primary" size="mini" @click="reqest">重置</el-button>
+              <el-button type="primary" size="mini" @click="sx">筛选</el-button>
+            </div>
+          </div>
+          <el-button style="margin: 10px 0 0 20px" slot="reference" type="primary" size="small">筛选<i class="el-icon-arrow-down el-icon--right"></i></el-button>
+        </el-popover>
       </div>
       <div class="mytask-content-middle">
         <div class="mytask-content-table">
@@ -40,6 +76,7 @@
               width="120">
             </el-table-column>
             <el-table-column
+              show-overflow-tooltip
               label="名称">
               <template slot-scope="scope">
                 <span class="colcell" @click="rownameclick(scope.row)">{{ scope.row.taskname }}</span>
@@ -48,6 +85,7 @@
             <el-table-column
               prop="pro_name"
               width="300"
+              show-overflow-tooltip
               label="所属项目">
             </el-table-column>
             <el-table-column
@@ -91,30 +129,33 @@
           layout="total, prev, pager, next, jumper"
           :total="$store.state.alltasktotal">
         </el-pagination>
-        <div :class="{ 'hidden': $store.state.noShow, 'sard': $store.state.isShow }">
+        <div :class="{ 'hidden': $store.state.noShow, 'sard': $store.state.isShow }"
+          v-loading="$store.state.loading"
+          element-loading-text="任务提交中，请稍后"
+          element-loading-spinner="el-icon-loading">
           <div class="taskright-title">
             <i class="iconfont icon-renwu"></i>
             <i class="fontt">任务</i>
             <i class="el-icon-close iicon" @click="close"></i>
           </div>
           <div class="height-auto">
-            <Applyfor v-if="route === 'applyfor'" :taskid="taskid" ht="alltask">
+            <Applyfor v-if="route === 'applyfor'" :taskid="taskid" ht="alltask" :page="$store.state.allsxform.page">
             </Applyfor>
-            <ApprovalContract v-if="route === 'approvalcontract'" :taskid="taskid" ht="alltask">
+            <ApprovalContract v-if="route === 'approvalcontract'" :taskid="taskid" ht="alltask" :page="$store.state.allsxform.page">
             </ApprovalContract>
-            <Contractor v-if="route === 'contractor'" :taskid="taskid" ht="alltask">
+            <Contractor v-if="route === 'contractor'" :taskid="taskid" ht="alltask" :page="$store.state.allsxform.page">
             </Contractor>
-            <Detection v-if="route === 'detection'" :taskid="taskid" ht="alltask">
+            <Detection v-if="route === 'detection'" :taskid="taskid" ht="alltask" :page="$store.state.allsxform.page">
             </Detection>
-            <DetectionAudit v-if="route === 'detectionaudit'" :taskid="taskid" ht="alltask">
+            <DetectionAudit v-if="route === 'detectionaudit'" :taskid="taskid" ht="alltask" :page="$store.state.allsxform.page">
             </DetectionAudit>
-            <Eqconfig v-if="route === 'eqconfig'" :taskid="taskid" ht="alltask">
+            <Eqconfig v-if="route === 'eqconfig'" :taskid="taskid" ht="alltask" :page="$store.state.allsxform.page">
             </Eqconfig>
-            <PutStorage v-if="route === 'putstorage'" :taskid="taskid" ht="alltask">
+            <PutStorage v-if="route === 'putstorage'" :taskid="taskid" ht="alltask" :page="$store.state.allsxform.page">
             </PutStorage>
-            <OutStorage v-if="route === 'outstorage'" :taskid="taskid" ht="alltask">
+            <OutStorage v-if="route === 'outstorage'" :taskid="taskid" ht="alltask" :page="$store.state.allsxform.page">
             </OutStorage>
-            <ReportAudit v-if="route === 'reportaudit'" :taskid="taskid" ht="alltask">
+            <ReportAudit v-if="route === 'reportaudit'" :taskid="taskid" ht="alltask" :page="$store.state.allsxform.page">
             </ReportAudit>
           </div>
         </div>
@@ -136,33 +177,42 @@
 export default {
   data() {
     return {
-      mytasksearch: "", //搜索框内容
       currentPage: 1, //默认第几页
       taskpagesize: 14, //每页显示几条
       taskid: 0, //任务id
       route: "", //任务组件别名
-      searchtype: "1" // 根据类型不同发送不同请求
+      // sxform: {
+      //   proid: null,
+      //   stime: "",
+      //   etime: "",
+      //   search: "",
+      //   userid: null,
+      //   state: ""
+      // },
+      projectoptions: [],
+      peopleoptions: [],
+      stateoptions: [
+        {
+          id: "未开始",
+          name: "未开始"
+        },
+        {
+          id: "已完成",
+          name: "已完成"
+        }
+      ]
     };
   },
   created() {
-    this.$store.dispatch("loadingAlltask", this.currentPage);
+    this.sxqq();
+    this.projectlist();
+    this.peoplelist();
     this.$store.commit("taskhuakuaihidden"); // 关闭右滑任务详情
   },
   methods: {
-    //筛选按钮时间
-    handleCommand(command) {
-      if (command === "a") {
-        console.log("aaa");
-      } else if (command === "b") {
-        console.log("bbb");
-      }
-    },
     handlePageChange(val) {
-      if (this.searchtype === "1") {
-        this.$store.dispatch("loadingAlltask", val);
-      } else if (this.searchtype === "2") {
-        this.searchfnc(val);
-      }
+      this.$store.state.allsxform.page = val;
+      this.sxqq();
     },
     //表格名称点击
     rownameclick(row) {
@@ -173,25 +223,45 @@ export default {
     close() {
       this.$store.commit("taskhuakuaihidden");
     },
-    // 搜索按钮
-    async mytaskseac() {
-      if (this.mytasksearch === "") {
-        this.$message.warning("请输入内容");
+    // 重置按钮
+    reqest() {
+      this.$store.state.allsxform.sxform.proid = null;
+      this.$store.state.allsxform.sxform.stime = "";
+      this.$store.state.allsxform.sxform.etime = "";
+      this.$store.state.allsxform.sxform.search = "";
+      this.$store.state.allsxform.sxform.userid = null;
+      this.$store.state.allsxform.sxform.state = "";
+      this.$store.state.allsxform.page = 1;
+      this.sxqq();
+    },
+    // 筛选按钮
+    sx() {
+      this.currentPage = 1;
+      this.sxqq();
+    },
+    // 数据和筛选请求
+    async sxqq() {
+      // let data = {};
+      // data.sxform = this.$store.state.allsxform;
+      // data.page = this.currentPage;
+      this.$store.dispatch("loadingAlltask", this.$store.state.allsxform);
+    },
+    // 所有项目列表
+    async projectlist() {
+      const res = await this.$http.get(`projectname/2`);
+      if (res.data.status === 200) {
+        this.projectoptions = res.data.info;
       } else {
-        this.searchtype = "2";
-        this.searchfnc(1);
+        this.$message.error(res.data.msg);
       }
     },
-    // 搜索请求
-    async searchfnc(page) {
-      const res = await this.$http.post(`searchalltask/${page}`, {
-        search: this.mytasksearch
-      });
+    // 所有负责人员列表
+    async peoplelist() {
+      const res = await this.$http.get(`username`);
       if (res.data.status === 200) {
-        this.$store.state.alltask = res.data.tasklist;
-        this.$store.state.alltasktotal = res.data.total_num;
+        this.peopleoptions = res.data.userinfo;
       } else {
-        this.$message.warning(res.data.msg);
+        this.$message.error(res.data.msg);
       }
     }
   },

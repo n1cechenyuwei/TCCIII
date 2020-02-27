@@ -103,7 +103,8 @@
             :data="taskdata"
             class="mytask-content-table-one"
             stripe
-            max-height="640"
+            max-height="580"
+            height="580"
             style="width: 100%">
             <el-table-column
               prop="id"
@@ -151,6 +152,7 @@
               </template>
             </el-table-column>
           </el-table>
+          <el-button style="margin-top: 20px" type="primary" size="small" @click="workdownload">导出工作计划</el-button>
         </el-tab-pane>
         <el-tab-pane label="外委" name="fourth">
           <el-table
@@ -381,11 +383,28 @@ export default {
       } else {
         this.$message.error(res.data.msg);
       }
+    },
+    // 导出工作计划
+    async workdownload() {
+      const res = await this.$http.get(
+        `exportworkplan/${this.$route.params.id}`
+      );
+      if (res.data.status === 200) {
+        let _form = document.createElement("FORM");
+        _form.setAttribute("method", "get");
+        _form.setAttribute("action", res.data.download_path);
+        document.body.appendChild(_form);
+        _form.submit();
+      } else {
+        this.$message.error(res.data.msg);
+      }
     }
   },
   created() {
-    this.comprojectlist();
-    this.procompact();
+    if (this.$route.params.id !== undefined) {
+      this.comprojectlist();
+      this.procompact();
+    }
   },
   components: {
     // Applyfor,
@@ -434,6 +453,7 @@ export default {
 }
 .projectname {
   font-size: 24px;
+  height: 32px;
   font-weight: 700px;
   text-align: center;
 }

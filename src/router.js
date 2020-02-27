@@ -12,6 +12,9 @@ const Tasked = () => import("@/views/tasks/Tasked.vue");
 const Alltask = () => import("@/views/tasks/Alltask.vue");
 const Configuration = () => import("@/views/tasks/Configuration.vue");
 const Grn = () => import("@/views/tasks/Grn.vue");
+const Outprint = () => import("@/views/tasks/outprint.vue");
+const Putprint = () => import("@/views/tasks/putprint.vue");
+const PutBoundOrder = () => import("@/views/tasks/putBoundOrder.vue");
 const TaskStatistical = () => import("@/views/tasks/TaskStatistical.vue");
 const TaskAllot = () => import("@/views/tasks/TaskAllot.vue");
 const Equipment = () => import("@/views/equipment/equipment.vue");
@@ -72,14 +75,18 @@ const Training = () => import("./views/knowledge/training.vue");
 const Vmsdetection = () => import("@/views/display/vmsdetection.vue");
 const Welcome = () => import("@/views/display/welcome.vue");
 const Nodetection = () => import("@/views/display/nodetection.vue");
-const PisStaffInfo = () => import("./views/inforelease/pisStaffInfo.vue");
-const PisTestingProcess = () => import("./views/inforelease/pisTestingProcess.vue");
-const PisTestingProgress = () => import("./views/inforelease/pisTestingProgress.vue");
-const ProjectInfo = () => import("./views/inforelease/projectInfo.vue");
-const PvprojectStatistical = () => import("./views/inforelease/pvprojectStatistical.vue");
-const VmsStaffInfo = () => import("./views/inforelease/vmsStaffInfo.vue");
-const VmsTestingProcess = () => import("./views/inforelease/vmsTestingProcess.vue");
-const VmsTestingProgress = () => import("./views/inforelease/vmsTestingProgress.vue");
+const PisStaffInfo = () => import("@/views/inforelease/pisStaffInfo.vue");
+const PisTestingProcess = () => import("@/views/inforelease/pisTestingProcess.vue");
+const PisTestingProgress = () => import("@/views/inforelease/pisTestingProgress.vue");
+const ProjectInfo = () => import("@/views/inforelease/projectInfo.vue");
+const PvprojectStatistical = () => import("@/views/inforelease/pvprojectStatistical.vue");
+const VmsStaffInfo = () => import("@/views/inforelease/vmsStaffInfo.vue");
+const VmsTestingProcess = () => import("@/views/inforelease/vmsTestingProcess.vue");
+const VmsTestingProgress = () => import("@/views/inforelease/vmsTestingProgress.vue");
+const pisSRF = () => import("@/views/reports/pisSRF.vue");
+const pisSRL = () => import("@/views/reports/pisSRL.vue");
+const vmsSRF = () => import("@/views/reports/vmsSRF.vue");
+const vmsSRL = () => import("@/views/reports/vmsSRL.vue");
 
 Vue.use(Router);
 
@@ -259,6 +266,26 @@ const router = new Router({
               name: "vmsReportsLatestdraft",
               path: "/vmsReportsLatestdraft",
               component: VmsReportsLatestdraft
+            },
+            {
+              name: "pisSRF",
+              path: "/pisSRF",
+              component: pisSRF
+            },
+            {
+              name: "pisSRL",
+              path: "/pisSRL",
+              component: pisSRL
+            },
+            {
+              name: "vmsSRF",
+              path: "/vmsSRF",
+              component: vmsSRF
+            },
+            {
+              name: "vmsSRL",
+              path: "/vmsSRL",
+              component: vmsSRL
             }
           ]
         },
@@ -405,6 +432,21 @@ const router = new Router({
       name: "GRN",
       path: "/GRN",
       component: Grn
+    },
+    {
+      name: "outprint",
+      path: "/outprint",
+      component: Outprint
+    },
+    {
+      name: "putprint",
+      path: "/putprint",
+      component: Putprint
+    },
+    {
+      name: "putBoundOrder",
+      path: "/putBoundOrder",
+      component: PutBoundOrder
     },
     {
       name: "qianming",

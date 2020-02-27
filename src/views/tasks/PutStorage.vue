@@ -3,7 +3,7 @@
     <div>
       <div class="applyfor-top">
         <i id="put-icon" class="iconfont icon-gongsimingcheng"></i>
-        <i class="font">{{taskinfo.taskname}}任务</i>
+        <i class="font task_title">{{taskinfo.taskname}}任务</i>
       </div>
       <div class="statuss">
         <div>
@@ -173,7 +173,7 @@
 <script>
 import { mapState } from "vuex";
 export default {
-  props: ["taskid", "ht"],
+  props: ["taskid", "ht", "page"],
   data() {
     return {
       deviceinfo: {}
@@ -198,14 +198,15 @@ export default {
         .then(async () => {
           const res = await this.$http.put(`putstorage/${this.taskid}`);
           if (res.data.status === 200) {
+            if (this.ht === "mytask") {
+              this.$store.dispatch("loadingMytask", this.$store.state.mysxform);
+            } else if (this.ht === "alltask") {
+              this.$store.dispatch("loadingAlltask", this.$store.state.allsxform);
+            } else {
+              this.$store.dispatch("hometask");
+            }
             this.$message.success("任务提交成功");
             this.$store.commit("taskhuakuaihidden");
-            if (this.ht === "mytask") {
-              this.$store.dispatch("loadingMytask", 1);
-            } else if (this.ht === "alltask") {
-              this.$store.dispatch("loadingAlltask", 1);
-            }
-            this.$store.dispatch("hometask");
           } else {
             this.$message.warning(res.data.msg);
           }
@@ -216,7 +217,7 @@ export default {
     handlerukudan() {
       let routeData = this.$router.resolve({
         name: "GRN",
-        query: { id: this.taskid }
+        query: { id: this.taskinfo.pro_id }
       });
       window.open(routeData.href, "_blank");
     }

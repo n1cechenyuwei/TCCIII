@@ -90,6 +90,13 @@ export default {
         this.levelthreedata.updataname = "proid";
         this.levelthreedata.updataid = row.id;
         this.levelthreedata.btnname = "上传文档";
+      } else if (row.name === "系统检测报告") {
+        this.levelthreedata.geturl = "sysreportlist";
+        this.levelthreedata.upname = "filename";
+        this.levelthreedata.upaction = "uploaddefinalreport";
+        this.levelthreedata.updataname = "taskid";
+        this.levelthreedata.updataid = row.taskid;
+        this.levelthreedata.btnname = "上传系统报告";
       } else {
         this.levelthreedata.geturl = "reportdocs";
         this.levelthreedata.upname = "filename";
@@ -114,6 +121,7 @@ export default {
       const res = await this.$http.get(
         `childrenmenu/${this.levelthreedata.id}/${page}`
       );
+      // console.log(res)
       if (res.data.status === 200) {
         this.projecttotal = res.data.total_num;
         this.projectlist = res.data.menu;

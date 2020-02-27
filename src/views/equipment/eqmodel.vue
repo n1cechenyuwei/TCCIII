@@ -1,24 +1,53 @@
 <template>
   <div>
     <div class="mytask-content-top">
-      <el-dropdown
-        @command="handleCommand"
+      <el-popover
         placement="bottom-start"
-        class="mytask-dropdown">
-        <el-button type="primary" size="small">
-          筛选<i class="el-icon-arrow-down el-icon--right"></i>
-        </el-button>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item command="a">按开始时间(最新)</el-dropdown-item>
-          <el-dropdown-item command="b">按结束时间(最新)</el-dropdown-item>
-          <el-dropdown-item command="c">按任务进度(最新)</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
+        width="220"
+        transition="el-zoom-in-bottom"
+        trigger="click">
+        <div>
+          <div class="sx_li">所属项目名称：</div>
+          <!-- <el-input size="mini" class="sx_li sx_input" v-model="sxform.proname" placeholder="请输入内容"></el-input> -->
+          <el-select v-model="sxform.proname" class="sx_li sx_input" size="small" placeholder="请选择">
+            <el-option
+              v-for="item in projectoptions"
+              :key="item.id"
+              :label="item.name"
+              :value="item.name">
+            </el-option>
+          </el-select>
+          <div class="sx_li">所属受检单位名称：</div>
+          <el-input size="mini" class="sx_li sx_input" v-model="sxform.company" placeholder="请输入内容"></el-input>
+          <div class="sx_li">设备类型：</div>
+          <el-cascader
+            class="sx_li sx_input"
+            size="mini"
+            v-model="eqtypeid"
+            :options="options">
+          </el-cascader>
+          <div class="sx_li">设备出入库状态：</div>
+          <el-select v-model="sxform.state" class="sx_li sx_input" placeholder="请选择" size="mini">
+            <el-option
+              v-for="item in lioptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+          <div class="sx_btn_box">
+            <el-button type="primary" size="mini" @click="reqest">重置</el-button>
+            <el-button type="primary" size="mini" @click="sx">筛选</el-button>
+          </div>
+        </div>
+        <el-button style="margin-left: 20px" slot="reference" type="primary" size="small">筛选<i class="el-icon-arrow-down el-icon--right"></i></el-button>
+      </el-popover>
       <div class="search-box">
         <el-input
           size="small"
           class="mytasksearch"
           placeholder="请输入设备名称"
+          @keyup.enter.native="eqmentsearch"
           v-model="myprojectsearch">
         </el-input>
         <i class="el-icon-search sreach-icon"></i>      
@@ -162,10 +191,10 @@
         <el-form-item label="接受/返还人" prop="receive_or_give">
           <el-input size="small" class="eqvmsinput" v-model="eqvmsform.receive_or_give"></el-input>
         </el-form-item>
-        <el-form-item label="出入库状态" prop="state">
-          <el-select size="mini" class="eqvmsinput" v-model="eqvmsform.state" placeholder="请选择">
-            <el-option label="出库" value="出库"></el-option>
-            <el-option label="入库" value="入库"></el-option>
+        <el-form-item label="借入借出状态" prop="state">
+          <el-select size="small" class="eqvmsinput" v-model="eqvmsform.state" placeholder="请选择">
+            <el-option label="借出" value="借出"></el-option>
+            <el-option label="借入" value="借入"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="操作内容" prop="remarks">
@@ -197,7 +226,7 @@
 
 <script>
 export default {
-  props: ["eqtype"],
+  props: ["eqtype", "sxrequest", "sxshebei"],
   data() {
     return {
       eqmenttype: this.eqtype,
@@ -232,18 +261,42 @@ export default {
         state: [
           { required: true, message: "请选择出入库状态", trigger: "blur" }
         ]
-      }
+      },
+      options: [],
+      eqtypeid: [],
+      sxform: {
+        proname: "",
+        company: "",
+        type: "",
+        state: ""
+      },
+      searchtype: "1",
+      lioptions: [
+        {
+          value: "出库",
+          label: "出库"
+        },
+        {
+          value: "入库",
+          label: "入库"
+        },
+        {
+          value: "待入库",
+          label: "待入库"
+        },
+        {
+          value: "借入",
+          label: "借入"
+        },
+        {
+          value: "借出",
+          label: "借出"
+        }
+      ],
+      projectoptions: []
     };
   },
   methods: {
-    //筛选按钮
-    handleCommand(command) {
-      if (command === "a") {
-        console.log("aaa");
-      } else if (command === "b") {
-        console.log("bbb");
-      }
-    },
     eqcontenthandle() {
       this.$refs.eqvmsform.validate(async valid => {
         if (!valid) {
@@ -257,15 +310,27 @@ export default {
         if (res.data.status === 200) {
           this.eqcontentDialogVisible = false;
           this.$message.success("操作成功");
-          this.pislistdata(this.currentPage);
+          if (this.searchtype === "1") {
+            this.pislistdata(this.currentPage);
+          } else {
+            this.sxqq(this.currentPage);
+          }
         } else {
           this.$message.error(res.data.msg);
         }
       });
     },
+    // 项目列表
+    async getprojectdata() {
+      const res = await this.$http.get(`filterprojects/${this.sxshebei}`);
+      if (res.data.status === 200) {
+        this.projectoptions = res.data.info;
+      } else {
+        this.$message.error("获取项目列表失败");
+      }
+    },
     // 设备操作
     handleeqcaozuo(row) {
-      console.log(row)
       this.eqvmsform.did = row.id;
       this.eqvmsform.eq_name = row.eq_name;
       this.eqvmsform.eq_type = row.eq_type;
@@ -299,7 +364,11 @@ export default {
       }
     },
     handleprojectChange(val) {
-      this.pislistdata(val);
+      if (this.searchtype === "1") {
+        this.pislistdata(val);
+      } else if (this.searchtype === "3") {
+        this.sxqq(val);
+      }
     },
     // 项目跳转
     goproject(projectid, router) {
@@ -331,10 +400,65 @@ export default {
         this.currentPage = 1;
         this.pislistdata(1);
       }
+    },
+    // 重置按钮
+    reqest() {
+      this.sxform.proname = "";
+      this.sxform.company = "";
+      this.eqtypeid = [];
+      this.sxform.state = "";
+      this.searchtype = "1";
+      this.pislistdata(1);
+    },
+    // 筛选按钮
+    sx() {
+      if (
+        this.sxform.proname === "" &&
+        this.sxform.company === "" &&
+        this.sxform.type === [] &&
+        this.sxform.state === ""
+      ) {
+        this.searchtype = "1";
+        this.currentPage = 1;
+        this.pislistdata(this.currentPage);
+      } else {
+        this.searchtype = "3";
+        this.currentPage = 1;
+        this.sxqq(1);
+      }
+    },
+    // 筛选请求
+    async sxqq(page) {
+      if (this.eqtypeid.length > 0) {
+        this.sxform.type = this.eqtypeid[this.eqtypeid.length - 1];
+      } else {
+        this.sxform.type = null;
+      }
+      const res = await this.$http.post(
+        `${this.sxrequest}/${page}`,
+        this.sxform
+      );
+      if (res.data.status === 200) {
+        this.eqpistotal = res.data.total_num;
+        this.eqpislist = res.data.eq_list;
+      } else {
+        this.$message.error(res.data.msg);
+      }
+    },
+    // 请求设备列表
+    async eqlist() {
+      const res = await this.$http.get(`devicetypelist/${this.sxshebei}`);
+      if (res.data.status === 200) {
+        this.options = res.data.detype_info;
+      } else {
+        this.$message.error(res.data.msg);
+      }
     }
   },
   created() {
     this.pislistdata(this.currentPage);
+    this.eqlist();
+    this.getprojectdata();
   },
   watch: {
     myprojectsearch(val) {

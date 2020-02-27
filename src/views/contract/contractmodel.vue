@@ -1,24 +1,54 @@
 <template>
   <div>
     <div class="mytask-content-top">
-      <el-dropdown
-        @command="handleCommand"
+      <el-popover
         placement="bottom-start"
-        class="mytask-dropdown">
-        <el-button type="primary" size="small">
-          筛选<i class="el-icon-arrow-down el-icon--right"></i>
-        </el-button>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item command="a">按开始时间(最新)</el-dropdown-item>
-          <el-dropdown-item command="b">按结束时间(最新)</el-dropdown-item>
-          <el-dropdown-item command="c">按任务进度(最新)</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
+        width="220"
+        transition="el-zoom-in-bottom"
+        trigger="click">
+        <div>
+          <div class="sx_li">合同甲方公司名称：</div>
+          <el-input v-model="sxform.company" class="sx_li sx_input" placeholder="请输入内容" size="mini"></el-input>
+          <div class="sx_li">开始时间(按合同签订时间)：</div>
+          <el-date-picker
+            size="mini"
+            v-model="sxform.stime"
+            class="sx_li sx_input"
+            value-format="yyyy-MM-dd"
+            type="date"
+            placeholder="选择日期">
+          </el-date-picker>
+          <div class="sx_li">截止时间(按合同签订时间)：</div>
+          <el-date-picker
+            size="mini"
+            v-model="sxform.etime"
+            class="sx_li sx_input"
+            value-format="yyyy-MM-dd"
+            type="date"
+            placeholder="选择日期">
+          </el-date-picker>
+          <div class="sx_li">合同签订状态：</div>
+          <el-select v-model="sxform.state" class="sx_li sx_input" placeholder="请选择" size="mini">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+          <div class="sx_btn_box">
+            <el-button type="primary" size="mini" @click="reqest">重置</el-button>
+            <el-button type="primary" size="mini" @click="sx">筛选</el-button>
+          </div>
+        </div>
+        <el-button style="margin-left: 20px" slot="reference" type="primary" size="small">筛选<i class="el-icon-arrow-down el-icon--right"></i></el-button>
+      </el-popover>
       <div class="search-box">
         <el-input
           size="small"
           class="mytasksearch"
           placeholder="请输入合同名称"
+          @keyup.enter.native="contractsearch"
           v-model="myprojectsearch">
         </el-input>
         <i class="el-icon-search sreach-icon"></i>      
@@ -35,7 +65,7 @@
           element-loading-spinner="el-icon-loading"
           element-loading-background="rgba(256, 256, 256, 0.8)"
           stripe
-          max-height="720"
+          max-height="740"
           style="width: 100%">
           <el-table-column type="expand">
             <template slot-scope="scope">
@@ -210,7 +240,7 @@
 
 <script>
 export default {
-  props: ["contractstatus"],
+  props: ["contractstatus", "sxrequest"],
   data() {
     return {
       contracttype: this.contractstatus,
@@ -232,7 +262,28 @@ export default {
       },
       conum: "",
       up_disabled: false,
-      projclick: ""
+      projclick: "",
+      options: [
+        {
+          value: "签订成功",
+          label: "签订成功"
+        },
+        {
+          value: "签订失败",
+          label: "签订失败"
+        },
+        {
+          value: "待签订",
+          label: "待签订"
+        }
+      ],
+      sxform: {
+        state: "",
+        stime: "",
+        etime: "",
+        company: ""
+      },
+      searchtype: "1"
     };
   },
   methods: {
@@ -265,14 +316,6 @@ export default {
     token() {
       const token = sessionStorage.getItem("token");
       this.httpheader.token = token;
-    },
-    //筛选按钮
-    handleCommand(command) {
-      if (command === "a") {
-        console.log("aaa");
-      } else if (command === "b") {
-        console.log("bbb");
-      }
     },
     // 上传成功
     uploadsuccess(response) {
@@ -381,7 +424,7 @@ export default {
         .then(async () => {
           const res = await this.$http.delete(`dropfinalcompact/${id}`);
           if (res.data.status === 200) {
-            this.$message.success("删除合同初稿成功");
+            this.$message.success("删除合同终稿成功");
             this.getdata();
           } else {
             this.$message.error(res.data.msg);
@@ -390,7 +433,11 @@ export default {
         .catch(() => {});
     },
     handleprojectChange(val) {
-      this.contract(val);
+      if (this.searchtype === "1") {
+        this.contract(val);
+      } else if (this.searchtype === "3") {
+        this.sxqq(val);
+      }
     },
     goproject(projectid, router) {
       if (this.projclick === 1) {
@@ -448,6 +495,45 @@ export default {
         this.$router.push({ name: "login" });
         this.$message.error("登陆过期，请重新登录");
       }
+    },
+    // 重置按钮
+    reqest() {
+      this.sxform.state = "";
+      this.sxform.stime = "";
+      this.sxform.etime = "";
+      this.sxform.company = "";
+      this.searchtype = "1";
+      this.sxqq(1);
+    },
+    // 筛选按钮
+    sx() {
+      if (
+        this.sxform.state === "" &&
+        this.sxform.stime === "" &&
+        this.sxform.etime === "" &&
+        this.sxform.company === ""
+      ) {
+        this.searchtype = "1";
+        this.currentPage = 1;
+        this.contract(1);
+      } else {
+        this.searchtype = "3";
+        this.currentPage = 1;
+        this.sxqq(1);
+      }
+    },
+    // 筛选请求
+    async sxqq(page) {
+      const res = await this.$http.post(
+        `${this.sxrequest}/${page}`,
+        this.sxform
+      );
+      if (res.data.status === 200) {
+        this.convmstotal = res.data.total_num;
+        this.convmslist = res.data.pacts_list;
+      } else {
+        this.$message.error(res.data.msg);
+      }
     }
   },
   created() {
@@ -501,7 +587,7 @@ export default {
   color: #409eff;
 }
 .mytask-content-table {
-  height: 720px;
+  height: 740px;
   min-width: 1670px;
 }
 .mytask-content-table-one {

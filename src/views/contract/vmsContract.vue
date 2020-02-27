@@ -1,5 +1,5 @@
 <template>
-  <Contractmodel contractstatus="vmspacts"></Contractmodel>
+  <Contractmodel contractstatus="vmspacts" sxrequest="screenvmscompacts"></Contractmodel>
 </template>
 
 <script>

@@ -72,7 +72,7 @@
             label="服务器SIP"
             :rules="[
               { required: true, message: '请输入服务器SIP', trigger: 'blur' },
-              { max: 10, message: '服务器SIP最长为10个字符', trigger: 'blur' }
+              { max: 13, message: '服务器SIP最长为13个字符', trigger: 'blur' }
             ]"
             prop="server_1_sip">
             <el-input size="small" v-model.trim="workconfigform.server_1_sip"></el-input>
@@ -80,7 +80,7 @@
           <el-form-item
             label="备用服务器SIP"
             :rules="[
-              { max: 10, message: '备用服务器SIP最长为10个字符', trigger: 'blur' }
+              { max: 13, message: '备用服务器SIP最长为13个字符', trigger: 'blur' }
             ]"
             prop="server_2_sip">
             <el-input size="small" v-model.trim="workconfigform.server_2_sip"></el-input>
@@ -89,7 +89,7 @@
             label="设备SIP"
             :rules="[
               { required: true, message: '请输入设备SIP', trigger: 'blur' },
-              { max: 10, message: '设备SIP最长为10个字符', trigger: 'blur' }
+              { max: 13, message: '设备SIP最长为13个字符', trigger: 'blur' }
             ]"
             prop="d_sip_id">
             <el-input size="small" v-model.trim="workconfigform.d_sip_id"></el-input>
@@ -182,7 +182,7 @@
     </el-card>
     <el-card shadow="always" class="workconfigcard-rb">
       <div class="table-title">
-        <span style="margin-right: 510px">工作台软件信息</span>
+        <span style="margin-right: 510px">非仿真软件信息</span>
         <el-button type="success" size="mini" @click="addbenchsoft">选取软件</el-button>
       </div>
       <el-table
@@ -288,7 +288,8 @@ export default {
       this.getconfig(val);
     },
     back() {
-      this.$router.push({ name: "environmentconfig" });
+      this.$router.push({ path: this.$route.params.path });
+      // this.$router.push({ name: "environmentconfig" });
     },
     // 提交配置信息
     config() {
@@ -337,6 +338,7 @@ export default {
             this.getconfig(this.radio);
           } else {
             this.$message.error(res.data.msg);
+            this.$refs.workconfigform.resetFields();
           }
         })
         .catch(() => {});
@@ -611,5 +613,8 @@ export default {
 .casescheckbox {
   width: 460px;
   margin-left: 30px;
+}
+.workconfig-radio .el-radio-button--small .el-radio-button__inner {
+  padding: 9px 10px;
 }
 </style>

@@ -548,3 +548,29 @@ ul, ol {
   margin-left: 30px;
   margin-top: 20px;
 }
+.sx_input {
+  width: 220px !important;
+}
+.sx_li {
+  margin-bottom: 6px !important;
+}
+.sx_btn_box {
+  text-align: center;
+  margin-top: 6px;
+}
+.task_title {
+  width: 870px;
+  overflow: hidden;
+  text-overflow:ellipsis;
+  white-space: nowrap;
+}
+.top_title {
+  color: #606266;
+  margin: 0 10px 0 30px;
+}
+.top_input {
+  width: 150px !important;
+}
+.dib {
+  display: inline-block;
+}

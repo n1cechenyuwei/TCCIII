@@ -220,8 +220,26 @@
       :visible.sync="$store.state.opyyzz"
       @closed="$store.commit('closeyyzz')"
       center
+      title="查看营业执照"
       width="960px">
       <img width="100%" :src="$store.state.license" alt="照片丢失了">
+    </el-dialog>
+    <el-dialog
+      title="修改申请名称"
+      :visible.sync="$store.state.opeditname"
+      width="576px">
+      <el-form ref="editnameform" :model="$store.state.editnameform" label-width="80px">
+        <el-form-item label="申请名称" prop="apply_name" :rules="[
+          { required: true, message: '请输入申请名称', trigger: 'blur' },
+          { max: 44, message: '申请名称长度不能超过 44 个字符', trigger: 'blur'}
+        ]">
+          <el-input size="small" v-model="$store.state.editnameform.apply_name"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button size="small" @click="$store.state.opeditname = false">取 消</el-button>
+        <el-button size="small" type="primary" @click="editapplyname">确 定</el-button>
+      </span>
     </el-dialog>
     <!-- 设备入库任务操作弹出框 -->
     <el-dialog
@@ -293,7 +311,7 @@
       @closed="detectionclose"
       center
       :visible.sync="$store.state.caselogshow"
-      width="960px">
+      width="1400px">
       <div class="baowen">{{$store.state.log.data}}</div>
     </el-dialog>
     <!-- 检测任务照片弹窗 -->
@@ -467,6 +485,24 @@ export default {
     eqoutclose() {
       this.$refs.outfrom.resetFields();
     },
+    // 修改申请名称
+    editapplyname() {
+      this.$refs.editnameform.validate(async valid => {
+        if (!valid) {
+          return this.$message.error("请正确填写信息");
+        }
+        const res = await this.$http.put(
+          `applyname/${this.$store.state.apply_id}`,
+          this.$store.state.editnameform
+        );
+        if (res.data.status === 200) {
+          this.$message.success("修改成功");
+          this.$store.commit("putapply_name");
+        } else {
+          this.$message.error(res.msg);
+        }
+      });
+    },
     // 设备出库提交设备信息
     outsubmit() {
       this.$refs.outfrom.validate(async valid => {
@@ -521,21 +557,80 @@ export default {
     },
     // 报告审核选择用例
     async handleCheckChange() {
-      const checkedKeys = this.$refs.tree.getCheckedKeys();
-      if (checkedKeys.length === 0) {
+      const alllist = this.$refs.tree.getCheckedNodes(false, true);
+      const ckeys = this.$refs.tree.getCheckedNodes(true, true);
+      let fnodes = []; // 包含子节点
+      let fkey = []; // 不包含子节点
+      for (let i = 0; i < alllist.length; i++) {
+        if (alllist[i].case_list) {
+          let fnode = {
+            name: "",
+            case_list: []
+          };
+          fnode.name = alllist[i].name;
+          fnodes.push(alllist[i]);
+          fkey.push(fnode);
+        }
+      }
+      for (let k = 0; k < ckeys.length; k++) {
+        let qqq = 0;
+        for (let q = 0; q < fnodes.length; q++) {
+          let www = 0;
+          for (let w = 0; w < fnodes[q].case_list.length; w++) {
+            if (ckeys[k].id === fnodes[q].case_list[w].id) {
+              for (let e = 0; e < fkey.length; e++) {
+                if (fkey[e].name == fnodes[q].name) {
+                  fkey[e].case_list.push(ckeys[k]);
+                  qqq = 1;
+                  www === 1;
+                  break;
+                }
+              }
+            }
+            if (www === 1) {
+              break;
+            }
+          }
+          if (qqq === 1) {
+            break;
+          }
+        }
+      }
+      if (ckeys.length === 0) {
         this.$message.error("请选择用例");
       } else {
-        let newArr = checkedKeys.filter(item => item != undefined);
-        const res = await this.$http.post(
-          `generatereport/${this.$store.state.devid}`,
-          { caseid_list: newArr }
-        );
-        if (res.data.status === 200) {
-          this.$message.success("报告生成成功");
-          this.$store.state.caselistshow = false;
-          this.$store.dispatch("draft_report", this.$store.state.devid);
+        if (this.$store.state.reporttype === 0) {
+          const res = await this.$http.post(
+            `generatereport`,
+            {
+              caseid_list: fkey,
+              devi_id: this.$store.state.devid,
+              taskid: 0
+            }
+          );
+          if (res.data.status === 200) {
+            this.$message.success("报告生成成功");
+            this.$store.state.caselistshow = false;
+            this.$store.dispatch("draft_report", this.$store.state.devid);
+          } else {
+            this.$message.error(res.data.msg);
+          }  
         } else {
-          this.$message.error(res.data.msg);
+          const res = await this.$http.post(
+            `generatereport`,
+            {
+              caseid_list: fkey,
+              devi_id: 0,
+              taskid: this.$store.state.devid
+            }
+          );
+          if (res.data.status === 200) {
+            this.$message.success("报告生成成功");
+            this.$store.state.caselistshow = false;
+            this.$store.dispatch("draft_report", this.$store.state.devid);
+          } else {
+            this.$message.error(res.data.msg);
+          }  
         }
       }
     },
@@ -649,6 +744,7 @@ export default {
 .baowen {
   height: 400px;
   overflow: auto;
+  white-space: pre-wrap;
 }
 .passinput {
   width: 300px !important;

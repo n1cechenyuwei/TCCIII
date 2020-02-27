@@ -3,7 +3,7 @@
     <div>
       <div class="appcom-top">
         <i id="appfor-icon" class="iconfont icon-gongsimingcheng"></i>
-        <i class="font">{{taskinfo.taskname}}任务</i>
+        <i class="font task_title">{{taskinfo.taskname}}任务</i>
       </div>
       <div class="statuss">
         <div>
@@ -183,13 +183,13 @@
                       <ul class="zhonggaolist-box">
                         <li class="zglist" v-for="(item, index) in $store.state.finalfile" :key="index">
                           <i class="el-icon-document wendangicon"></i>
-                          <span class="zhonggaoname">{{item.name}}</span>
+                          <span class="chugao-name">{{item.name}}</span>
                           <i class="el-icon-circle-check upload-success"></i>
                           <i id="upload-close" class="el-icon-circle-close" @click="handledelete(item)"></i>
                         </li>
                         <li class="zglist" v-if="newfile.name !== ''">
                           <i class="el-icon-document wendangicon"></i>
-                          <span class="zhonggaoname">{{newfile.name}}</span>
+                          <span class="chugao-name">{{newfile.name}}</span>
                           <span class="jindutiao">{{newfile.progress}}%</span>
                           <el-progress v-if="newfile.progress !== 0" :show-text="false" :percentage="newfile.progress" class="zgprogress" :stroke-width="3" color="#409eff"></el-progress>
                         </li>
@@ -232,7 +232,7 @@
 <script>
 import { mapState } from "vuex";
 export default {
-  props: ["taskid", "ht"],
+  props: ["taskid", "ht", "page"],
   data() {
     return {
       hetongradio: "",
@@ -297,10 +297,15 @@ export default {
                 }
               );
               if (res.data.status === 200) {
-                this.$message.success("任务提交成功");
                 this.$store.commit("taskhuakuaihidden");
-                this.$store.dispatch("loadingMytask", 1);
-                this.$store.dispatch("hometask");
+                this.$message.success("任务提交成功");
+                if (this.ht === "mytask") {
+                  this.$store.dispatch("loadingMytask", this.$store.state.mysxform);
+                } else if (this.ht === "alltask") {
+                  this.$store.dispatch("loadingAlltask", this.$store.state.allsxform);
+                } else {
+                  this.$store.dispatch("hometask");
+                }
                 this.hetongradio = "";
                 this.$refs.formhetong.resetFields();
               } else {
@@ -328,16 +333,17 @@ export default {
                 }
               );
               if (res.data.status === 200) {
+                this.$store.commit("taskhuakuaihidden");
                 this.$message.success("任务提交成功");
+                if (this.ht === "mytask") {
+                  this.$store.dispatch("loadingMytask", this.page);
+                } else if (this.ht === "alltask") {
+                  this.$store.dispatch("loadingAlltask", this.page);
+                } else {
+                  this.$store.dispatch("hometask");
+                }
                 this.hetongradio = "";
                 this.$refs.formhetong.resetFields();
-                if (this.ht === "mytask") {
-                  this.$store.dispatch("loadingMytask", 1);
-                } else if (this.ht === "alltask") {
-                  this.$store.dispatch("loadingAlltask", 1);
-                }
-                this.$store.commit("taskhuakuaihidden");
-                this.$store.dispatch("hometask");
               } else {
                 this.$message.error(res.data.meg);
               }
@@ -670,12 +676,20 @@ export default {
   height: 25px;
   line-height: 25px;
   margin-top: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .chugao-list:hover {
   background-color: #f5f7fa;
 }
 .chugao-name {
   vertical-align: middle;
+  display: inline-block;
+  max-width: 450px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 14px;
   color: #606266;
   margin-left: 5px;

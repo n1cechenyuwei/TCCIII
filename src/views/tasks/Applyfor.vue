@@ -3,7 +3,7 @@
     <div>
       <div class="applyfor-top">
         <i id="appfor-icon" class="iconfont icon-gongsimingcheng"></i>
-        <i class="font">{{appfordata.taskname}}</i>
+        <i class="font task_title">{{appfordata.taskname}}</i>
       </div>
       <div class="statuss">
         <div>
@@ -92,13 +92,20 @@
           </div>
         </div>
         <div class="applyfor-information-box"> 
-          <div class="information-box3">
-            <span>设备信息：</span>
-            <el-button size="small" type="primary" class="informationBtn" @click="$store.dispatch('applyEquipment', appforcompany.apply_id)">查看详情</el-button>
+          <div class="information-box99">
+            <span>申请名称：</span>
+            <span class="information-box-font">{{appforcompany.apply_name}}</span>
           </div>
+          <el-button size="mini" icon="el-icon-edit" @click="edit_mingcheng(appforcompany.apply_name, appforcompany.apply_id)" class="mingcheng_edit" type="primary"></el-button>
           <div class="information-box2">
             <span>审批状态：</span>
             <span class="information-box-font">{{appforcompany.approve_state}}</span>
+          </div>
+        </div>
+        <div class="applyfor-information-box"> 
+          <div class="information-box3">
+            <span>设备信息：</span>
+            <el-button size="small" type="primary" class="informationBtn" @click="$store.dispatch('applyEquipment', appforcompany.apply_id)">查看详情</el-button>
           </div>
         </div>
         <div class="lose" v-if="appforcompany.approve_state === '不通过'">
@@ -136,7 +143,7 @@
 <script>
 import { mapState } from "vuex";
 export default {
-  props: ["taskid", "ht"],
+  props: ["taskid", "ht", "page"],
   data() {
     return {
       tasksechedule: 0, //任务进度绑定值
@@ -176,11 +183,12 @@ export default {
               this.$message.success("任务提交成功");
               this.$store.commit("taskhuakuaihidden");
               if (this.ht === "mytask") {
-                this.$store.dispatch("loadingMytask", 1);
+                this.$store.dispatch("loadingMytask", this.$store.state.mysxform);
               } else if (this.ht === "alltask") {
-                this.$store.dispatch("loadingAlltask", 1);
+                this.$store.dispatch("loadingAlltask", this.$store.state.allsxform);
+              } else {
+                this.$store.dispatch("hometask");
               }
-              this.$store.dispatch("hometask");
               this.radio = "";
               this.$refs.formInline.resetFields();
             } else {
@@ -206,17 +214,17 @@ export default {
                 remarks: this.formInline.why
               });
               if (res.data.status === 200) {
+                this.$store.commit("taskhuakuaihidden");
                 this.$store.commit("tasksubmitloadinghidden");
                 this.$message.success("任务提交成功");
-                this.$store.commit("taskhuakuaihidden");
                 if (this.ht === "mytask") {
-                  this.$store.dispatch("loadingMytask", 1);
-                } else {
-                  this.$store.dispatch("loadingAlltask", 1);
+                  this.$store.dispatch("loadingMytask", this.page);
+                } else if (this.ht === "alltask") {
+                  this.$store.dispatch("loadingAlltask", this.page);
                 }
-                this.$store.dispatch("loadingMytask", 1);
                 this.$store.dispatch("hometask");
-                this.$store.dispatch("loadingAlltask", 1);
+                this.radio = "";
+                this.$refs.formInline.resetFields();
               } else {
                 this.$store.commit("tasksubmitloadinghidden");
                 this.$message.error(res.data.msg);
@@ -225,6 +233,13 @@ export default {
             .catch(() => {});
         });
       }
+    },
+    // 点击修改申请名称按钮
+    edit_mingcheng(name, id) {
+      const data = {};
+      data.name = name;
+      data.id = id;
+      this.$store.commit("handlename", data);
     },
     // 任务进度改变
     handletasksechedule() {
@@ -289,6 +304,19 @@ export default {
   color: #7e8b8e;
   font-size: 18px;
 }
+.information-box99 {
+  display: inline-block;
+  height: 32px;
+  line-height: 32px;
+  min-width: 300px;
+  max-width: 400px;
+  border-bottom: 1px dashed #cacaca;
+  color: #7e8b8e;
+  font-size: 18px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .information-box2 {
   position: absolute;
   color: #7e8b8e;
@@ -343,5 +371,16 @@ export default {
 }
 .titl {
   color: #7e8b8e;
+}
+.task_title {
+  width: 870px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mingcheng_edit {
+  position: relative;
+  top: -10px;
+  margin-left: 10px;
 }
 </style>

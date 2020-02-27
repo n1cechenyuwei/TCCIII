@@ -34,11 +34,12 @@
           </template>
         </el-table-column>
         <el-table-column
-          width="200"
+          width="230"
           label="操作">
           <template slot-scope="scope">
             <el-button type="primary" size="mini" icon="el-icon-edit" @click="permissionsEdit(scope.row.id)"></el-button>
             <el-button size="mini" type="danger" icon="el-icon-delete" @click="handleDelete(scope.row.id)"></el-button>
+            <el-button size="mini" type="primary" @click="openweb(scope.row.room_num, scope.row.istestroom)">打开网页</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -51,7 +52,17 @@
       @close="creatroleclose"
       center>
       <div style="margin: 0 auto">
-        <el-form label-position="right" label-width="110px" ref="waterform" :model="waterform" :rules="waterformrules">
+        <el-form label-position="right" style="text-align: left" label-width="110px" ref="waterform" :model="waterform" :rules="waterformrules">
+          <el-form-item label="房间类型" prop="istestroom">
+            <el-select v-model="waterform.istestroom" placeholder="请选择" style="width: 340px" size="small">
+              <el-option
+                v-for="item in room_options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
           <el-form-item label="房间号" prop="room_num">
             <el-input style="width: 340px" size="small" v-model.trim="waterform.room_num"></el-input>
           </el-form-item>
@@ -86,7 +97,21 @@
       width="600px"
       @close="checkrolesclose"
       center>
-      <el-form label-position="right" label-width="110px" ref="editwaterform" :model="editwaterform">
+      <el-form label-position="right" style="text-align: left" label-width="110px" ref="editwaterform" :model="editwaterform">
+        <el-form-item label="房间类型" prop="istestroom"
+          :rules="[
+            { required: true, message: '请选择房间类型', trigger: 'blur' }
+          ]"
+          >
+          <el-select v-model="editwaterform.istestroom" placeholder="请选择" style="width: 340px" size="small">
+            <el-option
+              v-for="item in room_options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item
           label="房间号"
           :rules="[
@@ -147,8 +172,19 @@ export default {
         room_num: "",
         room_name: "",
         duty_person: [],
-        projects: []
+        projects: [],
+        istestroom: ""
       },
+      room_options: [
+        {
+          value: 0,
+          label: "非检测实验室"
+        },
+        {
+          value: 1,
+          label: "检测实验室"
+        }
+      ],
       waterformrules: {
         room_num: [
           { required: true, message: "请输入房间号", trigger: "blur" },
@@ -160,6 +196,9 @@ export default {
         ],
         duty_person: [
           { required: true, message: "请选择负责人", trigger: "blur" }
+        ],
+        istestroom: [
+          { required: true, message: "请选择房间类型", trigger: "blur" }
         ]
       },
       editwaterform: {
@@ -167,7 +206,8 @@ export default {
         room_num: "",
         room_name: "",
         duty_person: [],
-        projects: []
+        projects: [],
+        istestroom: ""
       }
     };
   },
@@ -177,6 +217,25 @@ export default {
     },
     checkrolesclose() {
       this.$refs.editwaterform.resetFields();
+    },
+    // 打开网页
+    openweb(homeid, room_type) {
+      if (room_type === 0) {
+        let routeData = this.$router.resolve({
+          name: "nodetection"
+        });
+        window.open(routeData.href + "?" + homeid, "_blank");
+      } else if (room_type === 1) {
+        let routeData = this.$router.resolve({
+          name: "vmsdetection"
+        });
+        window.open(routeData.href + "?" + homeid, "_blank");
+      } else if (room_type === 2) {
+        let routeData = this.$router.resolve({
+          name: "welcome"
+        });
+        window.open(routeData.href, "_blank");
+      }
     },
     creatwaterinfo() {
       this.$refs.waterform.validate(async valid => {
@@ -199,6 +258,7 @@ export default {
         this.permissionsVisible = true;
         this.editwaterform.id = res.data.signs.id;
         this.editwaterform.duty_person = res.data.signs.duty_person;
+        this.editwaterform.istestroom = res.data.signs.istestroom;
         if (res.data.signs.projects === null) {
           this.editwaterform.projects = [];
         } else {

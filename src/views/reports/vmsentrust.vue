@@ -1,5 +1,5 @@
 <template>
-  <Uploadmodel alldata="vmsentrustreports" load="entrustlocalsearch" uploadurl="dereport"></Uploadmodel>
+  <Uploadmodel alldata="vmsentrustreports" load="entrustlocalsearch" uploadurl="dereport" sxrequest="screenvmsentrustreport"></Uploadmodel>
 </template>
 
 <script>

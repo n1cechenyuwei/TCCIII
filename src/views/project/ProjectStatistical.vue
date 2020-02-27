@@ -168,6 +168,12 @@ export default {
         .coord()
         .transpose()
         .scale(1, -1);
+      this.chartThree1.tooltip({
+        showTitle: true,
+        "g2-tooltip-list-item": {
+          "text-align": "left"
+        }
+      });
       this.chartThree1
         .interval()
         .position("label*value")
@@ -202,9 +208,9 @@ export default {
       data = dv.rows;
       this.chartone = new G2.Chart({
         container: "chartFour1", // 指定图表容器 ID
-        width: 1550, // 指定图表宽度
-        height: 300, // 指定图表高度
-        padding: [0, 180, 30, 220]
+        width: 1600, // 指定图表宽度
+        height: 320, // 指定图表高度
+        padding: [0, 180, 50, 220]
       });
       this.chartone.source(data, {
         range: {

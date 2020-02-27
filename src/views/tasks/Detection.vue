@@ -2,7 +2,7 @@
   <div class="height-auto">
     <div class="applyfor-top">
       <i id="detection-icon" class="iconfont icon-gongsimingcheng"></i>
-      <i class="font">{{taskinfo.taskname}}任务</i>
+      <i class="font task_title">{{taskinfo.taskname}}任务</i>
     </div>
     <div class="detection-jibenxinxi">
       <div>
@@ -107,14 +107,14 @@
                 <el-button v-if="!disable" type="warning" size="mini" icon="el-icon-delete" class="list-icon-delete" @click="deletecaseimg(item.id, scope.row.id)"></el-button>
               </div>
             </div>
-            <div class="detec-expand-rizhi">建议</div>
+            <div class="detec-expand-rizhi">评论</div>
             <div class="expand-rizhi-list">
               <div v-show="scope.row.accessory_info.casecomment_info.length === 0" class="expand-rizhi-listone">无</div>
               <div v-for="(item, index) in scope.row.accessory_info.casecomment_info" :key="index" :class="{'expand-jianyi-listone': index % 2 === 0, 'expand-jianyi-listtwo': index % 2 !== 0, 'hov': isok}">
                 <i class="el-icon-d-arrow-right jianyi-list-icon"></i>
                 <div class="jianyi-list-name">{{item.author}}：</div>
                 <div class="jianyi-list-content">{{item.content}}</div>
-                <div class="jianyi-time">{{item.comment_time}} 发表</div>
+                <div class="jianyi-time">{{item.comment_time}} 发表 <el-button style="margin-left: 20px" type="text" @click="deletepl(item.id, scope.row.id)">删除</el-button></div>
               </div>
               <div class="jianyi-box">
                 <el-form :model="textForm" status-icon :rules="textFormrules" ref="textForm">
@@ -159,6 +159,7 @@
           <template slot-scope="scope">
             <span v-if="scope.row.test_result === 1" class="tongguo">通过</span>
             <span v-if="scope.row.test_result === 2" class="butongguo">不通过</span>
+            <span v-if="scope.row.test_result === 3" class="bushiyong">不适用</span>
             <span v-if="scope.row.test_result === 0">待检测</span>
           </template>
         </el-table-column>
@@ -190,6 +191,7 @@
           <el-button size="small" type="primary" :disabled="dis" v-if="!disable">启动工具</el-button>
         </a>
         <el-button v-if="!disable" size="small" type="primary" @click="eqconfigsubmit">提交任务</el-button>
+        <el-button style="margin-left: 160px" size="small" type="primary" @click="jcdownload">导出检测结果</el-button>
       </div>
     </div>
   </div>
@@ -198,23 +200,23 @@
 <script>
 import { mapState } from "vuex";
 export default {
-  props: ["taskid", "ht"],
+  props: ["taskid", "ht", "page"],
   data() {
     return {
       isok: true,
       textarea3: "", // 输入框输入内容
       starttoolsoptions: [
         {
-          label: "vms检测工具",
+          label: "VMS检测工具",
           value: "vmsprotocol://TaskId="
+        },
+        {
+          label: "VMS检测报告",
+          value: "testreporttool://TaskId="
         },
         {
           label: "PIS检测工具",
           value: "pisprotocol://TaskId="
-        },
-        {
-          label: "检测报告工具",
-          value: "testreporttool://TaskId="
         }
       ],
       textForm: {
@@ -244,14 +246,15 @@ export default {
           } else {
             const res = await this.$http.put(`detection/${this.taskid}`);
             if (res.data.status === 200) {
-              this.$message.success("提交成功");
               if (this.ht === "mytask") {
-                this.$store.dispatch("loadingMytask", 1);
+                this.$store.dispatch("loadingMytask", this.$store.state.mysxform);
               } else if (this.ht === "alltask") {
-                this.$store.dispatch("loadingAlltask", 1);
+                this.$store.dispatch("loadingAlltask", this.$store.state.allsxform);
+              } else {
+                this.$store.dispatch("hometask");
               }
               this.$store.commit("taskhuakuaihidden");
-              this.$store.dispatch("hometask");
+              this.$message.success("提交成功");
             } else {
               this.$message.error(res.data.msg);
             }
@@ -337,7 +340,7 @@ export default {
         .then(async () => {
           const res = await this.$http.delete(`video/${id}`);
           if (res.data.status === 200) {
-            this.$message.success("照片删除成功");
+            this.$message.success("视频删除成功");
             this.$store.dispatch("casevideolist", rowid);
           } else {
             this.$message.error(res.data.msg);
@@ -348,6 +351,36 @@ export default {
     // 点击用例视频按钮
     opencasevideo(video) {
       this.$store.commit("handlecasevideoopen", video);
+    },
+    async jcdownload() {
+      const res = await this.$http.get(`exportresult/${this.taskid}`);
+      if (res.data.status === 200) {
+        let _form = document.createElement("FORM");
+        _form.setAttribute("method", "get");
+        _form.setAttribute("action", res.data.download_path);
+        document.body.appendChild(_form);
+        _form.submit();
+      } else {
+        this.$message.error(res.data.msg);
+      }
+    },
+    // 删除评论
+    deletepl(id, rowid) {
+      this.$confirm("确定删除该评论吗", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(async () => {
+          const res = await this.$http.delete(`comment/${id}`);
+          if (res.data.status === 200) {
+            this.$message.success("评论删除成功");
+            this.$store.dispatch("handlecasecomment", rowid);
+          } else {
+            this.$message.error(res.data.msg);
+          }
+        })
+        .catch(() => {});
     }
   },
   computed: mapState({

@@ -21,17 +21,17 @@
       <el-carousel
         arrow="never"
         height="300px"
-        :interval="3000"
+        :interval="10000"
         v-show="taskor === 1"
         indicator-position="none">
         <el-carousel-item class="aaaaaaa" v-for="(proli, index) in projects" :key="index">
           <div class="sp_task_box" v-for="(li, index2) in proli" :key="index2">
-            <div class="task_line">{{li.company}}</div>
+            <!-- <div class="task_line">{{li.company}}</div> -->
             <div class="task_line">{{li.proname}}</div>
           </div>
         </el-carousel-item>
       </el-carousel>
-      <div v-show="taskor === 0">无任务</div>
+      <div v-show="taskor === 0" class="nopro">当前无任务</div>
     </div>
   </div>
 </template>
@@ -42,7 +42,8 @@ export default {
     return {
       roomdata: "",
       projects: [],
-      taskor: 0
+      taskor: 0,
+      timer: ""
     };
   },
   methods: {
@@ -71,6 +72,9 @@ export default {
         this.$message.error("请在网址vmsdetection后输入'?' + '房间名'");
       }
     }
+  },
+  mounted() {
+    this.timer = setInterval(this.route, 1800000);
   },
   created() {
     this.route();
@@ -143,14 +147,23 @@ export default {
 }
 .task_line {
   display: inline-block;
-  width: 860px;
+  width: 1768px;
   text-align: left;
   padding-left: 20px;
   margin: 0px 10px 0 10px;
   background-color: rgba(38, 54, 180, 0.8);
   border: 1px solid #fff;
+  overflow: hidden;
+  height: 78px;
+  text-overflow: ellipsis;
+  white-space: nowrap; 
 }
 .aaaaaaa {
   text-align: center;
+}
+.nopro {
+  color: #fff;
+  font-size: 46px;
+  margin: 40px 0 0 100px;
 }
 </style>

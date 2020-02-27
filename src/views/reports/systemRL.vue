@@ -1,34 +1,26 @@
 <template>
   <div>
     <div class="mytask-content-top">
-      <el-popover
-        placement="bottom-start"
-        width="220"
-        transition="el-zoom-in-bottom"
-        trigger="click">
-        <div>
-          <div class="sx_li">所属项目名称：</div>
-          <el-input v-model="sxform.proname" class="sx_li sx_input" placeholder="请输入内容" size="mini"></el-input>
-          <div class="sx_li">所属受检单位名称：</div>
-          <el-input v-model="sxform.company" class="sx_li sx_input" placeholder="请输入内容" size="mini"></el-input>
-          <div class="sx_btn_box">
-            <el-button type="primary" size="mini" @click="reqest">重置</el-button>
-            <el-button type="primary" size="mini" @click="sx">筛选</el-button>
-          </div>
-        </div>
-        <el-button style="margin-left: 20px" slot="reference" type="primary" size="small">筛选<i class="el-icon-arrow-down el-icon--right"></i></el-button>
-      </el-popover>
-      <div class="search-box">
+      <div style="padding-top: 10px">
+        <span class="top_title">项目名称</span>
         <el-input
           size="small"
-          class="mytasksearch"
-          placeholder="请输入设备名称"
-          @keyup.enter.native="reportssearch"
-          v-model="myprojectsearch">
+          style="width: 200px"
+          placeholder="请输入项目名称"
+          @keyup.enter.native="reports(1)"
+          v-model="projectsearch">
         </el-input>
-        <i class="el-icon-search sreach-icon"></i>      
-      </div>     
-      <el-button type="primary" size="mini" @click="reportssearch">搜索</el-button>
+        <span class="top_title" style="margin-left: 100px">受检单位名称</span>
+        <el-input
+          size="small"
+          style="width: 200px; margin-right: 50px"
+          placeholder="请输入项目名称"
+          @keyup.enter.native="reports(1)"
+          v-model="dwsearch">
+        </el-input>
+        <el-button type="primary" size="mini" @click="reports(1)">搜索</el-button>
+        <el-button type="primary" size="mini" @click="requestrearch">重置</el-button>
+      </div>
     </div>
     <div class="mytask-content-middle">
       <div class="mytask-content-table">
@@ -66,7 +58,7 @@
                       <a :href="scoperow.row.download_url" :download="scoperow.row.download_url">
                         <el-button size="mini" type="primary" icon="el-icon-download"></el-button>
                       </a>
-                      <el-button @click="reportdelete(scoperow.row.id, scope.row.device_id)" style="margin: 0 0 0 6px;" size="mini" type="danger" icon="el-icon-delete"></el-button>
+                      <el-button @click="reportdelete(scoperow.row.id, scope.row.proid)" style="margin: 0 0 0 6px;" size="mini" type="danger" icon="el-icon-delete"></el-button>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -78,11 +70,6 @@
             align="center"
             label="序号"
             width="80">
-          </el-table-column>
-          <el-table-column
-            prop="device_name"
-            show-overflow-tooltip
-            label="设备名称">
           </el-table-column>
           <el-table-column
             show-overflow-tooltip
@@ -113,9 +100,9 @@
                 :headers="httpheader"
                 :http-request="uploador"
                 :on-error="uploaderror"
-                :data="{ did: scope.row.device_id }"
+                :data="{ taskid: scope.row.taskid, did: 0 }"
                 :multiple="false">
-                <el-button @click="uploadbtn(scope.row.device_id)" size="mini" type="primary">上传报告</el-button>
+                <el-button @click="uploadbtn(scope.row.taskid, scope.row.proid)" size="mini" type="primary">上传报告</el-button>
               </el-upload>
             </template>
           </el-table-column>
@@ -152,11 +139,9 @@ export default {
       devid: "", // 设备id
       up_disabled: false,
       projclick: "",
-      sxform: {
-        proname: "",
-        company: ""
-      },
-      searchtype: "1"
+      projectsearch: "",
+      dwsearch: "",
+      proid: ""
     };
   },
   methods: {
@@ -173,6 +158,7 @@ export default {
           let formData = new FormData();
           formData.append("filename", _file);
           formData.append("did", params.data.did);
+          formData.append("taskid", params.data.taskid);
           const res2 = await this.$http.post(
             `${this.reportsuploadurl}`,
             formData
@@ -194,7 +180,8 @@ export default {
     },
     async reports(page) {
       const res = await this.$http.post(`${this.reprotsalldata}/${page}`, {
-        search: this.myprojectsearch
+        proname: this.projectsearch,
+        company: this.dwsearch
       });
       if (res.data.status === 200) {
         this.eqpistotal = res.data.total_num;
@@ -203,6 +190,12 @@ export default {
         this.$message.error(res.data.msg);
       }
     },
+    // 重置按钮
+    requestrearch() {
+      this.projectsearch = "";
+      this.dwsearch = "";
+      this.reports(1);
+    },
     handleprojectChange(val) {
       if (this.searchtype === "1") {
         this.reports(val);
@@ -210,8 +203,9 @@ export default {
         this.sxqq(val);
       }
     },
-    uploadbtn(devid) {
-      this.devid = devid;
+    uploadbtn(taskid, proid) {
+      this.devid = taskid;
+      this.proid = proid;
     },
     uploaderror() {
       this.$message.error("上传失败");
@@ -243,8 +237,8 @@ export default {
       }
     },
     // 终稿删除
-    reportdelete(id, devid) {
-      this.devid = devid;
+    reportdelete(id, proid) {
+      this.proid = proid;
       this.$confirm(`确定删除该报告吗`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -263,10 +257,10 @@ export default {
     },
     // 局部刷新
     async updata() {
-      const res = await this.$http.get(`${this.reportsload}/${this.devid}`);
+      const res = await this.$http.get(`${this.reportsload}/${this.proid}`);
       if (res.data.status === 200) {
         this.eqpislist.forEach(obj => {
-          if (obj.device_id === this.devid) {
+          if (obj.proid === this.proid) {
             obj.report_info = res.data.reports_list;
           }
         });
@@ -302,38 +296,6 @@ export default {
       } else {
         this.$router.push({ name: "login" });
         this.$message.error("登陆过期，请重新登录");
-      }
-    },
-    // 重置按钮
-    reqest() {
-      this.sxform.proname = "";
-      this.sxform.company = "";
-      this.searchtype = "1";
-      this.sxqq(1);
-    },
-    // 筛选按钮
-    sx() {
-      if (this.sxform.proname === "" && this.sxform.company === "") {
-        this.searchtype = "1";
-        this.currentPage = 1;
-        this.reports(1);
-      } else {
-        this.searchtype = "3";
-        this.currentPage = 1;
-        this.sxqq(1);
-      }
-    },
-    // 筛选请求
-    async sxqq(page) {
-      const res = await this.$http.post(
-        `${this.sxrequest}/${page}`,
-        this.sxform
-      );
-      if (res.data.status === 200) {
-        this.eqpistotal = res.data.total_num;
-        this.eqpislist = res.data.report_list;
-      } else {
-        this.$message.error(res.data.msg);
       }
     }
   },

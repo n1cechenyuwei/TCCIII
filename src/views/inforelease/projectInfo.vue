@@ -1,10 +1,10 @@
 <template>
   <div class="dp">
-    <div class="pvptop">项目信息简介</div>
+    <div class="pvptop">年度项目信息简介</div>
     <div style="display: flex">
       <div style="margin:  0 0 0 70px;">
         <div class="table_top">VMS项目</div>
-        <el-carousel height="760px" style="width: 860px;" :interval="3000" indicator-position="none">
+        <el-carousel height="760px" style="width: 860px;" :interval="10000" indicator-position="none" @change="vmschange">
           <el-carousel-item v-for="(item, index) in vmsdata" :label="index + 1" :key="index">
             <div class="PItable">
               <div class="pjh_box">
@@ -47,7 +47,7 @@
       </div>
       <div style="margin:  0 0 0 60px;">
         <div class="table_top">PIS项目</div>
-        <el-carousel height="760px" style="width: 860px;" :interval="3000" indicator-position="none">
+        <el-carousel height="760px" style="width: 860px;" :interval="10000" indicator-position="none" @change="pischange">
           <el-carousel-item v-for="(item, index) in pisdata" :label="index + 1" :key="index">
             <div class="PItable pis">
               <div class="pjh_box pis">
@@ -94,13 +94,17 @@
 </template>
 
 <script>
-import G2 from "@antv/g2";
+// import G2 from "@antv/g2";
 export default {
   data() {
     return {
       vmsdata: [],
-      pisdata: []
-    }
+      pisdata: [],
+      vmstimer: null,
+      pistimer: null,
+      vmstimer2: null,
+      pistimer2: null
+    };
   },
   methods: {
     async vmsproinfo() {
@@ -118,13 +122,41 @@ export default {
       } else {
         this.$message.error(res.data.msg);
       }
+    },
+    vmschange(index) {
+      if (this.vmsdata.length === 1) {
+        this.vmstimer2 = setInterval(() => {
+          this.vmsproinfo();
+        }, 10000);
+      } else {
+        if (index + 1 === this.vmsdata.length) {
+          this.vmstimer = setTimeout(this.vmsproinfo, 10000);
+        }
+      }
+    },
+    pischange(index) {
+      if (this.pisdata.length === 1) {
+        this.pistimer2 = setInterval(() => {
+          this.pisproinfo();
+        }, 10000);
+      } else {
+        if (index + 1 === this.pisdata.length) {
+          this.pistimer = setTimeout(this.pisproinfo, 10000);
+        }
+      }
     }
   },
   mounted() {
     this.vmsproinfo();
     this.pisproinfo();
+  },
+  beforeDestroy() {
+    clearTimeout(this.vmstimer);
+    clearTimeout(this.pistimer);
+    clearInterval(this.vmstimer2);
+    clearInterval(this.pistimer2);
   }
-}
+};
 </script>
 
 <style>
@@ -143,7 +175,7 @@ export default {
 .table_top {
   color: #fff;
   font-size: 30px;
-  margin:  0 0 10px 0;
+  margin: 0 0 10px 0;
 }
 .PItable {
   width: 860px;

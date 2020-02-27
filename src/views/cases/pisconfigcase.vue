@@ -1,5 +1,5 @@
 <template>
-  <Caseconfigmodel caseconfig="pistasktype" getcaseall="getpiscase"></Caseconfigmodel>
+  <Caseconfigmodel caseconfig="pistasktype" getcaseall="getpiscase" timetype="pis"></Caseconfigmodel>
 </template>
 
 <script>

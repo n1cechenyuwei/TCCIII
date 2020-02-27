@@ -1,5 +1,5 @@
 <template>
-  <Contractmodel contractstatus="pispacts"></Contractmodel>
+  <Contractmodel contractstatus="pispacts" sxrequest="screenpiscompacts"></Contractmodel>
 </template>
 
 <script>

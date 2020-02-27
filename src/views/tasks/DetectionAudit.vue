@@ -2,7 +2,7 @@
   <div class="height-auto">
     <div class="applyfor-top">
       <i id="detection-icon" class="iconfont icon-gongsimingcheng"></i>
-      <i class="font">{{taskinfo.taskname}}任务</i>
+      <i class="font task_title">{{taskinfo.taskname}}任务</i>
     </div>
     <div class="detection-jibenxinxi">
       <div>
@@ -107,14 +107,14 @@
                 <!-- <el-button type="warning" size="mini" icon="el-icon-delete" class="list-icon-delete" @click="deletecaseimg(item.id, scope.row.id)"></el-button> -->
               </div>
             </div>
-            <div class="detec-expand-rizhi">建议</div>
+            <div class="detec-expand-rizhi">评论</div>
             <div class="expand-rizhi-list">
               <div v-show="scope.row.accessory_info.casecomment_info.length === 0" class="expand-rizhi-listone">无</div>
               <div v-for="(item, index) in scope.row.accessory_info.casecomment_info" :key="index" :class="{'expand-jianyi-listone': index % 2 === 0, 'expand-jianyi-listtwo': index % 2 !== 0, 'hov': isok}">
                 <i class="el-icon-d-arrow-right jianyi-list-icon"></i>
                 <div class="jianyi-list-name">{{item.author}}：</div>
                 <div class="jianyi-list-content">{{item.content}}</div>
-                <div class="jianyi-time">{{item.comment_time}} 发表</div>
+                <div class="jianyi-time">{{item.comment_time}} 发表 <el-button style="margin-left: 20px" type="text" @click="deletepl(item.id, scope.row.id)">删除</el-button></div>
               </div>
               <div class="jianyi-box">
                 <el-form :model="textForm" status-icon :rules="textFormrules" ref="textForm">
@@ -159,6 +159,7 @@
           <template slot-scope="scope">
             <span v-if="scope.row.test_result === 1" class="tongguo">通过</span>
             <span v-if="scope.row.test_result === 2" class="butongguo">不通过</span>
+            <span v-if="scope.row.test_result === 3" class="bushiyong">不适用</span>
             <span v-if="scope.row.test_result === 0">待审核</span>
           </template>
         </el-table-column>
@@ -194,7 +195,7 @@
 <script>
 import { mapState } from "vuex";
 export default {
-  props: ["taskid", "ht"],
+  props: ["taskid", "ht", "page"],
   data() {
     return {
       isok: true,
@@ -232,18 +233,19 @@ export default {
             }
           });
           if (this.$store.state.decissubmitok === false) {
-            this.$message.warning("请审核完完全部用例后再提交任务");
+            this.$message.warning("请审核完全部用例后再提交任务");
           } else {
             const res = await this.$http.put(`detectionaudit/${this.taskid}`);
             if (res.data.status === 200) {
-              this.$message.success("提交成功");
               if (this.ht === "mytask") {
-                this.$store.dispatch("loadingMytask", 1);
+                this.$store.dispatch("loadingMytask", this.$store.state.mysxform);
               } else if (this.ht === "alltask") {
-                this.$store.dispatch("loadingAlltask", 1);
+                this.$store.dispatch("loadingAlltask", this.$store.state.allsxform);
+              } else {
+                this.$store.dispatch("hometask");
               }
               this.$store.commit("taskhuakuaihidden");
-              this.$store.dispatch("hometask");
+              this.$message.success("提交成功");
             } else {
               this.$message.error(res.data.msg);
             }
@@ -348,6 +350,24 @@ export default {
     // 点击用例视频按钮
     opencasevideo(video) {
       this.$store.commit("handlecasevideoopen", video);
+    },
+    // 删除评论
+    deletepl(id, rowid) {
+      this.$confirm("确定删除该评论吗", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(async () => {
+          const res = await this.$http.delete(`comment/${id}`);
+          if (res.data.status === 200) {
+            this.$message.success("评论删除成功");
+            this.$store.dispatch("handlecasecomment", rowid);
+          } else {
+            this.$message.error(res.data.msg);
+          }
+        })
+        .catch(() => {});
     }
   },
   computed: mapState({

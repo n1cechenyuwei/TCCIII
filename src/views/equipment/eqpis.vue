@@ -1,5 +1,5 @@
 <template>
-  <Eqmodel eqtype="pisdevice"></Eqmodel>
+  <Eqmodel eqtype="pisdevice" sxrequest="screenpisdevice" sxshebei="pis"></Eqmodel>
 </template>
 
 <script>

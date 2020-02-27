@@ -1,5 +1,5 @@
 <template>
-  <Eqmodel eqtype="vmsdevice"></Eqmodel>
+  <Eqmodel eqtype="vmsdevice" sxrequest="screenvmsdevice" sxshebei="vms"></Eqmodel>
 </template>
 
 <script>

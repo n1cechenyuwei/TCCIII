@@ -1,24 +1,29 @@
 <template>
   <div>
     <div class="mytask-content-top">
-      <el-dropdown
-        @command="handleCommand"
+      <el-popover
         placement="bottom-start"
-        class="mytask-dropdown">
-        <el-button type="primary" size="small">
-          筛选<i class="el-icon-arrow-down el-icon--right"></i>
-        </el-button>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item command="a">按开始时间(最新)</el-dropdown-item>
-          <el-dropdown-item command="b">按结束时间(最新)</el-dropdown-item>
-          <el-dropdown-item command="c">按任务进度(最新)</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
+        width="220"
+        transition="el-zoom-in-bottom"
+        trigger="click">
+        <div>
+          <div class="sx_li">所属项目名称：</div>
+          <el-input v-model="sxform.proname" class="sx_li sx_input" placeholder="请输入内容" size="mini"></el-input>
+          <div class="sx_li">所属受检单位名称：</div>
+          <el-input v-model="sxform.company" class="sx_li sx_input" placeholder="请输入内容" size="mini"></el-input>
+          <div class="sx_btn_box">
+            <el-button type="primary" size="mini" @click="reqest">重置</el-button>
+            <el-button type="primary" size="mini" @click="sx">筛选</el-button>
+          </div>
+        </div>
+        <el-button style="margin-left: 20px" slot="reference" type="primary" size="small">筛选<i class="el-icon-arrow-down el-icon--right"></i></el-button>
+      </el-popover>
       <div class="search-box">
         <el-input
           size="small"
           class="mytasksearch"
           placeholder="请输入设备名称"
+          @keyup.enter.native="reportssearch"
           v-model="myprojectsearch">
         </el-input>
         <i class="el-icon-search sreach-icon"></i>      
@@ -31,7 +36,7 @@
           :data="eqpislist"
           class="mytask-content-table-one"
           stripe
-          height="750"
+          height="740"
           style="width: 100%">
           <el-table-column
             type="expand">
@@ -57,7 +62,7 @@
                       <a :href="scoperow.row.download_url" :download="scoperow.row.download_url">
                         <el-button size="mini" type="primary" icon="el-icon-download"></el-button>
                       </a>
-                      <el-button @click="reportdelete(scoperow.row.id, scope.row.device_id)" style="margin: 0 0 0 6px;" size="mini" type="danger" icon="el-icon-delete"></el-button>
+                      <el-button @click="reportdelete(scoperow.row.id, scope.row.device_id, scope.row.proid)" style="margin: 0 0 0 6px;" size="mini" type="danger" icon="el-icon-delete"></el-button>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -95,7 +100,7 @@
             width="120"
             label="操作">
             <template slot-scope="scope">
-              <el-button @click="openchugao(scope.row.device_id)" size="mini" type="primary">生成初稿</el-button>
+              <el-button @click="openchugao(scope.row.device_id, scope.row.proid)" size="mini" type="primary">生成初稿</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -134,12 +139,12 @@
 
 <script>
 export default {
-  props: ["reportdata"],
+  props: ["reportdata", "sxrequest"],
   data() {
     return {
       firstreportdata: this.reportdata,
       currentPage: 1, //默认第几页
-      taskpagesize: 14, //每页显示几条
+      taskpagesize: 13, //每页显示几条
       eqpistotal: 0,
       eqpislist: [],
       myprojectsearch: "",
@@ -148,18 +153,16 @@ export default {
       caseloading: false,
       checkedKeys: [], // 选中的测试用例
       devid: "", // 设备id
-      projclick: ""
+      projclick: "",
+      sxform: {
+        proname: "",
+        company: ""
+      },
+      searchtype: "1",
+      proid: ""
     };
   },
   methods: {
-    //筛选按钮
-    handleCommand(command) {
-      if (command === "a") {
-        console.log("aaa");
-      } else if (command === "b") {
-        console.log("bbb");
-      }
-    },
     async reports(page) {
       const res = await this.$http.post(`${this.firstreportdata}/${page}`, {
         search: this.myprojectsearch
@@ -172,10 +175,15 @@ export default {
       }
     },
     handleprojectChange(val) {
-      this.reports(val);
+      if (this.searchtype === "1") {
+        this.reports(val);
+      } else if (this.searchtype === "3") {
+        this.sxqq(val);
+      }
     },
     // 生成初稿
-    async openchugao(devid) {
+    async openchugao(devid, proid) {
+      this.proid = proid;
       this.devid = devid;
       this.caseshow = true;
       this.caseloading = true;
@@ -189,14 +197,56 @@ export default {
     },
     // 发送生成初稿
     async handleCheckChange() {
-      const checkedKeys = this.$refs.vmscasetree.getCheckedKeys();
-      if (checkedKeys.length === 0) {
-        this.$message.error("请选择测试用例");
+      const alllist = this.$refs.vmscasetree.getCheckedNodes(false, true);
+      const ckeys = this.$refs.vmscasetree.getCheckedNodes(true, true);
+      let fnodes = []; // 包含子节点
+      let fkey = []; // 不包含子节点
+      for (let i = 0; i < alllist.length; i++) {
+        if (alllist[i].case_list) {
+          let fnode = {
+            name: "",
+            case_list: []
+          };
+          fnode.name = alllist[i].name;
+          fnodes.push(alllist[i]);
+          fkey.push(fnode);
+        }
+      }
+      for (let k = 0; k < ckeys.length; k++) {
+        let qqq = 0;
+        for (let q = 0; q < fnodes.length; q++) {
+          let www = 0;
+          for (let w = 0; w < fnodes[q].case_list.length; w++) {
+            if (ckeys[k].id === fnodes[q].case_list[w].id) {
+              for (let e = 0; e < fkey.length; e++) {
+                if (fkey[e].name == fnodes[q].name) {
+                  fkey[e].case_list.push(ckeys[k]);
+                  qqq = 1;
+                  www === 1;
+                  break;
+                }
+              }
+            }
+            if (www === 1) {
+              break;
+            }
+          }
+          if (qqq === 1) {
+            break;
+          }
+        }
+      }
+      if (ckeys.length === 0) {
+        this.$message.error("请选择用例");
       } else {
-        let newArr = checkedKeys.filter(item => item != undefined);
-        const res = await this.$http.post(`generatereport/${this.devid}`, {
-          caseid_list: newArr
-        });
+        const res = await this.$http.post(
+          `generatereport`,
+          {
+            caseid_list: fkey,
+            devi_id: this.devid,
+            taskid: 0
+          }
+        );
         if (res.data.status === 200) {
           this.$message.success("报告生成成功");
           this.upload();
@@ -205,6 +255,23 @@ export default {
           this.$message.error(res.data.msg);
         }
       }
+
+      // const checkedKeys = this.$refs.vmscasetree.getCheckedKeys();
+      // if (checkedKeys.length === 0) {
+      //   this.$message.error("请选择测试用例");
+      // } else {
+      //   let newArr = checkedKeys.filter(item => item != undefined);
+      //   const res = await this.$http.post(`generatereport/${this.devid}`, {
+      //     caseid_list: newArr
+      //   });
+      //   if (res.data.status === 200) {
+      //     this.$message.success("报告生成成功");
+      //     this.upload();
+      //     this.caseshow = false;
+      //   } else {
+      //     this.$message.error(res.data.msg);
+      //   }
+      // }
     },
     // 项目跳转
     goproject(projectid, router) {
@@ -292,6 +359,38 @@ export default {
       } else {
         this.$router.push({ name: "login" });
         this.$message.error("登陆过期，请重新登录");
+      }
+    },
+    // 重置按钮
+    reqest() {
+      this.sxform.proname = "";
+      this.sxform.company = "";
+      this.searchtype = "1";
+      this.sxqq(1);
+    },
+    // 筛选按钮
+    sx() {
+      if (this.sxform.proname === "" && this.sxform.company === "") {
+        this.searchtype = "1";
+        this.currentPage = 1;
+        this.reports(1);
+      } else {
+        this.searchtype = "3";
+        this.currentPage = 1;
+        this.sxqq(1);
+      }
+    },
+    // 筛选请求
+    async sxqq(page) {
+      const res = await this.$http.post(
+        `${this.sxrequest}/${page}`,
+        this.sxform
+      );
+      if (res.data.status === 200) {
+        this.eqpistotal = res.data.total_num;
+        this.eqpislist = res.data.report_list;
+      } else {
+        this.$message.error(res.data.msg);
       }
     }
   },

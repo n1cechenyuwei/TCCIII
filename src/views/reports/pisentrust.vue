@@ -1,5 +1,5 @@
 <template>
-  <Uploadmodel alldata="pisentrustreports" load="entrustlocalsearch" uploadurl="dereport"></Uploadmodel>
+  <Uploadmodel alldata="pisentrustreports" load="entrustlocalsearch" uploadurl="dereport" sxrequest="screenpisentrustreport"></Uploadmodel>
 </template>
 
 <script>

@@ -1,24 +1,12 @@
 <template>
   <div>
     <div class="mytask-content-top">
-      <el-dropdown
-        @command="handleCommand"
-        placement="bottom-start"
-        class="mytask-dropdown">
-        <el-button type="primary" size="small">
-          筛选<i class="el-icon-arrow-down el-icon--right"></i>
-        </el-button>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item command="a">按开始时间(最新)</el-dropdown-item>
-          <el-dropdown-item command="b">按结束时间(最新)</el-dropdown-item>
-          <el-dropdown-item command="c">按任务进度(最新)</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
       <div class="search-box">
         <el-input
           size="small"
           class="mytasksearch"
           placeholder="请输入检测用例名称"
+          @keyup.enter.native="reportssearch"
           v-model="myprojectsearch">
         </el-input>
         <i class="el-icon-search sreach-icon"></i>      
@@ -107,7 +95,7 @@
       width="576px"
       @close="caseclose"
       center>
-      <el-form label-position="right" :rules="createCaseformrules" ref="createCaseform" class="casefrom" label-width="80px" :model="createCaseform">
+      <el-form label-position="right" style="text-align: left" :rules="createCaseformrules" ref="createCaseform" class="casefrom" label-width="80px" :model="createCaseform">
         <el-form-item label="用例编号" prop="case_num">
           <el-input size="small" class="caseinput" v-model="createCaseform.case_num"></el-input>
         </el-form-item>
@@ -145,7 +133,7 @@
       width="576px"
       @close="editcaseclose"
       center>
-      <el-form label-position="right" :rules="editCaseformrules" ref="editCaseform" class="casefrom" label-width="80px" :model="editCaseform">
+      <el-form label-position="right" style="text-align: left" :rules="editCaseformrules" ref="editCaseform" class="casefrom" label-width="80px" :model="editCaseform">
         <el-form-item label="用例编号" prop="case_num">
           <el-input size="small" class="caseinput" v-model="editCaseform.case_num"></el-input>
         </el-form-item>
@@ -205,11 +193,11 @@ export default {
       createCaseformrules: {
         case_num: [
           { required: true, message: "请输入用例编号", trigger: "blur" },
-          { max: 25, message: "用例编号最长为25个字符", trigger: "blur" }
+          { max: 50, message: "用例编号最长为50个字符", trigger: "blur" }
         ],
         case_name: [
           { required: true, message: "请输入用例名称", trigger: "blur" },
-          { max: 30, message: "用例名称最长为30个字符", trigger: "blur" }
+          { max: 50, message: "用例名称最长为50个字符", trigger: "blur" }
         ],
         priority: [
           { required: true, message: "请输入优先级别", trigger: "blur" },
@@ -217,27 +205,27 @@ export default {
         ],
         precondition: [
           { required: true, message: "请输入前提条件", trigger: "blur" },
-          { max: 160, message: "前提条件最长为160个字符", trigger: "blur" }
+          { max: 600, message: "前提条件最长为600个字符", trigger: "blur" }
         ],
         step: [
           { required: true, message: "请输入步骤描述", trigger: "blur" },
-          { max: 160, message: "步骤描述最长为160个字符", trigger: "blur" }
+          { max: 600, message: "步骤描述最长为600个字符", trigger: "blur" }
         ],
         expectedresult: [
           { required: true, message: "请输入预期结果", trigger: "blur" },
-          { max: 160, message: "预期结果最长为160个字符", trigger: "blur" }
+          { max: 600, message: "预期结果最长为600个字符", trigger: "blur" }
         ],
-        msg: [{ max: 160, message: "报文最长为300个字符", trigger: "blur" }]
+        msg: [{ max: 600, message: "报文最长为600个字符", trigger: "blur" }]
       },
       editCaseform: {},
       editCaseformrules: {
         case_num: [
           { required: true, message: "请输入用例编号", trigger: "blur" },
-          { max: 25, message: "用例编号最长为25个字符", trigger: "blur" }
+          { max: 50, message: "用例编号最长为50个字符", trigger: "blur" }
         ],
         case_name: [
           { required: true, message: "请输入用例名称", trigger: "blur" },
-          { max: 30, message: "用例名称最长为30个字符", trigger: "blur" }
+          { max: 50, message: "用例名称最长为50个字符", trigger: "blur" }
         ],
         priority: [
           { required: true, message: "请输入优先级别", trigger: "blur" },
@@ -245,29 +233,21 @@ export default {
         ],
         precondition: [
           { required: true, message: "请输入前提条件", trigger: "blur" },
-          { max: 160, message: "前提条件最长为160个字符", trigger: "blur" }
+          { max: 600, message: "前提条件最长为600个字符", trigger: "blur" }
         ],
         step: [
           { required: true, message: "请输入步骤描述", trigger: "blur" },
-          { max: 160, message: "步骤描述最长为160个字符", trigger: "blur" }
+          { max: 600, message: "步骤描述最长为600个字符", trigger: "blur" }
         ],
         expectedresult: [
           { required: true, message: "请输入预期结果", trigger: "blur" },
-          { max: 160, message: "预期结果最长为160个字符", trigger: "blur" }
+          { max: 600, message: "预期结果最长为600个字符", trigger: "blur" }
         ],
-        msg: [{ max: 160, message: "报文最长为300个字符", trigger: "blur" }]
+        msg: [{ max: 600, message: "报文最长为600个字符", trigger: "blur" }]
       }
     };
   },
   methods: {
-    //筛选按钮
-    handleCommand(command) {
-      if (command === "a") {
-        console.log("aaa");
-      } else if (command === "b") {
-        console.log("bbb");
-      }
-    },
     handleprojectChange(val) {
       this.getvmscases(val);
     },

@@ -2,29 +2,49 @@
   <div class="aaaaa">
     <div class="mytask-boxbox">
       <div class="mytask-content-top">
-        <el-dropdown
-          @command="handleCommand"
+        <el-popover
           placement="bottom-start"
-          class="mytask-dropdown">
-          <el-button type="primary" size="small">
-            筛选<i class="el-icon-arrow-down el-icon--right"></i>
-          </el-button>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="a">按开始时间(最新)</el-dropdown-item>
-            <el-dropdown-item command="b">按结束时间(最新)</el-dropdown-item>
-            <el-dropdown-item command="c">按任务进度(最新)</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-        <div class="search-box">
-          <el-input
-            size="small"
-            class="mytasksearch"
-            placeholder="请输入任务名称"
-            v-model.trim="mytasksearch">
-          </el-input>
-          <i class="el-icon-search sreach-icon"></i>      
-        </div>     
-        <el-button type="primary" size="mini" @click="mytaskseac">搜索</el-button>
+          width="220"
+          popper-class="sx_cla"
+          transition="el-zoom-in-bottom"
+          trigger="click">
+          <div>
+            <div class="sx_li">任务名称：</div>
+            <el-input size="small" class="sx_input sx_li" @keyup.enter.native="mysearch" v-model.trim="$store.state.mysxform.search" placeholder="请输入任务名称"></el-input>
+            <div class="sx_li">项目名称筛选：</div>
+            <el-select v-model="$store.state.mysxform.proid" class="sx_li sx_input" size="small" placeholder="请选择">
+              <el-option
+                v-for="item in projectoptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id">
+              </el-option>
+            </el-select>
+            <div class="sx_li">开始时间(按任务到期日筛选)：</div>
+            <el-date-picker
+              size="mini"
+              value-format="yyyy-MM-dd"
+              v-model="$store.state.mysxform.stime"
+              type="date"
+              class="sx_li sx_input"
+              placeholder="选择日期">
+            </el-date-picker>
+            <div class="sx_li">结束时间(按任务到期日筛选)：</div>
+            <el-date-picker
+              size="mini"
+              value-format="yyyy-MM-dd"
+              v-model="$store.state.mysxform.etime"
+              class="sx_li sx_input"
+              type="date"
+              placeholder="选择日期">
+            </el-date-picker>
+            <div class="sx_btn_box">
+              <el-button type="primary" size="mini" @click="reqest">重置</el-button>
+              <el-button type="primary" size="mini" @click="sx">筛选</el-button>
+            </div>
+          </div>
+          <el-button style="margin: 10px 0 0 20px" slot="reference" type="primary" size="small">筛选<i class="el-icon-arrow-down el-icon--right"></i></el-button>
+        </el-popover>
       </div>
       <div class="mytask-content-middle">
         <div class="mytask-content-table">
@@ -91,7 +111,7 @@
         </div>
         <el-pagination
           class="taskpage"
-          :current-page.sync="currentPage"
+          :current-page.sync="sxform.currentPage"
           @current-change="handlePageChange"
           :page-size="taskpagesize"
           layout="total, prev, pager, next, jumper"
@@ -108,23 +128,23 @@
             <i class="el-icon-close iicon" @click="close"></i>
           </div>
           <div class="height-auto">
-            <Applyfor v-if="route === 'applyfor'" :taskid="taskid" ht="mytask">
+            <Applyfor v-if="route === 'applyfor'" :taskid="taskid" ht="mytask" :page="$store.state.mysxform.currentPage">
             </Applyfor>
-            <ApprovalContract v-if="route === 'approvalcontract'" :taskid="taskid" ht="mytask">
+            <ApprovalContract v-if="route === 'approvalcontract'" :taskid="taskid" ht="mytask" :page="$store.state.mysxform.currentPage">
             </ApprovalContract>
-            <Contractor v-if="route === 'contractor'" :taskid="taskid" ht="mytask">
+            <Contractor v-if="route === 'contractor'" :taskid="taskid" ht="mytask" :page="$store.state.mysxform.currentPage">
             </Contractor>
-            <Detection v-if="route === 'detection'" :taskid="taskid" ht="mytask">
+            <Detection v-if="route === 'detection'" :taskid="taskid" ht="mytask" :page="$store.state.mysxform.currentPage">
             </Detection>
-            <DetectionAudit v-if="route === 'detectionaudit'" :taskid="taskid" ht="mytask">
+            <DetectionAudit v-if="route === 'detectionaudit'" :taskid="taskid" ht="mytask" :page="$store.state.mysxform.currentPage">
             </DetectionAudit>
-            <Eqconfig v-if="route === 'eqconfig'" :taskid="taskid" ht="mytask">
+            <Eqconfig v-if="route === 'eqconfig'" :taskid="taskid" ht="mytask" :page="$store.state.mysxform.currentPage">
             </Eqconfig>
-            <PutStorage v-if="route === 'putstorage'" :taskid="taskid" ht="mytask">
+            <PutStorage v-if="route === 'putstorage'" :taskid="taskid" ht="mytask" :page="$store.state.mysxform.currentPage">
             </PutStorage>
-            <OutStorage v-if="route === 'outstorage'" :taskid="taskid" ht="mytask">
+            <OutStorage v-if="route === 'outstorage'" :taskid="taskid" ht="mytask" :page="$store.state.mysxform.currentPage">
             </OutStorage>
-            <ReportAudit v-if="route === 'reportaudit'" :taskid="taskid" ht="mytask">
+            <ReportAudit v-if="route === 'reportaudit'" :taskid="taskid" ht="mytask" :page="$store.state.mysxform.currentPage">
             </ReportAudit>
           </div>
         </div>
@@ -138,37 +158,38 @@
 export default {
   data() {
     return {
-      mytasksearch: "", //搜索框内容
-      currentPage: 1, //默认第几页
+      // mytasksearch: "", //搜索框内容
+      // currentPage: 1, //默认第几页
       taskpagesize: 14, //每页显示几条
       eqimgshow: false, //设备生产厂家照片显示
       eqimgdata: "", //生厂厂家照片
       taskid: 0, //任务id
       route: "", //任务组件别名
-      searchtype: "1" // 根据类型不同发送不同请求
+      searchtype: "1", // 根据类型不同发送不同请求
+      sxform: {
+        proid: null,
+        stime: "",
+        etime: "",
+        currentPage: 1,
+        search: ""
+      },
+      projectoptions: []
     };
   },
   created() {
-    this.$store.dispatch("loadingMytask", this.currentPage);
+    this.$store.dispatch("loadingMytask", this.$store.state.mysxform);
+    this.projectlist();
     this.$store.state.mytaskloading = true;
     this.$store.commit("taskhuakuaihidden"); // 关闭右滑任务详情
   },
   methods: {
-    //筛选按钮时间
-    handleCommand(command) {
-      if (command === "a") {
-        console.log("aaa");
-      } else if (command === "b") {
-        console.log("bbb");
-      }
-    },
     handlePageChange(val) {
-      // this.currentPage = val;
-      if (this.searchtype === "1") {
-        this.$store.dispatch("loadingMytask", val);
-      } else if (this.searchtype === "2") {
-        this.searchfnc(val);
-      }
+      this.$store.mysxform.currentPage = val;
+      this.$store.dispatch("loadingMytask", this.$store.state.mysxform);
+    },
+    mysearch() {
+      this.sxform.currentPage = 1;
+      this.$store.dispatch("loadingMytask",this.$store.state.mysxform);
     },
     //表格名称点击
     rownameclick(row) {
@@ -178,28 +199,28 @@ export default {
       this.$store.dispatch("routerright", { taskid: row.id, route: row.route });
     },
     close() {
-      this.$store.dispatch("loadingMytask", this.currentPage);
+      this.$store.dispatch("loadingMytask", this.$store.state.mysxform);
       this.$store.commit("taskhuakuaihidden");
     },
-    // 搜索按钮
-    async mytaskseac() {
-      if (this.mytasksearch === "") {
-        this.$message.warning("请输入内容");
-      } else {
-        this.searchtype = "2";
-        this.searchfnc(1);
-      }
+    // 重置按钮
+    reqest() {
+      this.$store.state.mysxform.proid = null;
+      this.$store.state.mysxform.sxform.stime = "";
+      this.$store.state.mysxform.sxform.etime = "";
+      this.$store.state.mysxform.sxform.search = "";
+      this.$store.state.mysxform.sxform.currentPage = 1;
+      this.$store.dispatch("loadingMytask", this.$store.state.mysxform);
     },
-    // 搜索请求
-    async searchfnc(page) {
-      const res = await this.$http.post(`searchprocesstask/${page}`, {
-        search: this.mytasksearch
-      });
+    // 筛选按钮
+    sx() {
+      this.$store.dispatch("loadingMytask", this.$store.state.mysxform);
+    },
+    async projectlist() {
+      const res = await this.$http.get(`projectname/0`);
       if (res.data.status === 200) {
-        this.$store.state.mytasktotal = res.data.total_num;
-        this.$store.state.task = res.data.tasklist;
+        this.projectoptions = res.data.info;
       } else {
-        this.$message.warning(res.data.msg);
+        this.$message.error(res.data.msg);
       }
     }
   },
@@ -230,14 +251,6 @@ export default {
     },
     DetectionAudit: resolve => {
       require(["./DetectionAudit"], resolve);
-    }
-  },
-  watch: {
-    mytasksearch(val) {
-      if (val === "") {
-        this.searchtype = "1";
-        this.$store.dispatch("loadingMytask", 1);
-      }
     }
   }
 };
